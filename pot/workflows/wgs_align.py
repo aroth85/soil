@@ -25,7 +25,7 @@ def create_single_lane_alignment_workflow(
 
     workflow.transform(
         name='bwa_mem_paired_end',
-        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'num_cpus': bwa_threads},
+        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': bwa_threads},
         func=pot.wrappers.bwa.mem_paired_end,
         args=(
             mgd.InputFile(fastq_file_1),
@@ -41,7 +41,7 @@ def create_single_lane_alignment_workflow(
 
     workflow.transform(
         name='sort',
-        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'num_cpus': sambamba_threads},
+        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': sambamba_threads},
         func=pot.wrappers.sambamba.sort,
         args=(
             mgd.TempInputFile('aligned.bam'),
