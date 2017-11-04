@@ -126,11 +126,34 @@ def create_workflow(
         func=pot.wrappers.samtools.concatenate_vcf,
         args=(
             [mgd.TempInputFile('indels.vcf.gz'), mgd.TempInputFile('snvs.vcf.gz')],
-            mgd.OutputFile(out_file),
+            mgd.TempOutputFile('merged.vcf.gz'),
         ),
         kwargs={
             'allow_overlap': True,
         },
+    )
+
+    workflow.commandline(
+        name='filter_vcf',
+        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
+        args=(
+            'bcftools',
+            'view',
+            '-O', 'z',
+            '-f', '.,PASS',
+            '-o', mgd.OutputFile(out_file),
+            mgd.TempInputFile('merged.vcf.gz'),
+        )
+    )
+
+    workflow.commandline(
+        name='index_vcf',
+        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
+        func=pot.wrappers.samtools.index_vcf,
+        args=(
+            mgd.InputFile(out_file),
+            mgd.OutputFile(out_file + '.tbi'),
+        )
     )
 
     return workflow
