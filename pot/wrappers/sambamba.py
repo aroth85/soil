@@ -5,7 +5,7 @@ import os
 import pypeliner.commandline as cli
 import shutil
 
-from pot.utils import flatten_input
+from pot.utils.workflow import flatten_input
 
 
 def sort(in_file, out_file, tmp_dir, memory=24, threads=1):
