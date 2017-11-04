@@ -4,6 +4,16 @@ import pysam
 
 
 def get_regions(chromosome_lengths, split_size):
+    """ Split up chromosomes into regions with a fixed size. Useful for parallelising tasks across a genome.
+
+    :param chromosome_lengths: Dictionary with chromosomes as keys and lenghts as values
+    :param split_size: Maximum lenght of split interval.
+    :returns: A dictionary with keys being the numeric id of the region and values being the samtools style region
+        string.
+
+    >>> get_regions({'1': 1000, '2': 100}, 500)
+    {0: '1:1-500', 1: '1:501-1000', 2: '2:1-100'}
+    """
     if split_size is None:
         return dict(enumerate(chromosome_lengths.keys()))
 
