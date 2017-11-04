@@ -146,7 +146,7 @@ def create_workflow(
         )
     )
 
-    workflow.commandline(
+    workflow.transform(
         name='index_vcf',
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
         func=pot.wrappers.samtools.index_vcf,
