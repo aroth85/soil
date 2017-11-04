@@ -43,7 +43,6 @@ def create_workflow(
             mgd.InputFile(ref_genome_fasta_file),
             mgd.TempOutputFile('ref_base_counts.tsv'),
         ),
-        sandbox=sandbox,
     )
 
     workflow.transform(
@@ -56,7 +55,7 @@ def create_workflow(
             mgd.TempInputFile('ref_base_counts.tsv'),
             chromosomes,
         ),
-        sandbox=sandbox,
+        sandbox=None,
     )
 
     workflow.transform(
@@ -69,7 +68,6 @@ def create_workflow(
             mgd.InputFile(normal_bam_file),
             mgd.TempOutputFile('chrom_depth.txt', 'chrom_axis'),
         ),
-        sandbox=sandbox,
     )
 
     workflow.transform(
@@ -80,7 +78,7 @@ def create_workflow(
             mgd.TempInputFile('chrom_depth.txt', 'chrom_axis'),
             mgd.TempOutputFile('chrom_depth_merged.txt'),
         ),
-        sandbox=sandbox,
+        sandbox=None,
     )
 
     workflow.transform(
@@ -99,7 +97,6 @@ def create_workflow(
             mgd.TempInputObj('config', 'regions'),
             mgd.TempInputObj('genome_size'),
         ),
-        sandbox=sandbox,
     )
 
     workflow.transform(
@@ -110,7 +107,6 @@ def create_workflow(
             mgd.TempInputFile('indels.vcf', 'regions'),
             mgd.TempOutputFile('indels.vcf.gz'),
         ),
-        sandbox=sandbox,
     )
 
     workflow.transform(
@@ -121,7 +117,6 @@ def create_workflow(
             mgd.TempInputFile('snvs.vcf', 'regions'),
             mgd.TempOutputFile('snvs.vcf.gz'),
         ),
-        sandbox=sandbox,
     )
 
     workflow.transform(
@@ -135,7 +130,6 @@ def create_workflow(
         kwargs={
             'allow_overlap': True,
         },
-        sandbox=sandbox,
     )
 
     return workflow
