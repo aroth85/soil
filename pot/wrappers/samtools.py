@@ -25,12 +25,23 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
     else:
         cmd = ['bcftools', 'concat', '-O', 'z', '-o', out_file]
 
+    tmp_index_files = []
+
+    for file_name in in_files:
+        if not os.path.exists(file_name + '.tbi'):
+            tmp_index_files.append(file_name + '.tbi')
+
+            cli.execute('tabix', '-f', '-p', 'vcf', file_name)
+
     cmd += pot.utils.workflow.flatten_input(in_files)
 
     cli.execute(*cmd)
 
     if index_file is not None:
         index_vcf(out_file, index_file=index_file)
+
+    for file_name in tmp_index_files:
+        os.unlink(file_name)
 
 
 def index_vcf(vcf_file, index_file=None):
