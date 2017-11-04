@@ -21,7 +21,7 @@ def create_single_lane_alignment_workflow(
         packages=('bwa ==0.7.16', 'samtools ==1.6', 'sambamba ==0.6.6'),
     )
 
-    workflow = pypeliner.workflow.Workflow(sandbox=sandbox)
+    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
     workflow.transform(
         name='bwa_mem_paired_end',
@@ -60,3 +60,5 @@ def create_single_lane_alignment_workflow(
             mgd.OutputFile(out_bam_file + '.bai'),
         )
     )
+    
+    return workflow

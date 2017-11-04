@@ -31,13 +31,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-f1', '--fastq_file_1', help='Path to 1st of paired end fastqs')
+    parser.add_argument('-f1', '--fastq_file_1', help='Path to 1st of paired end fastqs', required=True)
 
-    parser.add_argument('-f2', '--fastq_file_2', help='Path to 1st of paired end fastqs')
+    parser.add_argument('-f2', '--fastq_file_2', help='Path to 1st of paired end fastqs', required=True)
 
-    parser.add_argument('-r', '--ref_genome_fasta_file', help='Path to reference genome to align against')
+    parser.add_argument('-r', '--ref_genome_fasta_file', help='Path to reference genome to align against', required=True)
 
-    parser.add_argument('-o', '--out_bam_file', help='Path where output will be written in BAM format')
+    parser.add_argument('-o', '--out_bam_file', help='Path where output will be written in BAM format', required=True)
 
     parser.add_argument('--max_jobs', type=int, default=1)
 
