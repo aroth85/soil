@@ -119,7 +119,7 @@ def count_fasta_bases(ref_genome_fasta_file, out_file):
     cli.execute(*cmd)
 
 
-def get_chromosome_depth(chrom, bam_file, out_file):
+def get_chromosome_depth(chrom, bam_file, ref_genome, out_file):
     share_dir = os.path.join(os.environ['CONDA_PREFIX'], 'share')
 
     exe = pot.utils.file_system.find('GetChromDepth', share_dir)
@@ -128,7 +128,8 @@ def get_chromosome_depth(chrom, bam_file, out_file):
         exe,
         '--align-file', bam_file,
         '--chrom', chrom,
-        '--output-file', out_file
+        '--output-file', out_file,
+        '--ref', ref_genome,
     ]
 
     cli.execute(*cmd)

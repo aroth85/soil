@@ -66,6 +66,7 @@ def create_workflow(
         args=(
             mgd.TempInputObj('chrom_names', 'chrom_axis'),
             mgd.InputFile(normal_bam_file),
+            mgd.InputFile(ref_genome_fasta_file),
             mgd.TempOutputFile('chrom_depth.txt', 'chrom_axis'),
         ),
     )
