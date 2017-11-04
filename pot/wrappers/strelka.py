@@ -103,6 +103,10 @@ def call_genome_segment(
 
     cli.execute(*cmd)
 
+    shutil.move(tmp_indel_file, indel_file)
+
+    shutil.move(tmp_snv_file, snv_file)
+
 
 def count_fasta_bases(ref_genome_fasta_file, out_file):
     share_dir = os.path.join(os.environ['CONDA_PREFIX'], 'share')
