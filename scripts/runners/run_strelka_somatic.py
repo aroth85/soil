@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import pypeliner
-
+import soil.utils.cli
 import soil.workflows.strelka_somatic
 
 
@@ -14,16 +13,7 @@ def main(args):
         split_size=int(1e7)
     )
 
-    config = {
-        'maxjobs': args.max_jobs,
-        'nativespec': args.native_spec,
-        'submit': args.submit,
-        'tmpdir': args.working_dir,
-    }
-
-    pyp = pypeliner.app.Pypeline(config=config)
-
-    pyp.run(workflow)
+    soil.utils.cli.run_workflow(args, workflow)
 
 if __name__ == '__main__':
     import argparse
@@ -42,13 +32,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--chromosomes', default=None, nargs='+')
 
-    parser.add_argument('--max_jobs', type=int, default=1)
-
-    parser.add_argument('--native_spec', default='')
-
-    parser.add_argument('--submit', choices=['drmaa', 'local'])
-
-    parser.add_argument('--working_dir', default=None)
+    soil.utils.cli.add_pipeline_args(parser)
 
     cli_args = parser.parse_args()
 
