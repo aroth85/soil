@@ -43,7 +43,7 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
     cli.execute(*cmd)
 
     for file_name in tmp_index_files:
-        os.unlink(tmp_index_files)
+        os.unlink(file_name)
 
     if index_file is not None:
         index_vcf(out_file, index_file=index_file)
