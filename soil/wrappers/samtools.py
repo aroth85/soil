@@ -19,29 +19,34 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
     :param allow_overlap: bool indicating whether there maybe overlapping regions in the files.
     :param index_file: path where tabix file will be written.
     """
+    in_files = soil.utils.workflow.flatten_input(in_files)
+
+    tmp_index_files = []
+
     if allow_overlap:
         cmd = ['bcftools', 'concat', '-a', '-O', 'z', '-o', out_file]
+
+        # bcftools requires that the input files be indexed when overlap is allowed
+        for file_name in in_files:
+            tmp_index_file_name = file_name + '.tbi'
+
+            if not os.path.exists(tmp_index_file_name):
+                index_vcf(file_name, index_file=tmp_index_file_name)
+
+                tmp_index_files.append(tmp_index_file_name)
 
     else:
         cmd = ['bcftools', 'concat', '-O', 'z', '-o', out_file]
 
-    tmp_index_files = []
-
-    for file_name in in_files:
-        if not os.path.exists(file_name + '.tbi'):
-            tmp_index_files.append(file_name + '.tbi')
-
-            cli.execute('tabix', '-f', '-p', 'vcf', file_name)
-
-    cmd += soil.utils.workflow.flatten_input(in_files)
+    cmd.extend(in_files)
 
     cli.execute(*cmd)
 
+    for file_name in tmp_index_files:
+        os.unlink(tmp_index_files)
+
     if index_file is not None:
         index_vcf(out_file, index_file=index_file)
-
-    for file_name in tmp_index_files:
-        os.unlink(file_name)
 
 
 def index_vcf(vcf_file, index_file=None):
