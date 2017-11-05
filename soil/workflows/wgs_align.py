@@ -3,8 +3,8 @@ from pypeliner.sandbox import CondaSandbox
 import pypeliner
 import pypeliner.managed as mgd
 
-import pot.wrappers.bwa
-import pot.wrappers.sambamba
+import soil.wrappers.bwa
+import soil.wrappers.sambamba
 
 
 def create_single_lane_alignment_workflow(
@@ -26,7 +26,7 @@ def create_single_lane_alignment_workflow(
     workflow.transform(
         name='bwa_mem_paired_end',
         ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': bwa_threads},
-        func=pot.wrappers.bwa.mem_paired_end,
+        func=soil.wrappers.bwa.mem_paired_end,
         args=(
             mgd.InputFile(fastq_file_1),
             mgd.InputFile(fastq_file_2),
@@ -42,7 +42,7 @@ def create_single_lane_alignment_workflow(
     workflow.transform(
         name='sort',
         ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': sambamba_threads},
-        func=pot.wrappers.sambamba.sort,
+        func=soil.wrappers.sambamba.sort,
         args=(
             mgd.TempInputFile('aligned.bam'),
             mgd.OutputFile(out_bam_file),

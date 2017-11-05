@@ -5,9 +5,9 @@ import pypeliner
 import pypeliner.managed as mgd
 import pysam
 
-import pot.wrappers.samtools
-import pot.wrappers.strelka
-import pot.utils.genome
+import soil.wrappers.samtools
+import soil.wrappers.strelka
+import soil.utils.genome
 
 
 def create_workflow(
@@ -27,7 +27,7 @@ def create_workflow(
 
     workflow.setobj(
         obj=mgd.TempOutputObj('config', 'regions'),
-        value=pot.utils.genome.get_bam_regions(normal_bam_file, split_size, chromosomes=chromosomes)
+        value=soil.utils.genome.get_bam_regions(normal_bam_file, split_size, chromosomes=chromosomes)
     )
 
     workflow.setobj(
@@ -38,7 +38,7 @@ def create_workflow(
     workflow.transform(
         name='count_fasta_bases',
         ctx={'mem': 2, 'num_retry': 3, 'mem_retry_increment': 2},
-        func=pot.wrappers.strelka.count_fasta_bases,
+        func=soil.wrappers.strelka.count_fasta_bases,
         args=(
             mgd.InputFile(ref_genome_fasta_file),
             mgd.TempOutputFile('ref_base_counts.tsv'),
@@ -62,7 +62,7 @@ def create_workflow(
         name='get_chromosome_depths',
         axes=('chrom_axis',),
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 8},
-        func=pot.wrappers.strelka.get_chromosome_depth,
+        func=soil.wrappers.strelka.get_chromosome_depth,
         args=(
             mgd.TempInputObj('chrom_names', 'chrom_axis'),
             mgd.InputFile(normal_bam_file),
@@ -74,7 +74,7 @@ def create_workflow(
     workflow.transform(
         name='merge_chromosome_depths',
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 8},
-        func=pot.wrappers.strelka.merge_chromosome_depth,
+        func=soil.wrappers.strelka.merge_chromosome_depth,
         args=(
             mgd.TempInputFile('chrom_depth.txt', 'chrom_axis'),
             mgd.TempOutputFile('chrom_depth_merged.txt'),
@@ -86,7 +86,7 @@ def create_workflow(
         name='call_genome_segment',
         axes=('regions',),
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 8},
-        func=pot.wrappers.strelka.call_genome_segment,
+        func=soil.wrappers.strelka.call_genome_segment,
         args=(
             mgd.TempInputFile('chrom_depth_merged.txt'),
             mgd.InputFile(normal_bam_file),
@@ -103,7 +103,7 @@ def create_workflow(
     workflow.transform(
         name='merge_indels',
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
-        func=pot.wrappers.samtools.concatenate_vcf,
+        func=soil.wrappers.samtools.concatenate_vcf,
         args=(
             mgd.TempInputFile('indels.vcf', 'regions'),
             mgd.TempOutputFile('indels.vcf.gz'),
@@ -113,7 +113,7 @@ def create_workflow(
     workflow.transform(
         name='merge_snvs',
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
-        func=pot.wrappers.samtools.concatenate_vcf,
+        func=soil.wrappers.samtools.concatenate_vcf,
         args=(
             mgd.TempInputFile('snvs.vcf', 'regions'),
             mgd.TempOutputFile('snvs.vcf.gz'),
@@ -123,7 +123,7 @@ def create_workflow(
     workflow.transform(
         name='merge_all',
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
-        func=pot.wrappers.samtools.concatenate_vcf,
+        func=soil.wrappers.samtools.concatenate_vcf,
         args=(
             [mgd.TempInputFile('indels.vcf.gz'), mgd.TempInputFile('snvs.vcf.gz')],
             mgd.TempOutputFile('merged.vcf.gz'),
@@ -149,7 +149,7 @@ def create_workflow(
     workflow.transform(
         name='index_vcf',
         ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
-        func=pot.wrappers.samtools.index_vcf,
+        func=soil.wrappers.samtools.index_vcf,
         args=(
             mgd.InputFile(out_file),
             mgd.OutputFile(out_file + '.tbi'),

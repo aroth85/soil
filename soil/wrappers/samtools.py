@@ -7,7 +7,7 @@ import os
 import pypeliner.commandline as cli
 import shutil
 
-import pot.utils.workflow
+import soil.utils.workflow
 
 
 def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
@@ -33,7 +33,7 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
 
             cli.execute('tabix', '-f', '-p', 'vcf', file_name)
 
-    cmd += pot.utils.workflow.flatten_input(in_files)
+    cmd += soil.utils.workflow.flatten_input(in_files)
 
     cli.execute(*cmd)
 

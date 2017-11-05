@@ -9,7 +9,7 @@ import os
 import pypeliner.commandline as cli
 import shutil
 
-import pot.utils.file_system
+import soil.utils.file_system
 
 
 def call_genome_segment(
@@ -46,9 +46,9 @@ def call_genome_segment(
 
     share_dir = os.path.join(os.environ['CONDA_PREFIX'], 'share')
 
-    config = load_config(pot.utils.file_system.find('configureStrelkaSomaticWorkflow.py.ini', share_dir))
+    config = load_config(soil.utils.file_system.find('configureStrelkaSomaticWorkflow.py.ini', share_dir))
 
-    strelka_exe = pot.utils.file_system.find('strelka2', share_dir)
+    strelka_exe = soil.utils.file_system.find('strelka2', share_dir)
 
     cmd = [
         strelka_exe,
@@ -91,8 +91,8 @@ def call_genome_segment(
         '--ssnv-contam-tolerance', config['ssnvContamTolerance'],
         '--indel-contam-tolerance', config['indelContamTolerance'],
 
-        '--somatic-snv-scoring-model-file', pot.utils.file_system.find('somaticSNVScoringModels.json', share_dir),
-        '--somatic-indel-scoring-model-file', pot.utils.file_system.find('somaticIndelScoringModels.json', share_dir),
+        '--somatic-snv-scoring-model-file', soil.utils.file_system.find('somaticSNVScoringModels.json', share_dir),
+        '--somatic-indel-scoring-model-file', soil.utils.file_system.find('somaticIndelScoringModels.json', share_dir),
     ]
 
     if not is_exome:
@@ -111,7 +111,7 @@ def call_genome_segment(
 def count_fasta_bases(ref_genome_fasta_file, out_file):
     share_dir = os.path.join(os.environ['CONDA_PREFIX'], 'share')
 
-    exe = pot.utils.file_system.find('countFastaBases', share_dir)
+    exe = soil.utils.file_system.find('countFastaBases', share_dir)
 
     cmd = [
         exe,
@@ -126,7 +126,7 @@ def count_fasta_bases(ref_genome_fasta_file, out_file):
 def get_chromosome_depth(chrom, bam_file, ref_genome, out_file):
     share_dir = os.path.join(os.environ['CONDA_PREFIX'], 'share')
 
-    exe = pot.utils.file_system.find('GetChromDepth', share_dir)
+    exe = soil.utils.file_system.find('GetChromDepth', share_dir)
 
     cmd = [
         exe,

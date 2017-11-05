@@ -1,2 +1,3 @@
-# Pypeliner Omics Toolbox (POT)
-Small collection of wrappers and workflows to support cancer bioinformatics analysis across multiple types of omics. 
+# Southampton Oxford Immunomics Library (Library)
+A library to support colloborative immunomics research in Southampton and Oxford.
+SOIL provides collection of wrappers and workflows to support analysis across multiple types of omics data. 
