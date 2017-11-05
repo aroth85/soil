@@ -26,8 +26,6 @@ if __name__ == '__main__':
 
     parser.add_argument('-r', '--ref_genome_fasta_file', required=True)
 
-    parser.add_argument('-r', '--ref_genome_fasta_file', required=True)
-
     parser.add_argument('-o', '--out_vcf_file', required=True)
 
     parser.add_argument('--chromosomes', default=None, nargs='+')
