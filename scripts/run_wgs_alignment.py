@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import pypeliner
 
-import pot.workflows.wgs_align
+import soil.workflows.wgs_align
 
 
 def main(args):
-    workflow = pot.workflows.wgs_align.create_single_lane_alignment_workflow(
+    workflow = soil.workflows.wgs_align.create_single_lane_alignment_workflow(
         args.fastq_file_1,
         args.fastq_file_2,
         args.ref_genome_fasta_file,

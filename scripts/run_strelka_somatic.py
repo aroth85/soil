@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import pypeliner
 
-import pot.workflows.strelka_somatic
+import soil.workflows.strelka_somatic
 
 
 def main(args):
-    workflow = pot.workflows.strelka_somatic.create_workflow(
+    workflow = soil.workflows.strelka_somatic.create_workflow(
         args.normal_bam_file,
         args.tumour_bam_file,
         args.ref_genome_fasta_file,
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-o', '--out_vcf_file', required=True)
 
-    parser.add_argument('--chromosomes', default=None)
+    parser.add_argument('--chromosomes', default=None, nargs='+')
 
     parser.add_argument('--max_jobs', type=int, default=1)
 
