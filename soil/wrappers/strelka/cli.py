@@ -9,7 +9,7 @@ import workflows
 @click.option('-t', '--tumour_bam_file', required=True, type=click.Path(exists=True, resolve_path=True))
 @click.option('-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True))
 @click.option('-o', '--out_vcf_file', required=True, type=click.Path(resolve_path=True))
-@click.option('--chromosomes', default=None, nargs='+', type=str)
+@click.option('--chromosomes', nargs=-1, type=str)
 @click.option('--split_size', default=int(1e7), type=int)
 def somatic(normal_bam_file, tumour_bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes, split_size):
     return workflows.create_somatic_workflow(
