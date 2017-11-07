@@ -5,9 +5,12 @@ import pypeliner
 import pypeliner.managed as mgd
 import pysam
 
+import soil.utils.genome
 import soil.wrappers.samtools.tasks
 import soil.wrappers.strelka.tasks
-import soil.utils.genome
+
+low_mem_ctx = {'mem': 2, 'mem_retry_factor': 2, 'num_retry': 3}
+med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
 
 
 def create_somatic_workflow(
@@ -23,7 +26,7 @@ def create_somatic_workflow(
         packages=('bcftools ==1.6', 'samtools ==1.6', 'strelka ==2.8.4'),
     )
 
-    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
+    workflow = pypeliner.workflow.Workflow(default_ctx=med_mem_ctx, default_sandbox=sandbox)
 
     workflow.setobj(
         obj=mgd.TempOutputObj('config', 'regions'),
@@ -37,7 +40,6 @@ def create_somatic_workflow(
 
     workflow.transform(
         name='count_fasta_bases',
-        ctx={'mem': 2, 'num_retry': 3, 'mem_retry_increment': 2},
         func=soil.wrappers.strelka.tasks.count_fasta_bases,
         args=(
             mgd.InputFile(ref_genome_fasta_file),
@@ -61,7 +63,6 @@ def create_somatic_workflow(
     workflow.transform(
         name='get_chromosome_depths',
         axes=('chrom_axis',),
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 8},
         func=soil.wrappers.strelka.tasks.get_chromosome_depth,
         args=(
             mgd.TempInputObj('chrom_names', 'chrom_axis'),
@@ -73,7 +74,6 @@ def create_somatic_workflow(
 
     workflow.transform(
         name='merge_chromosome_depths',
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 8},
         func=soil.wrappers.strelka.tasks.merge_chromosome_depth,
         args=(
             mgd.TempInputFile('chrom_depth.txt', 'chrom_axis'),
@@ -85,7 +85,6 @@ def create_somatic_workflow(
     workflow.transform(
         name='call_genome_segment',
         axes=('regions',),
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 8},
         func=soil.wrappers.strelka.tasks.call_genome_segment,
         args=(
             mgd.TempInputFile('chrom_depth_merged.txt'),
@@ -102,7 +101,6 @@ def create_somatic_workflow(
 
     workflow.transform(
         name='merge_indels',
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
             mgd.TempInputFile('indels.vcf', 'regions'),
@@ -112,7 +110,6 @@ def create_somatic_workflow(
 
     workflow.transform(
         name='merge_snvs',
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
             mgd.TempInputFile('snvs.vcf', 'regions'),
@@ -122,7 +119,6 @@ def create_somatic_workflow(
 
     workflow.transform(
         name='merge_all',
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
             [mgd.TempInputFile('indels.vcf.gz'), mgd.TempInputFile('snvs.vcf.gz')],
@@ -135,7 +131,7 @@ def create_somatic_workflow(
 
     workflow.commandline(
         name='filter_vcf',
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
+        ctx=low_mem_ctx,
         args=(
             'bcftools',
             'view',
@@ -148,7 +144,7 @@ def create_somatic_workflow(
 
     workflow.transform(
         name='index_vcf',
-        ctx={'mem': 4, 'num_retry': 3, 'mem_retry_increment': 2},
+        ctx=low_mem_ctx,
         func=soil.wrappers.samtools.tasks.index_vcf,
         args=(
             mgd.InputFile(out_file),
