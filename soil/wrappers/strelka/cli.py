@@ -20,8 +20,8 @@ def somatic(normal_bam_file, tumour_bam_file, ref_genome_fasta_file, out_vcf_fil
         tumour_bam_file,
         ref_genome_fasta_file,
         out_vcf_file,
-        chromosomes,
-        split_size
+        chromosomes=chromosomes,
+        split_size=split_size,
     )
 
 
