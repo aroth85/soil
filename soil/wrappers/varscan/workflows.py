@@ -19,7 +19,7 @@ def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromo
 
     sandbox = CondaSandbox(
         channels=('bioconda',),
-        packages=('bcftools ==1.6', 'samtools ==1.6', 'strelka ==2.4.3'),
+        packages=('bcftools ==1.6', 'samtools ==1.6', 'varscan ==2.4.3'),
     )
 
     workflow = pypeliner.workflow.Workflow(default_ctx=low_mem_ctx, default_sandbox=sandbox)
