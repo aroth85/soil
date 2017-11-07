@@ -38,17 +38,19 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
     if allow_overlap:
         cmd = ['bcftools', 'concat', '-a', '-O', 'z', '-o', out_file]
 
-        # bcftools requires that the input files be indexed when overlap is allowed
-        for file_name in in_files:
-            tmp_index_file_name = file_name + '.tbi'
-
-            if not os.path.exists(tmp_index_file_name):
-                index_vcf(file_name, index_file=tmp_index_file_name)
-
-                tmp_index_files.append(tmp_index_file_name)
-
     else:
         cmd = ['bcftools', 'concat', '-O', 'z', '-o', out_file]
+
+    for file_name in in_files:
+        if file_name.endswith('.vcf'):
+            continue
+
+        tmp_index_file_name = file_name + '.tbi'
+
+        if not os.path.exists(tmp_index_file_name):
+            index_vcf(file_name, index_file=tmp_index_file_name)
+
+            tmp_index_files.append(tmp_index_file_name)
 
     cmd.extend(in_files)
 
