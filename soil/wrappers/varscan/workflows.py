@@ -11,6 +11,8 @@ import pypeliner.managed as mgd
 import soil.utils.genome
 import soil.wrappers.samtools.tasks
 
+import tasks
+
 low_mem_ctx = {'mem': 2, 'mem_retry_factor': 2, 'num_retry': 3}
 med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
 
@@ -42,17 +44,13 @@ def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromo
         )
     )
 
-    workflow.commandline(
+    workflow.transform(
         name='run_mpileup2snp',
         axes=('regions',),
         ctx=med_mem_ctx,
+        func=tasks.mpileup2snp,
         args=(
-            'cat', mgd.TempInputFile('split.mpileup', 'regions'),
-            '|',
-            'varscan',
-            'mpileup2snp',
-            '--output-vcf', 1,
-            '>',
+            mgd.TempInputFile('split.mpileup', 'regions'),
             mgd.TempOutputFile('region.vcf', 'regions'),
         )
     )
