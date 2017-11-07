@@ -1,5 +1,5 @@
 import os
-import time
+import pypeliner.commandline as cli
 
 
 def mpileup2snp(in_file, out_file):
@@ -18,4 +18,4 @@ def mpileup2snp(in_file, out_file):
         out_file
     ])
 
-    time.sleep(10)
+    cli.execute(*cmd)
