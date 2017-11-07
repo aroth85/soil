@@ -57,7 +57,7 @@ def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromo
         )
     )
 
-    workflow.transfrom(
+    workflow.transform(
         name='compress',
         axes=('regions',),
         func=soil.wrappers.samtools.tasks.compress_vcf,
