@@ -1,4 +1,5 @@
 import os
+import time
 
 
 def mpileup2snp(in_file, out_file):
@@ -16,3 +17,5 @@ def mpileup2snp(in_file, out_file):
         '>',
         out_file
     ])
+
+    time.sleep(10)
