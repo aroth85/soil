@@ -12,7 +12,7 @@ import workflows
 @click.option('--chromosomes', default=None, nargs='+', type=str)
 @click.option('--split_size', default=int(1e4), type=int)
 def somatic(normal_bam_file, tumour_bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes, split_size):
-    workflows.create_somatic_workflow(
+    return workflows.create_somatic_workflow(
         normal_bam_file,
         tumour_bam_file,
         ref_genome_fasta_file,
