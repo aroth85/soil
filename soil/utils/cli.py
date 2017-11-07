@@ -39,4 +39,4 @@ def _add_runner_cli_args(func):
 
     click.option('--native_spec', default='', type=str)(func)
 
-    click.option('--submit', default='local', type=click.Choice(['cluster', 'local']))(func)
+    click.option('--submit', default='local', type=click.Choice(['drmaa', 'local']))(func)
