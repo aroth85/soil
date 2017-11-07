@@ -1,33 +1,42 @@
+import click
+import functools
 import pypeliner
 
 
-def add_pipeline_args(parser):
-    """ Add standard pipeline arguments to command line interface.
-
-    :param parser: An argparser.ArgumentParser instance.
+def runner(func):
+    """ Wrapper function to create a soil runner.
     """
-    parser.add_argument('-wd', '--working_dir', required=True)
+    @functools.wraps(func)
+    def func_wrapper(*args, **kwargs):
+        config = {
+            'maxjobs': kwargs.pop('max_jobs'),
+            'nativespec': kwargs.pop('native_spec'),
+            'submit': kwargs.pop('submit'),
+            'tmpdir': kwargs.pop('working_dir'),
+        }
 
-    parser.add_argument('--max_jobs', type=int, default=1)
+        workflow = func(*args, **kwargs)
 
-    parser.add_argument('--native_spec', default='')
+        pyp = pypeliner.app.Pypeline(config=config)
 
-    parser.add_argument('--submit', choices=['drmaa', 'local'], default='local')
+        pyp.run(workflow)
+
+    func_wrapper = click.command()(func_wrapper)
+
+    _add_runner_cli_args(func_wrapper)
+
+    return func_wrapper
 
 
-def run_workflow(args, workflow):
-    """ Execute a Pypeliner workflow.
+def _add_runner_cli_args(func):
+    """ Add standard pipeline arguments to command line interface for a runner function.
 
-    :param args: Arguments from argparser.ArgumentParser. Should have been run through :py:func:`add_pipeline_args`.
-    :param workflow: The Pypeliner workflow to execute.
+    :param func: Runner function
     """
-    config = {
-        'maxjobs': args.max_jobs,
-        'nativespec': args.native_spec,
-        'submit': args.submit,
-        'tmpdir': args.working_dir,
-    }
+    click.option('-wd', '--working_dir', required=True, type=click.Path(resolve_path=True))(func)
 
-    pyp = pypeliner.app.Pypeline(config=config)
+    click.option('--max_jobs', default=1, type=int)(func)
 
-    pyp.run(workflow)
+    click.option('--native_spec', default='')(func)
+
+    click.option('--submit', default='local', type=click.Choice(['cluster', 'local']))(func)

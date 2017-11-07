@@ -10,4 +10,9 @@ setup(
     author_email='andrewjlroth@gmail.com',
     url='https://github.com/aroth85/soil',
     packages=find_packages(),
+    entry_points={
+        'console_scripts': [
+            'soil-run = soil.cli:run',
+        ]
+    }
 )
