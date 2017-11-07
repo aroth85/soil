@@ -10,6 +10,18 @@ import shutil
 import soil.utils.workflow
 
 
+def compress_vcf(in_file, out_file, index_file=None):
+    """ Compress a VCF file using bgzip.
+
+    :param in_file: Path of uncompressed VCF file.
+    :param out_file: Path were compressed VCF file will be written.
+    """
+    cli.execute('bgzip', '-c', in_file, '>', out_file)
+
+    if index_file is not None:
+        index_vcf(out_file, index_file=index_file)
+
+
 def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
     """ Concatenate VCF files.
 

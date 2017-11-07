@@ -47,20 +47,31 @@ def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromo
         axes=('regions',),
         ctx=med_mem_ctx,
         args=(
+            'cat', mgd.TempInputFile('split.mpileup', 'regions'),
+            '|',
             'varscan',
             'mpileup2snp',
             '--output-vcf', 1,
-            mgd.TempInputFile('split.mpileup', 'regions'),
             '>',
             mgd.TempOutputFile('region.vcf', 'regions'),
         )
+    )
+
+    workflow.transfrom(
+        name='compress',
+        axes=('regions',),
+        func=soil.wrappers.samtools.tasks.compress_vcf,
+        args=(
+            mgd.TempInputFile('region.vcf', 'regions'),
+            mgd.TempOutputFile('region.vcf.gz', 'regions'),
+        ),
     )
 
     workflow.transform(
         name='concatenate_vcfs',
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
-            mgd.TempInputFile('region.vcf', 'regions'),
+            mgd.TempInputFile('region.vcf.gz', 'regions'),
             mgd.OutputFile(out_file),
         ),
     )
