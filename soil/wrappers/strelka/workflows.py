@@ -10,7 +10,7 @@ import soil.wrappers.strelka.tasks
 import soil.utils.genome
 
 
-def create_workflow(
+def create_somatic_workflow(
         normal_bam_file,
         tumour_bam_file,
         ref_genome_fasta_file,
