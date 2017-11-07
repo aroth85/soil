@@ -37,6 +37,6 @@ def _add_runner_cli_args(func):
 
     click.option('--max_jobs', default=1, type=int)(func)
 
-    click.option('--native_spec', default='')(func)
+    click.option('--native_spec', default='', type=str)(func)
 
     click.option('--submit', default='local', type=click.Choice(['cluster', 'local']))(func)
