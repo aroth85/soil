@@ -45,26 +45,24 @@ def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chr
         ),
     )
 
+    workflow.transform(
+        name='concatenate_vcfs',
+        func=soil.wrappers.samtools.tasks.concatenate_vcf,
+        args=(
+            mgd.TempInputFile('regions.vcf.gz', 'regions'),
+            mgd.TempOutputFile('merged.vcf.gz'),
+        ),
+    )
+
     workflow.commandline(
         name='filter_vcf',
-        axes=('regions',),
         args=(
             'bcftools',
             'view',
             '-O', 'z',
             '-f', '.,PASS',
-            '-o', mgd.TempOutputFile('filtered.vcf.gz', 'regions'),
-            mgd.TempInputFile('region.vcf.gz', 'regions'),
+            '-o', mgd.OutputFile(out_file),
+            mgd.TempInputFile('merged.vcf.gz'),
         )
     )
-
-    workflow.transform(
-        name='concatenate_vcfs',
-        func=soil.wrappers.samtools.tasks.concatenate_vcf,
-        args=(
-            mgd.TempInputFile('filtered.vcf.gz', 'regions'),
-            mgd.OutputFile(out_file),
-        ),
-    )
-
     return workflow
