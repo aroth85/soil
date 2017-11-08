@@ -5,6 +5,8 @@ import soil.utils.genome
 import soil.utils.workflow
 import soil.wrappers.samtools.tasks
 
+import tasks
+
 low_mem_ctx = {'mem': 2, 'mem_retry_factor': 2, 'num_retry': 3}
 med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
 
@@ -30,6 +32,7 @@ def create_single_sample_workflow(
         name='run_platypus',
         axes=('regions',),
         ctx=med_mem_ctx,
+        func=tasks.call_variants,
         args=(
             mgd.InputFile(bam_file),
             mgd.InputFile(ref_genome_fasta_file),
