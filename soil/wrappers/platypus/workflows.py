@@ -49,7 +49,7 @@ def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chr
         name='concatenate_vcfs',
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
-            mgd.TempInputFile('regions.vcf.gz', 'regions'),
+            mgd.TempInputFile('region.vcf.gz', 'regions'),
             mgd.TempOutputFile('merged.vcf.gz'),
         ),
     )
