@@ -34,7 +34,7 @@ def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromo
             'samtools',
             'mpileup',
             '-f', mgd.InputFile(ref_genome_fasta_file),
-            '-o', mgd.TempOutputFile('split.mpileup', 'regions'),
+            '-o', mgd.TempOutputFile('region.mpileup', 'regions'),
             '-r', mgd.TempInputObj('config', 'regions'),
             mgd.InputFile(bam_file),
         )
@@ -46,7 +46,7 @@ def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromo
         ctx=med_mem_ctx,
         func=tasks.mpileup2snp,
         args=(
-            mgd.TempInputFile('split.mpileup', 'regions'),
+            mgd.TempInputFile('region.mpileup', 'regions'),
             mgd.TempOutputFile('region.vcf', 'regions'),
         )
     )
