@@ -100,7 +100,7 @@ def create_rna_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file,
         args=(
             'opossum',
             '--BamFile', mgd.TempInputFile('raw.bam', 'regions'),
-            '--Outfile', mgd.TempOutputFile('fixed.bam', 'regions'),
+            '--OutFile', mgd.TempOutputFile('fixed.bam', 'regions'),
         )
     )
 
