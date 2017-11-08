@@ -24,7 +24,7 @@ def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chr
         name='run_platypus',
         axes=('regions',),
         args=(
-            'platypus-variant',
+            'platypus',
             'callVariants',
             '--bamFiles', mgd.InputFile(bam_file),
             '--logFileName', mgd.TempOutputFile('log.txt', 'regions'),
