@@ -15,14 +15,23 @@ def single_sample(bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes, sp
     if len(chromosomes) == 0:
         chromosomes = None
 
-    return workflows.create_single_sample_workflow(
-        bam_file,
-        ref_genome_fasta_file,
-        out_vcf_file,
-        chromosomes=chromosomes,
-        rna=rna,
-        split_size=split_size
-    )
+    if rna:
+        return workflows.create_rna_single_sample_workflow(
+            bam_file,
+            ref_genome_fasta_file,
+            out_vcf_file,
+            chromosomes=chromosomes,
+            split_size=split_size
+        )
+
+    else:
+        return workflows.create_single_sample_workflow(
+            bam_file,
+            ref_genome_fasta_file,
+            out_vcf_file,
+            chromosomes=chromosomes,
+            split_size=split_size
+        )
 
 
 @click.group()
