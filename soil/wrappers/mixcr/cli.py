@@ -12,7 +12,7 @@ import workflows
 @click.option('--rna', is_flag=True)
 def mixcr(fastq_file_1, fastq_file_2, out_tsv_file, threads, rna):
     if rna:
-        workflows.create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_tsv_file, threads=threads)
+        return workflows.create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_tsv_file, threads=threads)
 
     else:
-        workflows.create_basic_workflow(fastq_file_1, fastq_file_2, out_tsv_file, threads=threads)
+        return workflows.create_basic_workflow(fastq_file_1, fastq_file_2, out_tsv_file, threads=threads)
