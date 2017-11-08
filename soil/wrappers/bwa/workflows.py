@@ -6,7 +6,7 @@ import soil.wrappers.bwa.tasks
 import soil.wrappers.sambamba.tasks
 
 
-def create_single_lane_alignment_workflow(
+def create_mem_workflow(
         fastq_file_1,
         fastq_file_2,
         ref_genome_fasta_file,
