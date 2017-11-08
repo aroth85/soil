@@ -52,6 +52,7 @@ def _add_runner_cli_args(func):
         required=True,
         type=click.Path(resolve_path=True),
         help='''
+            \b
             Working directory for runner.
             Analysis will fail if it exists unless --resume flag is used.
             Will be deleted when analysis is finished.
@@ -70,16 +71,19 @@ def _add_runner_cli_args(func):
         default='',
         type=str,
         help='''
-            String specifying cluster submission parameters. Special values are {mem} for memory requests and {threads}
-            for thread requests.
+            \b
+            String specifying cluster submission parameters.
+            Special values are {mem} for memory requests and {threads} for thread requests.
 
             Examples:
                 For single threaded workflows
 
+                \b
                 "-cwd -V -q byslot.q -l mem_free={mem}G,h_vmem={mem}G"
 
                 For multi-threaded workflows
 
+                \b
                 "-cwd -V -pe smp {threads} -l mem_free={mem}G,h_vmem={mem}G"
         '''
     )(func)
@@ -95,6 +99,7 @@ def _add_runner_cli_args(func):
         '--resume',
         is_flag=True,
         help='''
+            \b
             Set this flag if an analysis was interrupted and you would like to resume.
             Only has an effect if the working directory exists.
         '''
