@@ -1,11 +1,10 @@
-from pypeliner.sandbox import CondaSandbox
-
 import pandas as pd
 import pypeliner
 import pypeliner.managed as mgd
 import pysam
 
 import soil.utils.genome
+import soil.utils.workflow
 import soil.wrappers.samtools.tasks
 import soil.wrappers.strelka.tasks
 
@@ -21,10 +20,7 @@ def create_somatic_workflow(
         chromosomes=None,
         split_size=int(1e7)):
 
-    sandbox = CondaSandbox(
-        channels=('bioconda',),
-        packages=('bcftools ==1.6', 'samtools ==1.6', 'strelka ==2.8.4'),
-    )
+    sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools', 'strelka'])
 
     workflow = pypeliner.workflow.Workflow(default_ctx=med_mem_ctx, default_sandbox=sandbox)
 

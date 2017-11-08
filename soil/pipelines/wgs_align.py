@@ -1,8 +1,7 @@
-from pypeliner.sandbox import CondaSandbox
-
 import pypeliner
 import pypeliner.managed as mgd
 
+import soil.utils.workflow
 import soil.wrappers.bwa.tasks
 import soil.wrappers.sambamba.tasks
 
@@ -16,10 +15,7 @@ def create_single_lane_alignment_workflow(
         read_group_info=None,
         sambamba_threads=1):
 
-    sandbox = CondaSandbox(
-        channels=('bioconda',),
-        packages=('bwa ==0.7.16', 'samtools ==1.6', 'sambamba ==0.6.6'),
-    )
+    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'samtools', 'sambamba'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
@@ -60,5 +56,5 @@ def create_single_lane_alignment_workflow(
             mgd.OutputFile(out_bam_file + '.bai'),
         )
     )
-    
+
     return workflow

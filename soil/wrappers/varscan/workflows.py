@@ -3,12 +3,11 @@ Created on 8 Apr 2017
 
 @author: Andrew Roth
 '''
-from pypeliner.sandbox import CondaSandbox
-
 import pypeliner
 import pypeliner.managed as mgd
 
 import soil.utils.genome
+import soil.utils.workflow
 import soil.wrappers.samtools.tasks
 
 import tasks
@@ -19,10 +18,7 @@ med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
 
 def create_pileup2snp_workflow(bam_file, ref_genome_fasta_file, out_file, chromosomes=None, split_size=int(1e7)):
 
-    sandbox = CondaSandbox(
-        channels=('bioconda',),
-        packages=('bcftools ==1.6', 'samtools ==1.6', 'varscan ==2.4.3'),
-    )
+    sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools', 'varscan'])
 
     workflow = pypeliner.workflow.Workflow(default_ctx=low_mem_ctx, default_sandbox=sandbox)
 

@@ -1,3 +1,8 @@
+from pypeliner.sandbox import CondaSandbox
+
+import soil.utils.conda
+
+
 def flatten_input(files):
     """ Takes a collection and returns a list. Useful for writing functions that may be used as one-to-one or
     many-to-one actions by pypeliner.
@@ -28,3 +33,18 @@ def flatten_input(files):
                 parsed_files.append(x)
 
     return parsed_files
+
+
+def get_sandbox(package_names):
+    channels = set()
+
+    package_strs = set()
+
+    for name in package_names:
+        package = soil.utils.conda.packages[name]
+
+        channels.add(package.channel)
+
+        package_strs.add(package.conda_str)
+
+    return CondaSandbox(sorted(channels), sorted(package_strs))
