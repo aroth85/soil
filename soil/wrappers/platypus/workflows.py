@@ -94,13 +94,14 @@ def create_rna_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file,
         )
     )
 
-    workflow.commandline(
+    workflow.transform(
         name='run_opossum',
         axes=('regions',),
+        ctx=med_mem_ctx,
+        func=tasks.fix_rna_bam,
         args=(
-            'opossum',
-            '--BamFile', mgd.TempInputFile('raw.bam', 'regions'),
-            '--OutFile', mgd.TempOutputFile('fixed.bam', 'regions'),
+            mgd.TempInputFile('raw.bam', 'regions'),
+            mgd.TempOutputFile('fixed.bam', 'regions'),
         )
     )
 

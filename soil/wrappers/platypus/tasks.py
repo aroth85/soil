@@ -35,3 +35,16 @@ def call_variants(bam_file, ref_genome_fasta_file, log_file, out_file, region, r
 
     if tmp_index:
         os.unlink(bam_file + '.bai')
+
+
+def fix_rna_bam(in_file, out_file):
+    cmd = [
+        'opossum',
+        '--BamFile', in_file,
+        '--OutFile', out_file,
+    ]
+
+    cli.execute(*cmd)
+
+    if os.path.exists(out_file + '.bai'):
+        os.unlink(out_file + '.bai')
