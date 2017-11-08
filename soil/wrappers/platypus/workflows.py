@@ -9,7 +9,13 @@ low_mem_ctx = {'mem': 2, 'mem_retry_factor': 2, 'num_retry': 3}
 med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
 
 
-def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chromosomes=None, split_size=int(1e7)):
+def create_single_sample_workflow(
+        bam_file,
+        ref_genome_fasta_file,
+        out_file,
+        chromosomes=None,
+        rna=False,
+        split_size=int(1e7)):
 
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools', 'platypus'])
 
@@ -20,19 +26,20 @@ def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chr
         value=soil.utils.genome.get_bam_regions(bam_file, split_size, chromosomes=chromosomes)
     )
 
-    workflow.commandline(
+    workflow.transform(
         name='run_platypus',
         axes=('regions',),
         ctx=med_mem_ctx,
         args=(
-            'platypus',
-            'callVariants',
-            '--bamFiles', mgd.InputFile(bam_file),
-            '--logFileName', mgd.TempOutputFile('log.txt', 'regions'),
-            '--refFile', mgd.InputFile(ref_genome_fasta_file),
-            '--regions', mgd.TempInputObj('config', 'regions'),
-            '-o', mgd.TempOutputFile('region.vcf', 'regions'),
-        )
+            mgd.InputFile(bam_file),
+            mgd.InputFile(ref_genome_fasta_file),
+            mgd.TempOutputFile('log.txt', 'regions'),
+            mgd.TempOutputFile('region.vcf', 'regions'),
+            mgd.TempInputObj('config', 'regions'),
+        ),
+        kwargs={
+            'rna': rna
+        }
     )
 
     workflow.transform(
