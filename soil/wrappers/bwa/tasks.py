@@ -10,6 +10,7 @@ def index(ref_genome_fasta_file, out_sentinel_file):
         :param ref_genome_fasta_file: Path to FASTA file for a reference genome which will be aligned against.
         :param out_sentinel_file: Path of sentinel file to show indexing was successful.
     """
+
     cmd = ['bwa', 'index', ref_genome_fasta_file]
 
     cli.execute(*cmd)
