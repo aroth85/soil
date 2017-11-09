@@ -7,6 +7,7 @@ import pypeliner
 import pypeliner.managed as mgd
 import pyteomics.fasta
 
+import soil.utils.workflow
 import soil.wrappers.percolator.tasks
 import soil.wrappers.proteowizard.tasks
 
@@ -28,7 +29,9 @@ def create_search_workflow(
         'num_threads': 1,
     })
 
-    workflow = pypeliner.workflow.Workflow()
+    sandbox = soil.utils.workflow.get_sandbox(['msgf_plus', 'percolator', 'proteowizard'])
+
+    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
     workflow.subworkflow(
         name='build_db_index',
@@ -127,7 +130,9 @@ def create_index_workflow(db_file, decoy_db_file, target_db_file):
     """ Build separate target and decoy databases and index for MSGF+ search.
     """
 
-    workflow = pypeliner.workflow.Workflow()
+    sandbox = soil.utils.workflow.get_sandbox(['msgf_plus'])
+
+    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
     workflow.commandline(
         name='copy_db',
