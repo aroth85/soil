@@ -15,17 +15,23 @@ def split_mzml_file(in_file, out_file_callback, tmp_dir, split_size=int(1e3), va
     for i, beg in enumerate(range(0, num_specs, split_size)):
         out_file = out_file_callback[i]
 
+        tmp_file = os.path.splitext(out_file.replace('.tmp', ''))[0]
+
+        tmp_file = tmp_file + '.mzML'
+
         end = beg + split_size - 1
 
         cmd = [
             'msconvert',
             in_file,
             '--filter', '"index [{0},{1}]"'.format(beg, end),
-            '--outfile', os.path.basename(out_file),
-            '-o', os.path.dirname(out_file),
+            '--outfile', os.path.basename(tmp_file),
+            '-o', os.path.dirname(tmp_file),
         ]
 
         cli.execute(*cmd)
+
+        shutil.move(tmp_file, out_file)
 
         if validate:
             total += _get_num_spectrum(out_file, tmp_dir)
