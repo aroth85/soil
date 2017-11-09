@@ -159,6 +159,7 @@ def create_index_workflow(db_file, decoy_db_file, target_db_file):
 
     workflow.transform(
         name='index_decoy_db',
+        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.build_index,
         args=(
             mgd.InputFile(decoy_db_file),
@@ -168,6 +169,7 @@ def create_index_workflow(db_file, decoy_db_file, target_db_file):
 
     workflow.transform(
         name='index_target_db',
+        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.build_index,
         args=(
             mgd.InputFile(target_db_file),
