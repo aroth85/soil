@@ -11,9 +11,9 @@ def create_mem_workflow(
         fastq_file_2,
         ref_genome_fasta_file,
         out_bam_file,
-        bwa_threads=1,
+        align_threads=1,
         read_group_info=None,
-        sambamba_threads=1):
+        sort_threads=1):
 
     sandbox = soil.utils.workflow.get_sandbox(['bwa', 'samtools', 'sambamba'])
 
@@ -21,7 +21,7 @@ def create_mem_workflow(
 
     workflow.transform(
         name='bwa_mem_paired_end',
-        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': bwa_threads},
+        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': align_threads},
         func=soil.wrappers.bwa.tasks.mem_paired_end,
         args=(
             mgd.InputFile(fastq_file_1),
@@ -31,20 +31,20 @@ def create_mem_workflow(
         ),
         kwargs={
             'read_group_info': read_group_info,
-            'threads': bwa_threads,
+            'threads': align_threads,
         }
     )
 
     workflow.transform(
         name='sort',
-        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': sambamba_threads},
+        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': sort_threads},
         func=soil.wrappers.sambamba.tasks.sort,
         args=(
             mgd.TempInputFile('aligned.bam'),
             mgd.OutputFile(out_bam_file),
             mgd.TempSpace('sort_tmp'),
         ),
-        kwargs={'threads': sambamba_threads}
+        kwargs={'threads': sort_threads}
     )
 
     workflow.commandline(

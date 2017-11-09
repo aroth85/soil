@@ -16,8 +16,8 @@ def mem(fastq_file_1, fastq_file_2, ref_genome_fasta_file, out_bam_file, threads
         fastq_file_2,
         ref_genome_fasta_file,
         out_bam_file,
-        bwa_threads=threads,
-        sambamba_threads=threads
+        align_threads=threads,
+        sort_threads=threads
     )
 
 
