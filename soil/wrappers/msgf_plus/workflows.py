@@ -58,7 +58,7 @@ def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=100
         }
     )
 
-    workflow.commandline(
+    workflow.transform(
         name='convert_to_tsv',
         axes=('split',),
         ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
