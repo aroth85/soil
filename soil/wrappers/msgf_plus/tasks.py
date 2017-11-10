@@ -50,6 +50,21 @@ def build_index(in_file, out_file, tmp_dir, tda=0):
     assert os.path.exists(out_file)
 
 
+def convert_mzid_to_tsv(in_file, out_file):
+    tmp_file = os.path.splitext(in_file)[0] + '.tsv'
+
+    cmd = [
+        'msgf_plus',
+        'edu.ucsd.msjava.ui.MzIDToTsv',
+        '-i', in_file,
+        '-o', tmp_file,
+    ]
+
+    cli.execute(*cmd)
+
+    shutil.move(tmp_file, out_file)
+
+
 def merge_results(in_files, out_file):
     data = []
 

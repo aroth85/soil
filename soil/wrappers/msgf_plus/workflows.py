@@ -34,10 +34,11 @@ def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=100
 
     workflow.commandline(
         name='copy_db',
+        axes=('split',),
         args=(
             'cp',
             mgd.InputFile(in_fasta_file),
-            mgd.TempOutputFile('db.fasta', 'split', axes_origin=[]),
+            mgd.TempOutputFile('db.fasta', 'split'),
         )
     )
 
@@ -61,11 +62,10 @@ def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=100
         name='convert_to_tsv',
         axes=('split',),
         ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
+        func=tasks.convert_mzid_to_tsv,
         args=(
-            'msgf_plus',
-            'MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv',
-            '-i', mgd.TempInputFile('search.mzid', 'split'),
-            '-o', mgd.TempOutputFile('search.tsv', 'split'),
+            mgd.TempInputFile('search.mzid', 'split'),
+            mgd.TempOutputFile('search.tsv', 'split'),
         )
     )
 
