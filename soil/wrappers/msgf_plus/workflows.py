@@ -37,7 +37,7 @@ def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=100
         args=(
             'cp',
             mgd.InputFile(in_fasta_file),
-            mgd.TempOutputFile('db.fasta', 'split'),
+            mgd.TempOutputFile('db.fasta', 'split', axes_origin=[]),
         )
     )
 
