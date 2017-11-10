@@ -58,6 +58,7 @@ def convert_mzid_to_tsv(in_file, out_file):
         'edu.ucsd.msjava.ui.MzIDToTsv',
         '-i', in_file,
         '-o', tmp_file,
+        '-showDecoy', 1,
     ]
 
     cli.execute(*cmd)
