@@ -5,43 +5,18 @@ Created on 24 Apr 2017
 '''
 import pypeliner
 import pypeliner.managed as mgd
-import pyteomics.fasta
 
 import soil.utils.workflow
-import soil.wrappers.percolator.tasks
 import soil.wrappers.proteowizard.tasks
 
 import tasks
 
 
-def create_search_workflow(
-        in_db_file,
-        in_mzml_file,
-        out_percolator_file,
-        config={},
-        split_size=1000):
+def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=1000):
 
-    msgf_plus_config = config.get('msgf+', {})
-
-    msgf_plus_config.update({
-        'add_decoys': False,
-        'add_features': True,
-        'num_threads': 1,
-    })
-
-    sandbox = soil.utils.workflow.get_sandbox(['msgf_plus', 'percolator', 'proteowizard'])
+    sandbox = soil.utils.workflow.get_sandbox(['msgf_plus', 'proteowizard'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
-
-    workflow.subworkflow(
-        name='build_db_index',
-        func=create_index_workflow,
-        args=(
-            mgd.InputFile(in_db_file),
-            mgd.TempOutputFile('decoy.fasta'),
-            mgd.TempOutputFile('target.fasta'),
-        )
-    )
 
     workflow.transform(
         name='split_mzml_file',
@@ -57,123 +32,49 @@ def create_search_workflow(
         }
     )
 
-    workflow.transform(
-        name='run_msgf_plus_decoy',
-        axes=('split',),
-        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=tasks.run_search,
-        args=(
-            mgd.TempInputFile('decoy.fasta'),
-            mgd.TempInputFile('spec_data.mzml', 'split'),
-            mgd.TempOutputFile('decoy_search_results.mzid', 'split'),
-            mgd.TempSpace('msgf_decoy_tmp', 'split'),
-        ),
-        kwargs=msgf_plus_config
-    )
-
-    workflow.transform(
-        name='run_msgf_plus_target',
-        axes=('split',),
-        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=tasks.run_search,
-        args=(
-            mgd.TempInputFile('target.fasta'),
-            mgd.TempInputFile('spec_data.mzml', 'split'),
-            mgd.TempOutputFile('target_search_results.mzid', 'split'),
-            mgd.TempSpace('msgf_target_tmp', 'split'),
-        ),
-        kwargs=msgf_plus_config
-    )
-
-    workflow.transform(
-        name='run_msgf2pin',
-        axes=(),
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=soil.wrappers.percolator.tasks.convert_msgf_to_pin,
-        args=(
-            mgd.TempInputFile('decoy_search_results.mzid', 'split'),
-            mgd.TempInputFile('target_search_results.mzid', 'split'),
-            mgd.TempOutputFile('percolator_input.tsv'),
-            mgd.TempSpace('msgf2pin_tmp'),
-        )
-    )
-
-    workflow.commandline(
-        name='concat_decoy_target_dbs',
-        args=(
-            'cat',
-            mgd.TempInputFile('decoy.fasta'),
-            mgd.TempInputFile('target.fasta'),
-            '>',
-            mgd.TempOutputFile('target_decoy.fasta'),
-        )
-    )
-
-    workflow.transform(
-        name='run_percolator',
-        axes=(),
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=soil.wrappers.percolator.tasks.run_percolator,
-        args=(
-            mgd.TempInputFile('percolator_input.tsv'),
-            mgd.OutputFile(out_percolator_file),
-        ),
-        kwargs={
-            'db_file': mgd.TempInputFile('target_decoy.fasta'),
-        }
-    )
-
-    return workflow
-
-
-def create_index_workflow(db_file, decoy_db_file, target_db_file):
-    """ Build separate target and decoy databases and index for MSGF+ search.
-    """
-
-    sandbox = soil.utils.workflow.get_sandbox(['msgf_plus'])
-
-    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
-
     workflow.commandline(
         name='copy_db',
         args=(
             'cp',
-            mgd.InputFile(db_file),
-            mgd.OutputFile(target_db_file),
+            mgd.InputFile(in_fasta_file),
+            mgd.TempOutputFile('db.fasta', 'split'),
         )
     )
 
     workflow.transform(
-        name='build_decoy_db',
-        func=pyteomics.fasta.write_decoy_db,
+        name='run_msgf_plus',
+        axes=('split',),
+        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
+        func=tasks.run_search,
         args=(
-            mgd.InputFile(target_db_file),
-            mgd.OutputFile(decoy_db_file),
+            mgd.TempInputFile('db.fasta', 'split'),
+            mgd.TempInputFile('spec_data.mzml', 'split'),
+            mgd.TempOutputFile('search.mzid', 'split'),
+            mgd.TempSpace('msgf_tmp', 'split'),
         ),
         kwargs={
-            'mode': 'reverse',
-            'decoy_only': True,
-            'file_mode': 'w',
+            'add_decoys': True,
         }
     )
 
-    workflow.transform(
-        name='index_decoy_db',
-        ctx={'mem': 6, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=tasks.build_index,
+    workflow.commandline(
+        name='convert_to_tsv',
+        axes=('split',),
+        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
         args=(
-            mgd.InputFile(decoy_db_file),
-            mgd.OutputFile(decoy_db_file + '.index.done'),
+            'msgf_plus',
+            'MSGFPlus.jar edu.ucsd.msjava.ui.MzIDToTsv',
+            '-i', mgd.TempInputFile('search.mzid', 'split'),
+            '-o', mgd.TempOutputFile('search.tsv', 'split'),
         )
     )
 
     workflow.transform(
-        name='index_target_db',
-        ctx={'mem': 6, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=tasks.build_index,
+        name='merge_results',
+        func=tasks.merge_results,
         args=(
-            mgd.InputFile(target_db_file),
-            mgd.OutputFile(target_db_file + '.index.done'),
+            mgd.TempInputFile('search.tsv', 'split'),
+            mgd.OutputFile(out_file)
         )
     )
 

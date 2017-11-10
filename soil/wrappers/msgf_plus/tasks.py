@@ -3,25 +3,66 @@ Created on 23 Mar 2017
 
 @author: Andrew Roth
 '''
+import glob
 import os
+import pandas as pd
 import pyopenms
 import pypeliner.commandline as cli
 import re
 import shutil
 
+import soil.utils.workflow
 
-def build_index(in_file, sentinel_file, tda=0):
+
+def build_index(in_file, out_file, tmp_dir, tda=0):
+    if tda >= 2:
+        raise Exception()
+
+    tmp_in_file = os.path.join(tmp_dir, os.path.basename(in_file))
+
+    shutil.copy(in_file, tmp_in_file)
+
     cmd = [
         'msgf_plus',
         'edu.ucsd.msjava.msdbsearch.BuildSA',
         '-Xmx4G',
-        '-d', in_file,
+        '-d', tmp_in_file,
         '-tda', tda
     ]
 
     cli.execute(*cmd)
 
-    open(sentinel_file, 'w').close()
+    if tda == 0:
+        tmp_files = glob.glob(tmp_in_file + '*')
+
+    elif tda == 1:
+        tmp_files = glob.glob(tmp_in_file + '.revCat.*')
+
+    out_dir = os.path.dirname(out_file)
+
+    for src_file in tmp_files:
+        dst_file = os.path.join(out_dir, os.path.basename(src_file))
+
+        dst_file = dst_file.replace('.revCat', '.')
+
+        shutil.copy(src_file, dst_file)
+
+    assert os.path.exists(out_file)
+
+
+def merge_results(in_files, out_file):
+    data = []
+
+    for file_name in soil.utils.workflow(in_files):
+        data.append(pd.read_csv(file_name, sep='\t'))
+
+    data = pd.concat(data)
+
+    data = data.sort_values(by='SpecEValue')
+
+    data = data.drop('#SpecFile', axis=1)
+
+    data.to_csv(out_file, index=False, sep='\t')
 
 
 def run_search(
@@ -59,20 +100,16 @@ def run_search(
         '-s', in_file,
         '-o', tmp_file,
         '-e', enzyme,
+        '-addFeatures', int(add_features),
         '-inst', instrument,
         '-m', fragment_method,
         '-mod', mod_file,
         '-ntt', num_tolerable_termini,
         '-t', precursor_mass_tolerance,
+        '-tda', int(add_decoys),
         '-thread', num_threads,
         '-ti', ','.join([str(x) for x in isotope_range]),
     ]
-
-    if add_decoys:
-        cmd.extend(['-tda', 1])
-
-    if add_features:
-        cmd.extend(['-addFeatures', 1])
 
     cli.execute(*cmd)
 
