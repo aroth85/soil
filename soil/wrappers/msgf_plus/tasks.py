@@ -68,7 +68,7 @@ def convert_mzid_to_tsv(in_file, out_file):
 def merge_results(in_files, out_file):
     data = []
 
-    for file_name in soil.utils.workflow(in_files):
+    for file_name in soil.utils.workflow.flatten_input(in_files):
         data.append(pd.read_csv(file_name, sep='\t'))
 
     data = pd.concat(data)
