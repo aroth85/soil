@@ -63,6 +63,25 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
         index_vcf(out_file, index_file=index_file)
 
 
+def index_fasta(in_file, out_file):
+    """ Build a samtools index for a FASTA file.
+
+    :param in_file: Path to FASTA file to index
+    :param out_file: Path where index file will be written
+    """
+    tmp_file = in_file + '.fai'
+
+    cmd = [
+        'samtools',
+        'faidx',
+        in_file,
+    ]
+
+    cli.execute(*cmd)
+
+    shutil.move(tmp_file, out_file)
+
+
 def index_vcf(vcf_file, index_file=None):
     """ Create a tabix index for a VCF file
 

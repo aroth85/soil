@@ -1,11 +1,22 @@
 import click
 
+import soil.ref_data.cli
+
 import soil.wrappers.bwa.cli
 import soil.wrappers.mixcr.cli
 import soil.wrappers.msgf_plus.cli
 import soil.wrappers.platypus.cli
 import soil.wrappers.strelka.cli
 import soil.wrappers.varscan.cli
+
+
+@click.group()
+def ref():
+    """ Tools for handling reference data files used by soil.
+    """
+    pass
+
+ref.add_command(soil.ref_data.cli.create)
 
 
 @click.group()
