@@ -47,7 +47,7 @@ def download_from_sftp(host, host_path, local_path, user, password):
 
 def filter_bad_proiteins(in_file, out_file):
     bad_chars = set(Bio.Alphabet.IUPAC.ExtendedIUPACProtein.letters) - set(Bio.Alphabet.IUPAC.IUPACProtein.letters)
-    
+
     with open(in_file, 'r') as in_fh, open(out_file, 'w') as out_fh:
         for record in Bio.SeqIO.parse(in_fh, 'fasta'):
             write_record = True

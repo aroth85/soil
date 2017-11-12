@@ -54,7 +54,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         name='download_ref_gene_annotations',
         func=create_download_decompress_concat_workflow,
         args=(
-            mgd.TempInputObj('ref_gene_annotations_urls'),
+            mgd.TempInputObj('ref_gene_annotations_gtf_urls'),
             mgd.OutputFile(ref_gene_annotations_gtf_file)
         )
     )
@@ -170,14 +170,13 @@ def create_download_workflow(url, local_path):
     """
     workflow = pypeliner.workflow.Workflow()
 
-    if os.path.exists(local_path):
-        return workflow
+    workflow.setobj(mgd.TempOutputObj('url'), value=url)
 
     workflow.transform(
         name='download',
         func=tasks.download,
         args=(
-            url,
+            mgd.TempInputObj('url'),
             mgd.OutputFile(local_path),
         ),
     )
@@ -188,14 +187,13 @@ def create_download_workflow(url, local_path):
 def create_download_decompress_workflow(url, local_path):
     workflow = pypeliner.workflow.Workflow()
 
-    if os.path.exists(local_path):
-        return workflow
+    workflow.setobj(mgd.TempOutputObj('url'), value=url)
 
     workflow.transform(
         name='download',
         func=tasks.download,
         args=(
-            url,
+            mgd.TempInputObj('url'),
             mgd.TempOutputFile('download'),
         ),
     )
@@ -223,11 +221,13 @@ def create_download_decompress_concat_workflow(urls, out_file):
     for i, url in enumerate(urls):
         local_files.append(mgd.TempFile('file_{}'.format(i)))
 
+        workflow.setobj(mgd.TempOutputObj('url_{}'.format(i)), value=url)
+
         workflow.subworkflow(
             name='download_file_{}'.format(i),
             func=create_download_decompress_workflow,
             args=(
-                url,
+                mgd.TempInputObj('url_{}'.format(i)),
                 local_files[i].as_output(),
             )
         )
@@ -245,50 +245,54 @@ def create_download_decompress_concat_workflow(urls, out_file):
 def create_download_cosmic_workflow(ref_data_version, out_file, user, password, host='sftp-cancer.sanger.ac.uk'):
     host_base_path = '/files/{}/cosmic/v83/VCF'.format(ref_data_version.lower())
 
-    if not os.path.exists(out_file):
-        sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools'])
+    coding_host_path = '/'.join([host_base_path, 'CosmicCodingMuts.vcf.gz'])
 
-        workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
+    non_coding_host_path = '/'.join([host_base_path, 'CosmicNonCodingVariants.vcf.gz'])
 
-        workflow.subworkflow(
-            name='download_coding',
-            func=create_download_cosmic_file_subworkflow,
-            args=(
-                host,
-                '/'.join([host_base_path, 'CosmicCodingMuts.vcf.gz']),
-                user,
-                password,
-                mgd.TempOutputFile('coding.vcf.gz'),
-            )
+    sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools'])
+
+    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
+
+    workflow.setobj(obj=mgd.TempOutputObj('coding_host_path'), value=coding_host_path)
+
+    workflow.setobj(obj=mgd.TempOutputObj('non_coding_host_path'), value=non_coding_host_path)
+
+    workflow.subworkflow(
+        name='download_coding',
+        func=create_download_cosmic_file_subworkflow,
+        args=(
+            host,
+            mgd.TempInputObj('coding_host_path'),
+            user,
+            password,
+            mgd.TempOutputFile('coding.vcf.gz'),
         )
+    )
 
-        workflow.subworkflow(
-            name='download_non_coding',
-            func=create_download_cosmic_file_subworkflow,
-            args=(
-                host,
-                '/'.join([host_base_path, 'CosmicNonCodingVariants.vcf.gz']),
-                user,
-                password,
-                mgd.TempOutputFile('non_coding.vcf.gz'),
-            )
+    workflow.subworkflow(
+        name='download_non_coding',
+        func=create_download_cosmic_file_subworkflow,
+        args=(
+            host,
+            mgd.TempInputObj('non_coding_host_path'),
+            user,
+            password,
+            mgd.TempOutputFile('non_coding.vcf.gz'),
         )
+    )
 
-        workflow.transform(
-            name='merge_files',
-            func=soil.wrappers.samtools.tasks.concatenate_vcf,
-            args=(
-                [mgd.TempInputFile('coding.vcf.gz'), mgd.TempInputFile('non_coding.vcf.gz')],
-                mgd.OutputFile(out_file)
-            ),
-            kwargs={
-                'allow_overlap': True,
-                'index_file': mgd.OutputFile(out_file + '.tbi')
-            }
-        )
-
-    else:
-        workflow = pypeliner.workflow.Workflow()
+    workflow.transform(
+        name='merge_files',
+        func=soil.wrappers.samtools.tasks.concatenate_vcf,
+        args=(
+            [mgd.TempInputFile('coding.vcf.gz'), mgd.TempInputFile('non_coding.vcf.gz')],
+            mgd.OutputFile(out_file)
+        ),
+        kwargs={
+            'allow_overlap': True,
+            'index_file': mgd.OutputFile(out_file + '.tbi')
+        }
+    )
 
     return workflow
 
@@ -330,17 +334,17 @@ def create_download_cosmic_file_subworkflow(host, host_path, user, password, out
 
     return workflow
 
+
 def create_ref_genome_workflow(urls, out_file):
     workflow = pypeliner.workflow.Workflow()
 
-    if os.path.exists(out_file):
-        return workflow
+    workflow.setobj(obj=mgd.TempOutputObj('urls'), value=urls)
 
     workflow.subworkflow(
         name='download_ref_fasta_files',
         func=create_download_decompress_concat_workflow,
         args=(
-            urls,
+            mgd.TempInputObj('urls'),
             mgd.TempOutputFile('raw_ref.fasta')
         )
     )
