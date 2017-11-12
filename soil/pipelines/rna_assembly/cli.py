@@ -51,7 +51,7 @@ def from_fastq(fastq_file_1, fastq_file_2, ref_genome_fasta_file, ref_gtf_file, 
 
     return workflows.create_assembly_from_fastq_workflow(
         fastq_file_1,
-        fastq_file_1,
+        fastq_file_2,
         ref_genome_fasta_file,
         ref_gtf_file,
         out_bam_file,
