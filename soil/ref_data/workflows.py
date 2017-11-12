@@ -79,6 +79,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
 
     workflow.transform(
         name='bwa_index_ref_genome',
+        ctx={'mem': 8, 'mem_retry_increment': 8, 'num_retry': 3},
         func=soil.wrappers.bwa.tasks.index,
         args=(
             mgd.InputFile(ref_genome_fasta_file),
