@@ -1,12 +1,37 @@
 import Bio.Seq
 import Bio.SeqIO
 import pypeliner.commandline as cli
+import pysam
 import pysftp
 
 
+def _guess_file_type(filename):
+    magic_dict = {
+        '\x1f\x8b\x08': 'gz',
+        '\x42\x5a\x68': 'bz2',
+        '\x50\x4b\x03\x04': 'zip'
+    }
+
+    max_len = max(len(x) for x in magic_dict)
+
+    with open(filename) as f:
+        file_start = f.read(max_len)
+
+    for magic, file_type in magic_dict.items():
+        if file_start.startswith(magic):
+            return file_type
+
+    return None
+
+
 def decompress(in_file, out_file):
-    if in_file.endswith('gz'):
+    file_type = _guess_file_type(in_file)
+
+    if file_type == 'gz':
         cmd = ['gzip', '-cd', in_file, '>', out_file]
+
+    else:
+        cmd = ['cp', in_file, out_file]
 
     cli.execute(*cmd)
 
@@ -18,6 +43,21 @@ def download(url, local_path):
 def download_from_sftp(host, host_path, local_path, user, password):
     with pysftp.Connection(host, username=user, password=password) as sftp:
         sftp.get(host_path, localpath=local_path)
+
+
+def filter_bad_proiteins(in_file, out_file):
+    bad_chars = set(Bio.Alphabet.IUPAC.ExtendedIUPACProtein.letters) - set(Bio.Alphabet.IUPAC.IUPACProtein.letters)
+    
+    with open(in_file, 'r') as in_fh, open(out_file, 'w') as out_fh:
+        for record in Bio.SeqIO.parse(in_fh, 'fasta'):
+            write_record = True
+
+            for aa in bad_chars:
+                if aa in record.seq:
+                    write_record = False
+
+            if write_record:
+                Bio.SeqIO.write(record, out_fh, 'fasta')
 
 
 def lex_sort_fasta(in_file, out_file):

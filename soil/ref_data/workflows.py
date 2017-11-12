@@ -7,11 +7,12 @@ import yaml
 import soil.utils.workflow
 import soil.wrappers.bwa.tasks
 import soil.wrappers.samtools.tasks
+import soil.wrappers.star.tasks
 
 import tasks
 
 
-def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False):
+def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=1):
     if ref_genome_version == 'GRCh37':
         import soil.ref_data.configs.GRCh37
 
@@ -37,28 +38,32 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False):
 
     ref_gene_annotations_gtf_file = os.path.join(out_dir, 'ref_gene_annotations.gtf')
 
-    ref_genome_fasta_file = os.path.join(out_dir, 'ref_genome.fasta')
+    ref_genome_fasta_file = os.path.join(out_dir, 'ref_genome.fa')
 
-    ref_proteome_fasta_file = os.path.join(out_dir, 'ref_proteome.fasta')
+    ref_proteome_fasta_file = os.path.join(out_dir, 'ref_proteome.fa')
 
     sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'samtools'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
+    for key in config:
+        if key.endswith('url') or key.endswith('urls'):
+            workflow.setobj(obj=mgd.TempOutputObj(key), value=config[key])
+
     workflow.subworkflow(
         name='download_ref_gene_annotations',
-        func=create_download_decompress_workflow,
+        func=create_download_decompress_concat_workflow,
         args=(
-            config['ref_gene_annotations_gtf_url'],
+            mgd.TempInputObj('ref_gene_annotations_urls'),
             mgd.OutputFile(ref_gene_annotations_gtf_file)
         )
     )
 
     workflow.subworkflow(
         name='download_ref_genome',
-        func=create_download_decompress_workflow,
+        func=create_download_decompress_concat_workflow,
         args=(
-            config['ref_genome_fasta_url'],
+            mgd.TempInputObj('ref_genome_fasta_urls'),
             mgd.TempOutputFile('raw_ref.fasta'),
         )
     )
@@ -71,6 +76,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False):
             mgd.OutputFile(ref_genome_fasta_file),
         )
     )
+
     workflow.transform(
         name='bwa_index_ref_genome',
         func=soil.wrappers.bwa.tasks.index,
@@ -78,6 +84,20 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False):
             mgd.InputFile(ref_genome_fasta_file),
             mgd.OutputFile(ref_genome_fasta_file + '.bwa_index.done'),
         )
+    )
+
+    workflow.transform(
+        name='star_index_ref_genome',
+        ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': threads},
+        func=soil.wrappers.star.tasks.index,
+        args=(
+            mgd.InputFile(ref_genome_fasta_file),
+            mgd.InputFile(ref_gene_annotations_gtf_file),
+            mgd.OutputFile(ref_genome_fasta_file + '.star_index.done'),
+        ),
+        kwargs={
+            'threads': threads,
+        }
     )
 
     workflow.transform(
@@ -91,9 +111,18 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False):
 
     workflow.subworkflow(
         name='download_ref_proteome',
-        func=create_download_decompress_workflow,
+        func=create_download_decompress_concat_workflow,
         args=(
-            config['ref_proteome_fasta_url'],
+            mgd.TempInputObj('ref_proteome_fasta_urls'),
+            mgd.TempOutputFile('raw_ref_prot.fasta')
+        )
+    )
+
+    workflow.transform(
+        name='filter_bad_proteins',
+        func=tasks.filter_bad_proiteins,
+        args=(
+            mgd.TempInputFile('raw_ref_prot.fasta'),
             mgd.OutputFile(ref_proteome_fasta_file)
         )
     )
@@ -102,7 +131,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False):
         name='download_dbsnp',
         func=create_download_workflow,
         args=(
-            config['dbsnp_url'],
+            mgd.TempInputObj('dbsnp_url'),
             mgd.OutputFile(dbsnp_file)
         )
     )
@@ -141,15 +170,17 @@ def create_download_workflow(url, local_path):
     """
     workflow = pypeliner.workflow.Workflow()
 
-    if not os.path.exists(local_path):
-        workflow.transform(
-            name='download',
-            func=tasks.download,
-            args=(
-                url,
-                mgd.OutputFile(local_path),
-            ),
-        )
+    if os.path.exists(local_path):
+        return workflow
+
+    workflow.transform(
+        name='download',
+        func=tasks.download,
+        args=(
+            url,
+            mgd.OutputFile(local_path),
+        ),
+    )
 
     return workflow
 
@@ -157,24 +188,56 @@ def create_download_workflow(url, local_path):
 def create_download_decompress_workflow(url, local_path):
     workflow = pypeliner.workflow.Workflow()
 
-    if not os.path.exists(local_path):
-        workflow.transform(
-            name='download',
-            func=tasks.download,
+    if os.path.exists(local_path):
+        return workflow
+
+    workflow.transform(
+        name='download',
+        func=tasks.download,
+        args=(
+            url,
+            mgd.TempOutputFile('download'),
+        ),
+    )
+
+    workflow.transform(
+        name='decompress',
+        func=tasks.decompress,
+        args=(
+            mgd.TempInputFile('download'),
+            mgd.OutputFile(local_path),
+        )
+    )
+
+    return workflow
+
+
+def create_download_decompress_concat_workflow(urls, out_file):
+    workflow = pypeliner.workflow.Workflow()
+
+    if os.path.exists(out_file):
+        return workflow
+
+    local_files = []
+
+    for i, url in enumerate(urls):
+        local_files.append(mgd.TempFile('file_{}'.format(i)))
+
+        workflow.subworkflow(
+            name='download_file_{}'.format(i),
+            func=create_download_decompress_workflow,
             args=(
                 url,
-                mgd.TempOutputFile('download.gz'),
-            ),
-        )
-
-        workflow.transform(
-            name='decompress',
-            func=tasks.decompress,
-            args=(
-                mgd.TempInputFile('download.gz'),
-                local_path
+                local_files[i].as_output(),
             )
         )
+
+    concat_args = ['cat', ] + [x.as_input() for x in local_files] + ['>', mgd.OutputFile(out_file)]
+
+    workflow.commandline(
+        name='concat_fastas',
+        args=concat_args
+    )
 
     return workflow
 
@@ -262,6 +325,32 @@ def create_download_cosmic_file_subworkflow(host, host_path, user, password, out
         args=(
             mgd.TempInputFile('file.vcf'),
             mgd.OutputFile(out_file)
+        )
+    )
+
+    return workflow
+
+def create_ref_genome_workflow(urls, out_file):
+    workflow = pypeliner.workflow.Workflow()
+
+    if os.path.exists(out_file):
+        return workflow
+
+    workflow.subworkflow(
+        name='download_ref_fasta_files',
+        func=create_download_decompress_concat_workflow,
+        args=(
+            urls,
+            mgd.TempOutputFile('raw_ref.fasta')
+        )
+    )
+
+    workflow.transform(
+        name='lexsort_ref_genome',
+        func=tasks.lex_sort_fasta,
+        args=(
+            mgd.TempInputFile('raw_ref.fasta'),
+            mgd.OutputFile(out_file),
         )
     )
 

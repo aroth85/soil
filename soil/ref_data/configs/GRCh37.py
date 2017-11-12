@@ -8,11 +8,25 @@ def get_config():
 
     gencode_url = 'ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh37_mapping'
 
-    ref_genome_fasta_url = _get_url(gencode_url, 'GRCh37.primary_assembly.genome.fa.gz')
+    thousand_genomes_url = \
+        'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence'
 
-    ref_proteome_fasta_url = _get_url(gencode_url, 'gencode.v27lift37.pc_translations.fa.gz')
+    ref_genome_fasta_urls = [
+        _get_url(gencode_url, 'GRCh37.primary_assembly.genome.fa.gz'),
+        _get_url(thousand_genomes_url, 'EBVt1.fa.gz'),
+        _get_url(thousand_genomes_url, 'hs37d5cs.fa.gz'),
+        _get_url(thousand_genomes_url, 'hs37d5ss.fa.gz'),
+        'http://tools.thermofisher.com/downloads/ERCC92.fa',
+    ]
 
-    ref_gene_annotations_gtf_url = _get_url(gencode_url, 'gencode.v27lift37.annotation.gtf.gz')
+    ref_proteome_fasta_urls = [
+        _get_url(gencode_url, 'gencode.v27lift37.pc_translations.fa.gz'),
+    ]
+
+    ref_gene_annotations_gtf_urls = [
+        _get_url(gencode_url, 'gencode.v27lift37.annotation.gtf.gz'),
+        'http://tools.thermofisher.com/downloads/ERCC92.gtf',
+    ]
 
     config = locals()
 
