@@ -25,5 +25,7 @@ packages = {
     'samtools': Package('samtools', '1.6'),
     'star': Package('star', '2.5.3a'),
     'strelka': Package('strelka', '2.8.4'),
+    'stringtie': Package('stringtie', '1.3.3'),
+    'transdecoder': Package('transdecoder', '3.0.1'),
     'varscan': Package('varscan', '2.4.3'),
 }
