@@ -1,5 +1,7 @@
 import click
 
+import soil.pipelines.rna_assembly.cli
+
 import soil.ref_data.cli
 
 import soil.wrappers.bwa.cli
@@ -9,6 +11,13 @@ import soil.wrappers.platypus.cli
 import soil.wrappers.star.cli
 import soil.wrappers.strelka.cli
 import soil.wrappers.varscan.cli
+
+
+@click.group()
+def pipeline():
+    pass
+
+pipeline.add_command(soil.pipelines.rna_assembly.cli.rna_assembly)
 
 
 @click.group()
@@ -31,8 +40,3 @@ run.add_command(soil.wrappers.platypus.cli.platypus)
 run.add_command(soil.wrappers.star.cli.star)
 run.add_command(soil.wrappers.strelka.cli.strelka)
 run.add_command(soil.wrappers.varscan.cli.varscan)
-
-
-@click.group()
-def pipeline():
-    pass

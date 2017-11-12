@@ -12,6 +12,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
+            'soil-pipeline = soil.cli:pipeline',
             'soil-ref = soil.cli:ref',
             'soil-run = soil.cli:run',
         ]
