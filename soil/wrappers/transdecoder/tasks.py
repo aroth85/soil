@@ -14,6 +14,11 @@ def gtf_to_fasta(
         tmp_dir):
     """ Convert a GTF file from cufflinks or stringtie to a FASTA file
     """
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+
+    os.makedirs(tmp_dir)
+
     os.chdir(tmp_dir)
 
     opt_dir = os.path.join(os.environ['CONDA_PREFIX'], 'opt')
@@ -57,3 +62,5 @@ def gtf_to_fasta(
     shutil.move(tmp_cdna_fasta_file + '.transdecoder.cds', out_cds_fasta_file)
 
     shutil.move(tmp_cdna_fasta_file + '.transdecoder.pep', out_protein_fasta_file)
+
+    shutil.rmtree(tmp_dir)
