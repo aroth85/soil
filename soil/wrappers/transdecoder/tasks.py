@@ -39,6 +39,8 @@ def gtf_to_fasta(
 
     cmd = ['perl', gtf_to_gff_script, in_gtf_file, '>', tmp_gff_file]
 
+    cli.execute(*cmd)
+
     cmd = ['TransDecoder.LongOrfs', '-t', tmp_cdna_fasta_file]
 
     cli.execute(*cmd)
