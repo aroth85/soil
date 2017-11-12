@@ -9,6 +9,7 @@ def align(
         ref_genome_dir,
         out_file,
         tmp_dir,
+        add_xs_tag=False,
         log_dir=None,
         read_group_info=None,
         threads=1,
@@ -34,6 +35,9 @@ def align(
         '--readFilesCommand', 'zcat',
         '--outFileNamePrefix', tmp_prefix,
     ]
+
+    if add_xs_tag:
+        cmd.extend(['--outSAMstrandField', 'intronMotif'])
 
     if read_group_info is not None:
         read_group_str = ['ID:{0}'.format(read_group_info['ID']), ]

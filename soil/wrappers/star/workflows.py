@@ -12,6 +12,7 @@ def create_align_workflow(
         fastq_file_2,
         ref_genome_dir,
         out_bam_file,
+        add_xs_tag=False,
         align_threads=1,
         read_group_info=None,
         sort_threads=1):
@@ -32,6 +33,7 @@ def create_align_workflow(
             mgd.TempSpace('align_tmp'),
         ),
         kwargs={
+            'add_xs_tag': add_xs_tag,
             'read_group_info': read_group_info,
             'threads': align_threads,
         }
