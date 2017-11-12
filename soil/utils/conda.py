@@ -23,6 +23,7 @@ packages = {
     'proteowizard': Package('proteowizard', '3_0_9992'),
     'sambamba': Package('sambamba', '0.6.6'),
     'samtools': Package('samtools', '1.6'),
+    'star': Package('star', '2.5.3a'),
     'strelka': Package('strelka', '2.8.4'),
     'varscan': Package('varscan', '2.4.3'),
 }

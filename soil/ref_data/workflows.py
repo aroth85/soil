@@ -42,7 +42,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
 
     ref_proteome_fasta_file = os.path.join(out_dir, 'ref_proteome.fa')
 
-    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'samtools'])
+    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'samtools', 'star'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
