@@ -23,7 +23,7 @@ import workflows
 )
 @click.option(
     '-c', '--chromosomes', multiple=True, type=str,
-    help='''Chromosome to analyze. Can be specified multiple times i.e. -c chr1 -c chrX to analyze chromosomes 1 and X
+    help='''Chromosome to analyze. Can be specified multiple times i.e. -c chr1 -c chrX to analyze chromosomes 1 and X.
     '''
 )
 @click.option(
