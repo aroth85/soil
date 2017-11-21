@@ -35,7 +35,7 @@ def runner(func):
 
         shutil.rmtree(working_dir)
 
-    func_wrapper = click.command()(func_wrapper)
+    func_wrapper = click.command(context_settings={'max_content_width': 120})(func_wrapper)
 
     _add_runner_cli_args(func_wrapper)
 
