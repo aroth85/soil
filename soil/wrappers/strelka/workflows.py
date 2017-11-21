@@ -17,7 +17,7 @@ def create_somatic_workflow(
         tumour_bam_file,
         ref_genome_fasta_file,
         out_file,
-        chromosomes=None,
+        chromosomes='default',
         is_exome=False,
         split_size=int(1e7)):
 

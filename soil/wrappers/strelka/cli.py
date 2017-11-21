@@ -32,7 +32,7 @@ import workflows
 )
 def somatic(normal_bam_file, tumour_bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes, exome):
     if len(chromosomes) == 0:
-        chromosomes = None
+        chromosomes = 'default'
 
     return workflows.create_somatic_workflow(
         normal_bam_file,

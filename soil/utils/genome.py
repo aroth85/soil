@@ -36,19 +36,30 @@ def get_regions(chromosome_lengths, split_size):
     return regions
 
 
-def get_bam_regions(bam_file, split_size, chromosomes=None):
+def get_bam_regions(bam_file, split_size, chromosomes='default'):
     chromosome_lengths = load_bam_chromosome_lengths(bam_file, chromosomes=chromosomes)
 
     return get_regions(chromosome_lengths, split_size)
 
 
-def load_bam_chromosome_lengths(file_name, chromosomes=None):
+def load_bam_chromosome_lengths(file_name, chromosomes='default'):
     chromosome_lengths = OrderedDict()
 
     bam = pysam.Samfile(file_name, 'rb')
 
-    if chromosomes is None:
+    if chromosomes == 'all':
         chromosomes = bam.references
+
+    elif chromosomes == 'default':
+        defaults = [str(i) for i in range(1, 23)] + ['X', 'Y', 'M', 'MT']
+
+        chromosomes = []
+
+        for chrom in bam.references:
+            chrom = chrom.replace('chr', '')
+
+            if chrom in defaults:
+                chromosomes.append(chrom)
 
     else:
         chromosomes = chromosomes
