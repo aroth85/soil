@@ -1,3 +1,4 @@
+import pysam
 import pypeliner
 import pypeliner.managed as mgd
 
@@ -6,6 +7,10 @@ import tasks
 
 
 def create_optitype_workflow(bam_file, hla_type_file, is_rna=False, threads=1):
+    if check_chr_prefix(bam_file):
+        chrom_str = 'chr6'
+    else:
+        chrom_str = '6'
 
     sandbox = soil.utils.workflow.get_sandbox(['optitype', 'samtools'])
 
@@ -16,7 +21,7 @@ def create_optitype_workflow(bam_file, hla_type_file, is_rna=False, threads=1):
         args=(
             'samtools', 'view', '-bh', '-f', '2', '-F', '4',
             mgd.InputFile(bam_file),
-            '6',
+            chrom_str,
             '|',
             'samtools', 'collate', '-O', '-', mgd.TempSpace('chr6_collate_temp'),
             '|',
@@ -44,3 +49,13 @@ def create_optitype_workflow(bam_file, hla_type_file, is_rna=False, threads=1):
     )
 
     return workflow
+
+
+def check_chr_prefix(bam_file):
+    bam = pysam.AlignmentFile(bam_file)
+
+    is_chr_prefix = ('chr6' in bam.references)
+
+    bam.close()
+
+    return is_chr_prefix
