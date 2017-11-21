@@ -48,56 +48,43 @@ def _add_runner_cli_args(func):
     :param func: Runner function
     """
     click.option(
-        '-wd', '--working_dir',
-        required=True,
-        type=click.Path(resolve_path=True),
-        help='''
-Working directory for runner.
-Analysis will fail if it exists unless --resume flag is used.
-Will be deleted when analysis is finished.
+        '-wd', '--working_dir', required=True, type=click.Path(resolve_path=True),
+        help='''Working directory for runner. Analysis will fail if it exists unless --resume flag is used. Will be
+         deleted when analysis is finished.
         '''
     )(func)
 
     click.option(
-        '--max_jobs',
-        default=1,
-        type=int,
+        '--max_jobs', default=1, type=int,
         help='''Maximum number of jobs to run.'''
     )(func)
 
     click.option(
-        '--native_spec',
-        default='',
-        type=str,
-        help='''
-String specifying cluster submission parameters.
-Special values are {mem} for memory requests and {threads} for thread requests.
+        '--native_spec', default='', type=str,
+        help='''String specifying cluster submission parameters. Special values are {mem} for memory requests and
+         {threads} for thread requests.
 
-Examples:
-    For single threaded workflows
+        Examples:
+            For single threaded workflows
 
-    "-cwd -V -q byslot.q -l mem_free={mem}G,h_vmem={mem}G"
+            "-cwd -V -q byslot.q -l mem_free={mem}G,h_vmem={mem}G"
 
-    For multi-threaded workflows
+            For multi-threaded workflows
 
-    "-cwd -V -pe smp {threads} -l mem_free={mem}G,h_vmem={mem}G"
+            "-cwd -V -pe smp {threads} -l mem_free={mem}G,h_vmem={mem}G"
         '''
     )(func)
 
     click.option(
-        '--submit',
-        default='local',
-        type=click.Choice(['drmaa', 'local']),
+        '--submit', default='local', type=click.Choice(['drmaa', 'local']),
         help='''Job submission strategy. Use local to run on host machine or drmaa to submit to a cluster.'''
     )(func)
 
     click.option(
-        '--resume',
-        is_flag=True,
-        help='''
-Set this flag if an analysis was interrupted and you would like to resume.
-Only has an effect if the working directory exists.
-'''
+        '--resume', is_flag=True,
+        help='''Set this flag if an analysis was interrupted and you would like to resume. Only has an effect if the
+         working directory exists.
+        '''
     )(func)
 
 
