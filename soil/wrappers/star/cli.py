@@ -7,7 +7,7 @@ import workflows
 
 @soil.utils.cli.runner
 @click.option(
-    '-f', '---fastq_files', required=True, multiple=True, nargs=2, type=click.Path(exists=True, resolve_path=True),
+    '-f', '--fastq_files', required=True, multiple=True, nargs=2, type=click.Path(exists=True, resolve_path=True),
     help='''A pair of file paths for 1 and 2 file from paired end sequencing. Can be specified multiple times if
     multiple lanes where run.'''
 )
