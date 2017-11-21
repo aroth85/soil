@@ -24,7 +24,7 @@ import workflows
     help='''Name of library sequenced to create FASTQ files.'''
 )
 @click.option(
-    '-r', '--read_group_ids', default=None, multiple=True, type=str,
+    '-rg', '--read_group_ids', default=None, multiple=True, type=str,
     help='''Read group ID to be used for the lanes. Should be set to match -f, that is the same order and number of
     times. If not set it will be guessed from the file name.'''
 )
