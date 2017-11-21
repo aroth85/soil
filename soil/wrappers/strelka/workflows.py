@@ -1,7 +1,6 @@
 import pandas as pd
 import pypeliner
 import pypeliner.managed as mgd
-import pysam
 
 import soil.utils.genome
 import soil.utils.workflow
@@ -180,13 +179,5 @@ def get_known_genome_size(bam_file, size_file, chromosomes):
     return sizes['known_size'].sum()
 
 
-def _get_chromosomes(bam_file, chromosomes=None):
-    bam = pysam.Samfile(bam_file, 'rb')
-
-    if chromosomes is None:
-        chromosomes = bam.references
-
-    else:
-        chromosomes = chromosomes
-
-    return [str(x) for x in chromosomes]
+def _get_chromosomes(bam_file, chromosomes):
+    return soil.utils.genome.load_bam_chromosome_lengths(bam_file, chromosomes).keys()
