@@ -15,7 +15,6 @@ def get_config():
         _get_url(gencode_url, 'GRCh37.primary_assembly.genome.fa.gz'),
         _get_url(thousand_genomes_url, 'EBVt1.fa.gz'),
         _get_url(thousand_genomes_url, 'hs37d5cs.fa.gz'),
-        _get_url(thousand_genomes_url, 'hs37d5ss.fa.gz'),
         'http://tools.thermofisher.com/downloads/ERCC92.fa',
     ]
 
