@@ -57,12 +57,12 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '--max-jobs', default=1, type=int,
+        '-mj', '--max-jobs', default=1, type=int,
         help='''Maximum number of jobs to run.'''
     )(func)
 
     click.option(
-        '--native-spec', default=os.environ.get('SOIL_NATIVE_SPEC', ''), type=str,
+        '-ns', '--native-spec', default=os.environ.get('SOIL_NATIVE_SPEC', ''), type=str,
         help=' '.join([
             'String specifying cluster submission parameters.',
             'Special values are {mem} for memory requests and {threads} for thread requests.',
@@ -72,7 +72,7 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '--submit', default='local', type=click.Choice(['drmaa', 'local']),
+        '-sb', '--submit', default='local', type=click.Choice(['drmaa', 'local']),
         help='''Job submission strategy. Use local to run on host machine or drmaa to submit to a cluster.'''
     )(func)
 
