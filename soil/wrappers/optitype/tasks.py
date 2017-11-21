@@ -59,7 +59,7 @@ def _write_optitype_config(file_name, threads=1):
 
     parser.add_section('ilp')
     parser.set('ilp', 'solver', 'glpk')
-    parser.set('ilp', 'threads', threads)
+    parser.set('ilp', 'threads', 1)
 
     parser.add_section('behavior')
     parser.set('behavior', 'deletebam', 'true')
