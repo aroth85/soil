@@ -49,9 +49,11 @@ def _add_runner_cli_args(func):
     """
     click.option(
         '-wd', '--working_dir', required=True, type=click.Path(resolve_path=True),
-        help='''Working directory for runner. Analysis will fail if it exists unless --resume flag is used. Will be
-         deleted when analysis is finished.
-        '''
+        help=' '.join([
+            'Working directory for runner.',
+            'Analysis will fail if it exists unless --resume flag is used.'
+            'Will be deleted when analysis is finished.'
+        ])
     )(func)
 
     click.option(
@@ -61,8 +63,11 @@ def _add_runner_cli_args(func):
 
     click.option(
         '--native_spec', default='', type=str,
-        help='''String specifying cluster submission parameters. Special values are {mem} for memory requests and
-         {threads} for thread requests.
+        help=' '.join([
+            'String specifying cluster submission parameters.',
+            'Special values are {mem} for memory requests and {threads} for thread requests.'
+        ]) +
+        '''
 
         Examples:
             For single threaded workflows
@@ -82,9 +87,10 @@ def _add_runner_cli_args(func):
 
     click.option(
         '--resume', is_flag=True,
-        help='''Set this flag if an analysis was interrupted and you would like to resume. Only has an effect if the
-         working directory exists.
-        '''
+        help=' '.join([
+            'Set this flag if an analysis was interrupted and you would like to resume.',
+            'Only has an effect if the working directory exists.'
+        ])
     )(func)
 
 
