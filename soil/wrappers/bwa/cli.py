@@ -11,24 +11,24 @@ import workflows
     multiple lanes where run.'''
 )
 @click.option(
-    '-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-r', '--ref-genome-fasta-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path to reference genome in FASTA format to align against. BWA index files should be in same directory.'''
 )
 @click.option(
-    '-o', '--out_bam_file', required=True, type=click.Path(resolve_path=True),
+    '-o', '--out-bam-file', required=True, type=click.Path(resolve_path=True),
     help='''Path where output will be written in coordinate sorted duplicate marked BAM format.'''
 )
 @click.option(
-    '-l', '--library_id', default=None, type=str,
+    '-l', '--library-id', default=None, type=str,
     help='''Name of library sequenced to create FASTQ files.'''
 )
 @click.option(
-    '-rg', '--read_group_ids', multiple=True, type=str,
+    '-rg', '--read-group-ids', multiple=True, type=str,
     help='''Read group ID to be used for the lanes. Should be set to match -f, that is the same order and number of
     times. If not set it will be guessed from the file name.'''
 )
 @click.option(
-    '-s', '--sample_id', default=None, type=str,
+    '-s', '--sample-id', default=None, type=str,
     help='''Name of sample used to prepare library.'''
 )
 @click.option(

@@ -7,29 +7,29 @@ import workflows
 
 @soil.utils.cli.runner
 @click.option(
-    '-f', '--fastq_files', required=True, multiple=True, nargs=2, type=click.Path(exists=True, resolve_path=True),
+    '-f', '--fastq-files', required=True, multiple=True, nargs=2, type=click.Path(exists=True, resolve_path=True),
     help='''A pair of file paths for 1 and 2 file from paired end sequencing. Can be specified multiple times if
     multiple lanes where run.'''
 )
 @click.option(
-    '-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-r', '--ref-genome-fasta-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path to reference genome in FASTA format to align against. STAR index files should be in same directory.'''
 )
 @click.option(
-    '-o', '--out_bam_file', required=True, type=click.Path(resolve_path=True),
+    '-o', '--out-bam-file', required=True, type=click.Path(resolve_path=True),
     help='''Path where output will be written in coordinate sorted duplicate marked BAM format.'''
 )
 @click.option(
-    '-l', '--library_id', default=None, type=str,
+    '-l', '--library-id', default=None, type=str,
     help='''Name of library sequenced to create FASTQ files.'''
 )
 @click.option(
-    '-rg', '--read_group_ids', multiple=True, type=str,
+    '-rg', '--read-group-ids', multiple=True, type=str,
     help='''Read group ID to be used for the lanes. Should be set to match -f, that is the same order and number of
     times. If not set it will be guessed from the file name.'''
 )
 @click.option(
-    '-s', '--sample_id', default=None, type=str,
+    '-s', '--sample-id', default=None, type=str,
     help='''Name of sample used to prepare library.'''
 )
 @click.option(
@@ -37,7 +37,7 @@ import workflows
     help='''Number of threads used in parallel steps of workflow.'''
 )
 @click.option(
-    '-x', '--add_xs_tag', is_flag=True,
+    '-x', '--add-xs-tag', is_flag=True,
     help='''Add XS tag to BAM alignment. Set this to support downwstream cufflinks and stringtie analysis.'''
 )
 def align(fastq_files, ref_genome_fasta_file, out_bam_file, add_xs_tag, library_id, read_group_ids, sample_id, threads):

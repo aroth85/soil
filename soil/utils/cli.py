@@ -48,7 +48,7 @@ def _add_runner_cli_args(func):
     :param func: Runner function
     """
     click.option(
-        '-wd', '--working_dir', required=True, type=click.Path(resolve_path=True),
+        '-wd', '--working-dir', required=True, type=click.Path(resolve_path=True),
         help=' '.join([
             'Working directory for runner.',
             'Analysis will fail if it exists unless --resume flag is used.'
@@ -57,12 +57,12 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '--max_jobs', default=1, type=int,
+        '--max-jobs', default=1, type=int,
         help='''Maximum number of jobs to run.'''
     )(func)
 
     click.option(
-        '--native_spec', default=os.environ.get('SOIL_NATIVE_SPEC', ''), type=str,
+        '--native-spec', default=os.environ.get('SOIL_NATIVE_SPEC', ''), type=str,
         help=' '.join([
             'String specifying cluster submission parameters.',
             'Special values are {mem} for memory requests and {threads} for thread requests.',

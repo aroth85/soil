@@ -6,19 +6,19 @@ import workflows
 
 @soil.utils.cli.runner
 @click.option(
-    '-n', '--normal_bam_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-n', '--normal-bam-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path of BAM file for normal (non-malignant) sample.'''
 )
 @click.option(
-    '-t', '--tumour_bam_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-t', '--tumour-bam-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path of BAM file for tumour (malignant) sample.'''
 )
 @click.option(
-    '-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-r', '--ref-genome-fasta-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path of reference genome FASTA file that BAM files were aligned to.'''
 )
 @click.option(
-    '-o', '--out_vcf_file', required=True, type=click.Path(resolve_path=True),
+    '-o', '--out-vcf-file', required=True, type=click.Path(resolve_path=True),
     help='''Path where output file will be written in bgzip compressed VCF format.'''
 )
 @click.option(

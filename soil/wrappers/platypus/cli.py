@@ -6,15 +6,15 @@ import workflows
 
 @soil.utils.cli.runner
 @click.option(
-    '-b', '--bam_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-b', '--bam-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path of BAM file to call variants from.'''
 )
 @click.option(
-    '-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-r', '--ref-genome-fasta-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path of reference genome FASTA file BAM file was aligned to.'''
 )
 @click.option(
-    '-o', '--out_vcf_file', required=True, type=click.Path(resolve_path=True),
+    '-o', '--out-vcf-file', required=True, type=click.Path(resolve_path=True),
     help='''Path where output file will be written in bgzip compressed VCF format.'''
 )
 @click.option(

@@ -6,15 +6,15 @@ import workflows
 
 @soil.utils.cli.runner
 @click.option(
-    '-1', '--fastq_file_1', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-1', '--fastq-file-1', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path FASTQ file with first reads of paired end library.'''
 )
 @click.option(
-    '-2', '--fastq_file_2', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-2', '--fastq-file-2', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path FASTQ file with first reads of paired end library.'''
 )
 @click.option(
-    '-o', '--out_tsv_file', required=True, type=click.Path(resolve_path=True),
+    '-o', '--out-tsv-file', required=True, type=click.Path(resolve_path=True),
     help='''Path where output will be written in tab delimited format.'''
 )
 @click.option(

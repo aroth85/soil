@@ -6,11 +6,11 @@ import workflows
 
 @soil.utils.cli.runner
 @click.option(
-    '-b', '--bam_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    '-b', '--bam-file', required=True, type=click.Path(exists=True, resolve_path=True),
     help='''Path to BAM file to analyze. Should be a normal (non-malignant) sample if available.'''
 )
 @click.option(
-    '-o', '--out_file', required=True, type=click.Path(resolve_path=True),
+    '-o', '--out-file', required=True, type=click.Path(resolve_path=True),
     help='''Path where output with HLA information will be written.'''
 )
 @click.option(
