@@ -66,18 +66,8 @@ def _add_runner_cli_args(func):
         help=' '.join([
             'String specifying cluster submission parameters.',
             'Special values are {mem} for memory requests and {threads} for thread requests.'
-        ]) +
-        '''
-
-        Examples:
-            For single threaded workflows
-
-            "-cwd -V -q byslot.q -l mem_free={mem}G,h_vmem={mem}G"
-
-            For multi-threaded workflows
-
-            "-cwd -V -pe smp {threads} -l mem_free={mem}G,h_vmem={mem}G"
-        '''
+            'See online help for examples.'
+        ])
     )(func)
 
     click.option(
