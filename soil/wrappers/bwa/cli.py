@@ -5,18 +5,48 @@ import workflows
 
 
 @soil.utils.cli.runner
-@click.option('-1', '--fastq_file_1', required=True, type=click.Path(exists=True, resolve_path=True))
-@click.option('-2', '--fastq_file_2', required=True, type=click.Path(exists=True, resolve_path=True))
-@click.option('-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True))
-@click.option('-o', '--out_bam_file', required=True, type=click.Path(resolve_path=True))
-@click.option('-t', '--threads', default=1, type=int)
-def mem(fastq_file_1, fastq_file_2, ref_genome_fasta_file, out_bam_file, threads):
-    return workflows.create_mem_workflow(
-        fastq_file_1,
-        fastq_file_2,
+@click.option(
+    '-f', '--fastq_files', required=True, multiple=True, nargs=2, type=click.Path(exists=True, resolve_path=True),
+    help='''A pair of file paths for 1 and 2 file from paired end sequencing. Can be specified multiple times if
+    multiple lanes where run.'''
+)
+@click.option(
+    '-r', '--ref_genome_fasta_file', required=True, type=click.Path(exists=True, resolve_path=True),
+    help='''Path to reference genome in FASTA format to align against. BWA index files should be in same directory.'''
+)
+@click.option(
+    '-o', '--out_bam_file', required=True, type=click.Path(resolve_path=True),
+    help='''Path where output will be written in coordinate sorted duplicate marked BAM format.'''
+)
+@click.option(
+    '-l', '--library_id', default=None, type=str,
+    help='''Name of library sequenced to create FASTQ files.'''
+)
+@click.option(
+    '-rg', '--read_group_ids', multiple=True, type=str,
+    help='''Read group ID to be used for the lanes. Should be set to match -f, that is the same order and number of
+    times. If not set it will be guessed from the file name.'''
+)
+@click.option(
+    '-s', '--sample_id', default=None, type=str,
+    help='''Name of sample used to prepare library.'''
+)
+@click.option(
+    '-t', '--threads', default=1, type=int,
+    help='''Number of threads used in parallel steps of workflow.'''
+)
+def align(fastq_files, ref_genome_fasta_file, out_bam_file, library_id, read_group_ids, sample_id, threads):
+    fastq_files_1, fastq_files_2, read_group_info = soil.utils.cli.parse_alignment_cli_args(
+        fastq_files, library_id, read_group_ids, sample_id)
+
+    return workflows.create_multiple_lane_align_workflow(
+        fastq_files_1,
+        fastq_files_2,
         ref_genome_fasta_file,
         out_bam_file,
         align_threads=threads,
+        merge_threads=threads,
+        read_group_info=read_group_info,
         sort_threads=threads
     )
 
@@ -25,4 +55,4 @@ def mem(fastq_file_1, fastq_file_2, ref_genome_fasta_file, out_bam_file, threads
 def bwa():
     pass
 
-bwa.add_command(mem)
+bwa.add_command(align)
