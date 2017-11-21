@@ -28,7 +28,7 @@ def create_multiple_lane_align_workflow(
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
-    workflow.setobj(obj=mgd.OutputChunks('lane'), value=fastq_files_1.keys())
+    workflow.setobj(obj=mgd.TempOutputObj('read_group_info', 'lane'), value=read_group_info)
 
     workflow.subworkflow(
         name='align',
@@ -43,7 +43,7 @@ def create_multiple_lane_align_workflow(
         kwargs={
             add_xs_tag: add_xs_tag,
             align_threads: align_threads,
-            read_group_info: read_group_info,
+            read_group_info: mgd.TempInputObj('read_group_info', 'lane'),
             sort_threads: sort_threads,
         }
     )
