@@ -18,6 +18,7 @@ def create_somatic_workflow(
         ref_genome_fasta_file,
         out_file,
         chromosomes=None,
+        is_exome=False,
         split_size=int(1e7)):
 
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools', 'strelka'])
@@ -93,6 +94,9 @@ def create_somatic_workflow(
             mgd.TempInputObj('config', 'regions'),
             mgd.TempInputObj('genome_size'),
         ),
+        kwargs={
+            'is_exome': is_exome,
+        }
     )
 
     workflow.transform(
