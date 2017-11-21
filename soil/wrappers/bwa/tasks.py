@@ -44,7 +44,7 @@ def mem_paired_end(fastq_file_1, fastq_file_2, ref_genome_fasta_file, out_bam_fi
 
             read_group_str.append(':'.join((key, value)))
 
-        read_group_str = '\t'.join(read_group_str)
+        read_group_str = '\\t'.join(read_group_str)
 
         cmd.extend(['-R', read_group_str])
 
