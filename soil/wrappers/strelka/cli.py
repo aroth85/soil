@@ -19,7 +19,7 @@ import workflows
 )
 @click.option(
     '-o', '--out_vcf_file', required=True, type=click.Path(resolve_path=True),
-    help='''Path where output file will be written in tabix compressed format.'''
+    help='''Path where output file will be written in bgzip compressed VCF format.'''
 )
 @click.option(
     '-c', '--chromosomes', multiple=True, type=str,
