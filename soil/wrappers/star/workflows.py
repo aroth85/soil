@@ -41,10 +41,10 @@ def create_multiple_lane_align_workflow(
             mgd.TempOutputFile('lane.bam', 'lane'),
         ),
         kwargs={
-            add_xs_tag: add_xs_tag,
-            align_threads: align_threads,
-            read_group_info: mgd.TempInputObj('read_group_info', 'lane'),
-            sort_threads: sort_threads,
+            'add_xs_tag': add_xs_tag,
+            'align_threads': align_threads,
+            'read_group_info': mgd.TempInputObj('read_group_info', 'lane'),
+            'sort_threads': sort_threads,
         }
     )
 
