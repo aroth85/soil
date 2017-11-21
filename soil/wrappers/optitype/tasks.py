@@ -1,7 +1,8 @@
-import distutils
 import os
 import pypeliner.commandline as cli
 import shutil
+
+import soil.utils.file_system
 
 
 def run_optitype(reads_1_fastq, reads_2_fastq, hla_type_file, tmp_dir, is_rna=False, threads=1):
@@ -46,12 +47,14 @@ def run_optitype(reads_1_fastq, reads_2_fastq, hla_type_file, tmp_dir, is_rna=Fa
 
 
 def _write_optitype_config(file_name, threads=1):
+    razers_exe = soil.utils.file_system.find('razers3', os.environ['CONDA_PREFIX'])
+
     from ConfigParser import ConfigParser
 
     parser = ConfigParser()
 
     parser.add_section('mapping')
-    parser.set('mapping', 'razers3', distutils.spawn.find_executable('razers3'))
+    parser.set('mapping', 'razers3', razers_exe)
     parser.set('mapping', 'threads', threads)
 
     parser.add_section('ilp')
