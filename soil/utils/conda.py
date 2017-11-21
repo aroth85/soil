@@ -16,6 +16,7 @@ packages = {
     'bwa': Package('bwa', '0.7.16'),
     'bcftools': Package('bcftools', '1.6'),
     'opossum': Package('opossum', '0.2.0de259b45a35cd7d4c01dbb40d48d16c9118d76c4', channel='aroth85'),
+    'optitype': Package('optitype', '1.2.1'),
     'mixcr': Package('mixcr', '2.1.3'),
     'msgf_plus': Package('msgf_plus', '2017.07.21'),
     'percolator': Package('percolator', '3.1'),
