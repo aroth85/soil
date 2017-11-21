@@ -63,6 +63,14 @@ def create_multiple_lane_align_workflow(
         }
     )
 
+    workflow.commandline(
+        name='index',
+        args=(
+            'samtools', 'index',
+            mgd.InputFile(out_bam_file),
+            mgd.OutputFile(out_bam_file + '.bai'),
+        )
+    )
     return workflow
 
 

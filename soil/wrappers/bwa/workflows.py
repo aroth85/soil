@@ -22,7 +22,7 @@ def create_multiple_lane_align_workflow(
         for key in fastq_files_1:
             read_group_info[key] = None
 
-    sandbox = soil.utils.workflow.get_sandbox(['sambamba'])
+    sandbox = soil.utils.workflow.get_sandbox(['sambamba', 'samtools'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
@@ -58,6 +58,15 @@ def create_multiple_lane_align_workflow(
         kwargs={
             'threads': merge_threads,
         }
+    )
+
+    workflow.commandline(
+        name='index',
+        args=(
+            'samtools', 'index',
+            mgd.InputFile(out_bam_file),
+            mgd.OutputFile(out_bam_file + '.bai'),
+        )
     )
 
     return workflow
