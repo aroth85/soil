@@ -62,7 +62,7 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '--native_spec', default='', type=str,
+        '--native_spec', default=os.environ.get('SOIL_NATIVE_SPEC', ''), type=str,
         help=' '.join([
             'String specifying cluster submission parameters.',
             'Special values are {mem} for memory requests and {threads} for thread requests.'
