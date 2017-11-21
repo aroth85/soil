@@ -24,7 +24,7 @@ import workflows
     help='''Name of library sequenced to create FASTQ files.'''
 )
 @click.option(
-    '-rg', '--read_group_ids', default=None, multiple=True, type=str,
+    '-rg', '--read_group_ids', multiple=True, type=str,
     help='''Read group ID to be used for the lanes. Should be set to match -f, that is the same order and number of
     times. If not set it will be guessed from the file name.'''
 )
@@ -53,9 +53,9 @@ def align(fastq_files, ref_genome_fasta_file, out_bam_file, add_xs_tag, library_
     if sample_id is None:
         sample_id = 'UKNOWN'
 
-    for f1, f2 in fastq_files:
-        if read_group_ids is not None:
-            key = read_group_ids.pop(0)
+    for idx, (f1, f2) in enumerate(fastq_files):
+        if len(read_group_ids) > 0:
+            key = read_group_ids[idx]
 
         else:
             key = os.path.basename(f1).split('.')[0]
