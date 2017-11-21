@@ -56,9 +56,9 @@ def load_bam_chromosome_lengths(file_name, chromosomes='default'):
         chromosomes = []
 
         for chrom in bam.references:
-            chrom = chrom.replace('chr', '')
+            raw_chrom = chrom.replace('chr', '')
 
-            if chrom in defaults:
+            if raw_chrom in defaults:
                 chromosomes.append(chrom)
 
     else:
