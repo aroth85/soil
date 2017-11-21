@@ -99,3 +99,39 @@ Set this flag if an analysis was interrupted and you would like to resume.
 Only has an effect if the working directory exists.
 '''
     )(func)
+
+
+def parse_alignment_cli_args(fastq_files, library_id=None, read_group_ids=None, sample_id=None):
+    """ Parse standard alignment arguments. Assumes paired end data which all comes from the same library.
+
+    :param fastq_files: List of tuples where each tuple is one FASTA file of a paired end library.
+    :param library_id: Identifier of library sequenced to generate FASTA files.
+    :param read_group_ids: List of read group identifiers. Length should match length of fastq_files.
+    :param sample_id: Identifier of sample used to prepare library.
+    """
+    fastq_files_1 = {}
+
+    fastq_files_2 = {}
+
+    read_group_info = {}
+
+    if library_id is None:
+        library_id = 'UKNOWN'
+
+    if sample_id is None:
+        sample_id = 'UKNOWN'
+
+    for idx, (f1, f2) in enumerate(fastq_files):
+        if len(read_group_ids) > 0:
+            key = read_group_ids[idx]
+
+        else:
+            key = os.path.basename(f1).split('.')[0]
+
+        fastq_files_1[key] = f1
+
+        fastq_files_2[key] = f2
+
+        read_group_info[key] = {'ID': key, 'LB': library_id, 'SM': sample_id}
+
+    return fastq_files_1, fastq_files_2, read_group_info

@@ -41,30 +41,8 @@ import workflows
     help='''Add XS tag to BAM alignment. Set this to support downwstream cufflinks and stringtie analysis.'''
 )
 def align(fastq_files, ref_genome_fasta_file, out_bam_file, add_xs_tag, library_id, read_group_ids, sample_id, threads):
-    fastq_files_1 = {}
-
-    fastq_files_2 = {}
-
-    read_group_info = {}
-
-    if library_id is None:
-        library_id = 'UKNOWN'
-
-    if sample_id is None:
-        sample_id = 'UKNOWN'
-
-    for idx, (f1, f2) in enumerate(fastq_files):
-        if len(read_group_ids) > 0:
-            key = read_group_ids[idx]
-
-        else:
-            key = os.path.basename(f1).split('.')[0]
-
-        fastq_files_1[key] = f1
-
-        fastq_files_2[key] = f2
-
-        read_group_info[key] = {'ID': key, 'LB': library_id, 'SM': sample_id}
+    fastq_files_1, fastq_files_2, read_group_info = soil.utils.cli.parse_alignment_cli_args(
+        fastq_files, library_id, read_group_ids, sample_id)
 
     ref_genome_fasta_dir = os.path.dirname(ref_genome_fasta_file)
 
