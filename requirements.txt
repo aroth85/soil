@@ -2,7 +2,7 @@ biopython
 click
 pandas
 pysam
-pypeliner
-pyopenms
+#pypeliner
+#pyopenms
 pysftp
 pyyaml
