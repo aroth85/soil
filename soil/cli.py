@@ -11,7 +11,7 @@ import soil.wrappers.optitype.cli
 import soil.wrappers.platypus.cli
 import soil.wrappers.star.cli
 import soil.wrappers.strelka.cli
-import soil.wrappers.varscan.cli
+import soil.wrappers.transdecoder.cli
 
 
 @click.group()
@@ -41,4 +41,4 @@ run.add_command(soil.wrappers.optitype.cli.optitype)
 run.add_command(soil.wrappers.platypus.cli.platypus)
 run.add_command(soil.wrappers.star.cli.star)
 run.add_command(soil.wrappers.strelka.cli.strelka)
-run.add_command(soil.wrappers.varscan.cli.varscan)
+run.add_command(soil.wrappers.transdecoder.cli.transdecoder)
