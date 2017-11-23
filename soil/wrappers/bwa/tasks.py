@@ -11,7 +11,7 @@ def index(ref_genome_fasta_file, out_sentinel_file):
         :param out_sentinel_file: Path of sentinel file to show indexing was successful.
     """
 
-    cmd = ['bwa', 'index', ref_genome_fasta_file]
+    cmd = ['bwa', 'index', '-b', 1000000000, ref_genome_fasta_file]
 
     cli.execute(*cmd)
 
