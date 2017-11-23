@@ -39,7 +39,7 @@ conda install --yes --file requirements.txt -c bioconda
 pip install pyopenms
 ```
 
-If all worked then you should be able to have `soil-run` on the path.
+If all worked then you should have `soil-run` on the path and it won't raise errors.
 
 # Using SOIL wrappers
 
