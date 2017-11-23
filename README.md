@@ -41,6 +41,8 @@ pip install pyopenms
 
 If all worked then you should have `soil-run` on the path and it won't raise errors.
 
+> Note: If you want to run on a cluster install the `drmaa` package using conda.
+
 # Using SOIL wrappers
 
 The simples way to use soil is through the `soil-run` command which provides wrappers for several useful programs.
@@ -161,4 +163,4 @@ Note that it is possible to set the environment variable `SOIL_NATIVE_SPEC`, in 
 SOIL can run either on a local machine or on a cluster (currently only Grid Engine is tested).
 The `-sb` flag chooses which, with `local` running locally and `drmaa` on a cluster via the DRMAA API.
 
-> Note: If you want to run a cluster install the `drmaa` package through conda.
+> Note: If you want to run on a cluster install the `drmaa` package using conda.
