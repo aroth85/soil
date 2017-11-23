@@ -94,7 +94,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         args=(
             'ln',
             mgd.InputFile(ref_data_paths.genome_fasta_file),
-            mgd.OutputFile(ref_data_paths.star_genome_fasta_files)
+            mgd.OutputFile(ref_data_paths.star_genome_fasta_file)
         )
     )
 
@@ -103,9 +103,9 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         ctx={'mem': 32, 'mem_retry_increment': 16, 'num_retry': 3, 'threads': threads},
         func=soil.wrappers.star.tasks.index,
         args=(
-            mgd.InputFile(ref_data_paths.star_genome_fasta_files),
+            mgd.InputFile(ref_data_paths.star_genome_fasta_file),
             mgd.InputFile(ref_data_paths.gene_annotations_gtf_file),
-            mgd.OutputFile(ref_data_paths.star_genome_fasta_files + '.star_index.done'),
+            mgd.OutputFile(ref_data_paths.star_genome_fasta_file + '.star_index.done'),
         ),
         kwargs={
             'threads': threads,
