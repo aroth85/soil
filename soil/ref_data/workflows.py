@@ -4,17 +4,17 @@ import pypeliner
 import pypeliner.managed as mgd
 import yaml
 
+
+import soil.ref_data.paths
 import soil.utils.workflow
 import soil.wrappers.bwa.tasks
 import soil.wrappers.samtools.tasks
 import soil.wrappers.star.tasks
 
-import soil.ref_data.paths
 import tasks
 
 
 def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=1):
-    ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(out_dir)
 
     if ref_genome_version == 'GRCh37':
         import soil.ref_data.configs.GRCh37
@@ -26,6 +26,8 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
 
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+
+    ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(out_dir)
 
     with open(ref_data_paths.config_file, 'w') as fh:
         yaml.dump(config, fh)

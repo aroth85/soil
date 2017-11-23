@@ -46,7 +46,7 @@ class SoilRefDataPaths(object):
     def proteome_fasta_file(self):
         """ Path of reference proteome FASTA file.
         """
-        return os.path(self.base_dir, 'proteome.fa')
+        return os.path.join(self.base_dir, 'proteome.fa')
 
     @property
     def bwa_genome_fasta_file(self):
