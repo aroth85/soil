@@ -11,6 +11,12 @@ class SoilRefDataPaths(object):
         self.base_dir = base_dir
 
     @property
+    def config_file(self):
+        """ Path of file with information about where the reference data came from.
+        """
+        return os.path.join(self.base_dir, 'config.yaml')
+
+    @property
     def cosmic_vcf_file(self):
         """ Path to bgzip compressed tabix indexed COSMIC VCF.
 

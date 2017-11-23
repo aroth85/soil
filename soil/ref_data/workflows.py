@@ -14,6 +14,8 @@ import tasks
 
 
 def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=1):
+    ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(out_dir)
+
     if ref_genome_version == 'GRCh37':
         import soil.ref_data.configs.GRCh37
 
@@ -25,15 +27,13 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    with open(os.path.join(out_dir, 'config.yaml'), 'w') as fh:
+    with open(ref_data_paths.config_file, 'w') as fh:
         yaml.dump(config, fh)
 
     if cosmic:
         cosmic_user = click.prompt('Please enter COSMIC user ID')
 
         cosmic_password = click.prompt('Please enter COSMIC password', hide_input=True)
-
-    ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(out_dir)
 
     sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'samtools', 'star'])
 
