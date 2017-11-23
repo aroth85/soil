@@ -19,8 +19,8 @@ source activate soil
 ```
 
 Next you will need to get [SOIL](https://github.com/aroth85/pypeliner) and an experimental fork of [Pypeliner](https://github.com/aroth85/pypeliner) using git.
-The following assumes you are in a directory where you want to put the code run the following.
-First we will install Pypeliner.
+The following assumes you are in a directory where you want to put the code.
+First install Pypeliner.
 
 ```
 git clone https://github.com/aroth85/pypeliner.git
@@ -29,7 +29,7 @@ python setup.py develop
 conda install --yes --file requirements.txt
 ```
 
-Next we will install SOIL, again assuming you are in the directory where the code resides i.e. `cd ..` from the previous steps.
+Next install SOIL, again assuming you are in the directory where the code resides i.e. `cd ..` from the previous steps.
 
 ```
 git clone git@github.com:aroth85/soil.git
