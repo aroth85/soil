@@ -136,9 +136,13 @@ This flag controls the maximum number of concurrent jobs which will be run.
 When running locally this should be less equal the number of cores available.
 For clusters it is less important as the queue system will control things if to many jobs get launched.
 
+> Note: If you are running locally and using a wrapper with a thread command then you may overload the system.
+> SOIL is not aware of how many threads a job is using when it computes max jobs, so you can request more threads than jobs.
+> This is not an issue on clusters as the submit system takes care of the issues.
+
 ##  Native spec -ns
 
-This flag is only relevant if the wrapper is being wrong on a cluster.
+This flag is only relevant if the wrapper is being run on a cluster.
 This is equivalent to the arguments that would be put in a qsub script.
 For example
 
@@ -157,4 +161,4 @@ Note that it is possible to set the environment variable `SOIL_NATIVE_SPEC`, in 
 SOIL can run either on a local machine or on a cluster (currently only Grid Engine is tested).
 The `-sb` flag chooses which, with `local` running locally and `drmaa` on a cluster via the DRMAA API.
 
-> Note if you want to run a cluster install the `drmaa` package through conda.
+> Note: If you want to run a cluster install the `drmaa` package through conda.
