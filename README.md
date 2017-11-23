@@ -18,7 +18,7 @@ conda create -n soil python=2.7
 source activate soil
 ```
 
-Next we need you will need to get [SOIL](https://github.com/aroth85/pypeliner) and an experimental fork of [Pypeliner](https://github.com/aroth85/pypeliner) using git.
+Next you will need to get [SOIL](https://github.com/aroth85/pypeliner) and an experimental fork of [Pypeliner](https://github.com/aroth85/pypeliner) using git.
 The following assumes you are in a directory where you want to put the code run the following.
 First we will install Pypeliner.
 
