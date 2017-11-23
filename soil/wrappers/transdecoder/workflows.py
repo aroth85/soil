@@ -31,7 +31,7 @@ def create_transdecoder_workflow(
     )
 
     workflow.transform(
-        name='convert_gtf_to_cdna_fasta',
+        name='convert_gtf_to_gff',
         ctx={'mem': 8, 'mem_retry_increment': 8, 'num_retry': 3},
         func=tasks.convert_gtf_to_gff_file,
         args=(
