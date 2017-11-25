@@ -25,7 +25,7 @@ def create(ref_genome_version, out_dir, cosmic, threads):
 @click.option('-s', '--split-size', default=int(1e7), type=int)
 @click.option('-t', '--threads', default=1, type=int)
 def mappability(ref_genome_fasta_file, out_file, split_size, threads):
-    soil.ref_data.mappability.workflows.create_mappability_workflow(
+    return soil.ref_data.mappability.workflows.create_mappability_workflow(
         ref_genome_fasta_file,
         out_file,
         k=100,
