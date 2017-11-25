@@ -60,6 +60,7 @@ def create_mappability_workflow(
     workflow.transform(
         name='compute_mappability',
         axes=('chrom', 'kmer_group'),
+        ctx={'mem': 4, 'mem_retry_increment': 2, 'num_retry': 3},
         func=tasks.compute_mappability,
         args=(
             mgd.TempInputFile('aligned.bam', 'chrom', 'kmer_group'),
