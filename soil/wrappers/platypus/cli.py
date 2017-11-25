@@ -28,7 +28,7 @@ import workflows
 )
 def single_sample(bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes, rna):
     if len(chromosomes) == 0:
-        chromosomes = None
+        chromosomes = 'default'
 
     if rna:
         return workflows.create_rna_single_sample_workflow(
