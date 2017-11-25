@@ -121,7 +121,7 @@ def compute_mappability(in_file, out_file, max_map_qual=None):
     df.to_csv(out_file, index=False, sep='\t')
 
 
-def compute_chrom_mean_mappability(in_files, norm_const, out_file):
+def compute_chrom_mean_mappability(in_files, out_file):
     def collapse_seg(df):
         return pd.Series(
             data=[df['chrom'].iloc[0], df['coord'].min(), df['coord'].max() + 1, df['mappability'].iloc[0]],
