@@ -1,8 +1,8 @@
 import click
 
-import soil.utils.cli
 import soil.ref_data.mappability.workflows
 import soil.ref_data.workflows
+import soil.utils.cli
 
 
 @soil.utils.cli.runner
