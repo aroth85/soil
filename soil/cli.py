@@ -28,6 +28,7 @@ def ref():
     pass
 
 ref.add_command(soil.ref_data.cli.create)
+ref.add_command(soil.ref_data.cli.mappability)
 
 
 @click.group()
