@@ -30,6 +30,7 @@ def create_mappability_workflow(
     workflow.transform(
         name='create_kmer_reads',
         axes=('chrom',),
+        ctx={'mem': 4, 'mem_retry_increment': 2, 'num_retry': 3},
         func=tasks.create_kmer_reads,
         args=(
             mgd.TempInputFile('chrom.fasta', 'chrom'),
