@@ -19,7 +19,10 @@ def create(ref_genome_version, out_dir, cosmic, threads):
 
 @soil.utils.cli.runner
 @click.option('-o', '--out_file', required=True, type=click.Path(resolve_path=True))
-@click.option('-r', '--ref-genome-fasta-file', default='GRCh37', type=click.Choice(['GRCh37', ]))
+@click.option(
+    '-r', '--ref-genome-fasta-file', required=True, type=click.Path(exists=True, resolve_path=True),
+    help='''Path to reference genome in FASTA format to align against. BWA index files should be in same directory.'''
+)
 @click.option('-s', '--split-size', default=int(1e7), type=int)
 @click.option('-t', '--threads', default=1, type=int)
 def mappability(ref_genome_fasta_file, out_file, split_size, threads):
