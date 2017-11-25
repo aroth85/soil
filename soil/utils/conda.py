@@ -28,5 +28,6 @@ packages = {
     'strelka': Package('strelka', '2.8.4'),
     'stringtie': Package('stringtie', '1.3.3'),
     'transdecoder': Package('transdecoder', '3.0.1'),
+    'ucsc-bedgraphtobigwig': Package('ucsc-bedgraphtobigwig', '357'),
     'varscan': Package('varscan', '2.4.3'),
 }
