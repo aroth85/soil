@@ -1,9 +1,8 @@
 import click
 
 import soil.utils.cli
-
-import mappability.workflows
-import workflows
+import soil.ref_data.mappability.workflows
+import soil.ref_data.workflows
 
 
 @soil.utils.cli.runner
@@ -14,7 +13,7 @@ import workflows
 def create(ref_genome_version, out_dir, cosmic, threads):
     """ Download and index reference data.
     """
-    return workflows.create_ref_data_workflow(ref_genome_version, out_dir, cosmic=cosmic, threads=threads)
+    return soil.ref_data.workflows.create_ref_data_workflow(ref_genome_version, out_dir, cosmic=cosmic, threads=threads)
 
 
 @soil.utils.cli.runner
@@ -26,7 +25,7 @@ def create(ref_genome_version, out_dir, cosmic, threads):
 @click.option('-s', '--split-size', default=int(1e7), type=int)
 @click.option('-t', '--threads', default=1, type=int)
 def mappability(ref_genome_fasta_file, out_file, split_size, threads):
-    mappability.workflows.create_mappability_workflow(
+    soil.ref_data.mappability.workflows.create_mappability_workflow(
         ref_genome_fasta_file,
         out_file,
         k=100,
