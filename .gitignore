@@ -103,3 +103,4 @@ ENV/
 /.pydevproject
 .settings/
 /sandbox/
+*.html
