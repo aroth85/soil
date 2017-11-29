@@ -1,6 +1,6 @@
 class Package(object):
 
-    def __init__(self, name, version, channel='bioconda'):
+    def __init__(self, name, version=None, channel='bioconda'):
         self.name = name
 
         self.version = version
@@ -9,25 +9,44 @@ class Package(object):
 
     @property
     def conda_str(self):
-        return '{0} =={1}'.format(self.name, self.version)
+        if self.version is None:
+            pkg_str = self.name
+
+        else:
+            pkg_str = '{0} =={1}'.format(self.name, self.version)
+
+        return pkg_str
 
 
 packages = {
+    # B
     'bwa': Package('bwa', '0.7.16'),
     'bcftools': Package('bcftools', '1.6'),
-    'opossum': Package('opossum', '0.2.0de259b45a35cd7d4c01dbb40d48d16c9118d76c4', channel='aroth85'),
-    'optitype': Package('optitype', '1.2.1'),
+    # H
+    'hmmcopy': Package('bioconductor-hmmcopy', '1.20.0'),
+    'hmmcopy_utils': Package('hmmcopy', '0.1.1'),
+    # M
     'mixcr': Package('mixcr', '2.1.3'),
     'msgf_plus': Package('msgf_plus', '2017.07.21'),
+    # O
+    'opossum': Package('opossum', '0.2.0de259b45a35cd7d4c01dbb40d48d16c9118d76c4', channel='aroth85'),
+    'optitype': Package('optitype', '1.2.1'),
+    # P
     'percolator': Package('percolator', '3.1'),
     'platypus': Package('platypus-variant', '0.8.1.1'),
     'proteowizard': Package('proteowizard', '3_0_9992'),
+    # S
     'sambamba': Package('sambamba', '0.6.6'),
     'samtools': Package('samtools', '1.6'),
+    'snpsift': Package('snpsift', '4.3.1r'),
     'star': Package('star', '2.5.3a'),
     'strelka': Package('strelka', '2.8.4'),
     'stringtie': Package('stringtie', '1.3.3'),
+    # T
+    'titan': Package('bioconductor-titancna', '1.16.0'),
     'transdecoder': Package('transdecoder', '3.0.1'),
+    # U
     'ucsc-bedgraphtobigwig': Package('ucsc-bedgraphtobigwig', '357'),
+    # V
     'varscan': Package('varscan', '2.4.3'),
 }

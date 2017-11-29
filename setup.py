@@ -16,5 +16,8 @@ setup(
             'soil-ref = soil.cli:ref',
             'soil-run = soil.cli:run',
         ]
+    },
+    package_data={
+        'soil': ['scripts/*.py', ]
     }
 )
