@@ -42,6 +42,22 @@ def get_bam_regions(bam_file, split_size, chromosomes='default'):
     return get_regions(chromosome_lengths, split_size)
 
 
+def get_autosomal_chromosomes(bam_file):
+    bam = pysam.Samfile(bam_file, 'rb')
+
+    defaults = [str(i) for i in range(1, 23)]
+
+    chromosomes = []
+
+    for chrom in bam.references:
+        raw_chrom = chrom.replace('chr', '')
+
+        if raw_chrom in defaults:
+            chromosomes.append(chrom)
+
+    return chromosomes
+
+
 def get_default_chromosomes(bam_file):
     bam = pysam.Samfile(bam_file, 'rb')
 
