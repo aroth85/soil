@@ -228,8 +228,8 @@ params$genotypeParams$alphaKHyper <- rep(alphaK,K)
 params$genotypeParams$betaKHyper <- rep(25,K)
 #params$genotypeParams$alphaKHyper[c(1,7:K)] <- alphaHigh
 params$ploidyParams$phi_0 <- ploidy_0
-params$ploidyParams$alphaPHyper <- 200
-params$ploidyParams$betaPHyper <- 100
+params$ploidyParams$alphaPHyper <- 201
+params$ploidyParams$betaPHyper <- 400
 params$normalParams$n_0 <- norm_0
 #params$genotypeParams$rt[c(4, 9)] <- hetAR
 
