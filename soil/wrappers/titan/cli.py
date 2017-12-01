@@ -1,5 +1,4 @@
 import click
-import os
 
 import soil.utils.cli
 import workflows
@@ -27,8 +26,8 @@ import workflows
     help='''Path of reference genome FASTA file that BAM files were aligned to.'''
 )
 @click.option(
-    '-o', '--out-prefix', required=True, type=click.Path(resolve_path=True),
-    help='''Path where output files will be written.'''
+    '-o', '--out-file', required=True, type=click.Path(resolve_path=True),
+    help='''Path where output file will be written.'''
 )
 @click.option(
     '-e', '--exome-bed-file', default=None, type=click.Path(resolve_path=True),
@@ -40,14 +39,8 @@ def titan(
         dbsnp_vcf_file,
         mappability_file,
         ref_genome_fasta_file,
-        out_dir,
+        out_file,
         exome_bed_file=None):
-
-    out_normal_vcf_file = os.path.join(out_dir, 'normal.vcf.gz')
-
-    out_sentinel_file = os.path.join(out_dir, 'selected', 'done.txt')
-
-    out_stats_file = os.path.join(out_dir, 'stats.tsv')
 
     return workflows.create_titan_workflow(
         normal_bam_file,
@@ -55,8 +48,6 @@ def titan(
         dbsnp_vcf_file,
         mappability_file,
         ref_genome_fasta_file,
-        out_sentinel_file,
-        out_stats_file,
+        out_file,
         exome_bed_file=exome_bed_file,
-        out_normal_vcf_file=out_normal_vcf_file
     )

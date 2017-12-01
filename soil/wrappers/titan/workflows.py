@@ -13,17 +13,9 @@ def create_titan_workflow(
         dbsnp_vcf_file,
         mappability_file,
         ref_genome_fasta_file,
-        out_sentinel_file,
-        out_stats_file,
+        out_file,
         exome_bed_file=None,
-        sample='Tumour',
-        out_normal_vcf_file=None):
-
-    if out_normal_vcf_file is None:
-        normal_vcf = mgd.TempFile('normal.vcf.gz')
-
-    else:
-        normal_vcf = mgd.File(out_normal_vcf_file)
+        sample='Tumour'):
 
     sandbox = soil.utils.workflow.get_sandbox(['hmmcopy', 'hmmcopy_utils', 'snpsift', 'titan'])
 
@@ -44,7 +36,7 @@ def create_titan_workflow(
         args=(
             mgd.InputFile(normal_bam_file),
             mgd.InputFile(ref_genome_fasta_file),
-            normal_vcf.as_output(),
+            mgd.TempOutputFile('normal.vcf.gz'),
         ),
         kwargs={
             'chromosomes': chromosomes,
@@ -59,7 +51,7 @@ def create_titan_workflow(
             'SnpSift',
             'annotate',
             mgd.InputFile(dbsnp_vcf_file),
-            normal_vcf.as_input(),
+            mgd.TempInputFile('normal.vcf.gz'),
             '>',
             mgd.TempOutputFile('normal.dbsnp.vcf'),
         ),
@@ -206,50 +198,21 @@ def create_titan_workflow(
         args=(
             mgd.TempInputFile('run.tar.gz', 'param_idx'),
             mgd.TempInputObj('init_params', 'param_idx'),
-            mgd.OutputFile(out_stats_file),
+            mgd.TempOutputFile('stats.tsv'),
         ),
     )
 
     workflow.transform(
-        name='select_solution',
-        func=tasks.select_optimal_run,
+        name='build_output',
+        func=tasks.build_final_results_file,
         args=(
-            mgd.InputFile(out_stats_file),
-        ),
-        ret=mgd.TempOutputObj('optimal_idx'),
-    )
-
-    workflow.transform(
-        name='copy_optimal_solution',
-        func=tasks.copy_optimal_solution,
-        args=(
-            mgd.TempInputObj('optimal_idx'),
+            mgd.TempInputFile('coverage.wig'),
+            mgd.TempInputFile('allele_counts.tsv'),
             mgd.TempInputFile('run.tar.gz', 'param_idx'),
-            mgd.OutputFile(out_sentinel_file),
-            #             mgd.OutputFile(out_params_file),
-            #             mgd.OutputFile(out_segs_file),
-            #             mgd.OutputFile(out_plots_dir),
+            mgd.TempInputFile('stats.tsv'),
+            mgd.OutputFile(out_file),
+            mgd.TempSpace('build_results'),
         )
     )
-
-#     workflow.transform(
-#         name='run_titan_with_optimal_params',
-#         func=tasks.run_titan,
-#         args=(
-#             mgd.TempInputFile('coverage.wig'),
-#             mgd.TempInputFile('allele_counts.tsv'),
-#             mgd.TempInputObj('optimal_params'),
-#             mgd.OutputFile(out_params_file),
-#             mgd.OutputFile(out_segs_file),
-#             mgd.TempSpace('titan_tmp'),
-#         ),
-#         kwargs={
-#             'estimate_normal_contam': True,
-#             'estimate_ploidy': True,
-#             'is_exome': (exome_bed_file is not None),
-#             'plot_dir': mgd.OutputFile(out_plots_dir),
-#             'sample': sample,
-#         }
-#     )
 
     return workflow

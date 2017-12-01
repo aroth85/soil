@@ -134,11 +134,11 @@ def create_intialization_parameters():
     """ Initialize parameter sweep
     """
 
-    normal_contam = [0.25, 0.75]  # [0.2, 0.4, 0.6, 0.8]
+    normal_contam = [0.25, 0.5, 0.75]
 
-    num_clusters = [1, 2, 3]  # , 4, 5]
+    num_clusters = [1, 2, 3, 4]
 
-    ploidy = [2, 4]  # 3, 4]
+    ploidy = [2, 3, 4]
 
     init_param_values = itertools.product(
         normal_contam,
@@ -177,8 +177,10 @@ def run_titan(
 
     os.makedirs(tmp_dir)
 
+    script = pkg_resources.resource_filename('soil', 'scripts/run_titan.R')
+
     cmd = [
-        'titanCNA.R',
+        script,
         '--id', sample,
         '--cnFile', coverage_file,
         '--hetFile', snp_file,
@@ -259,39 +261,64 @@ def _read_titan_params(tar_file):
     return params
 
 
-def select_optimal_run(in_file):
+def build_final_results_file(counts_file, coverage_file, run_files, stats_file, out_file, tmp_dir):
 
-    df = pd.read_csv(in_file, sep='\t')
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+
+    os.makedirs(tmp_dir)
+
+    input_dir = os.path.join(tmp_dir, 'input')
+
+    os.makedirs(input_dir)
+
+    shutil.copyfile(stats_file, os.path.join(tmp_dir, 'stats.tsv'))
+
+    shutil.copyfile(counts_file, os.path.join(input_dir, 'counts.tsv'))
+
+    shutil.copyfile(coverage_file, os.path.join(input_dir, 'coverage.tsv'))
+
+    for run_idx in run_files:
+        run_tmp_dir = os.path.join(tmp_dir, 'runs', str(run_idx))
+
+        os.makedirs(run_tmp_dir)
+
+        tar_file = tarfile.open(run_files[run_idx], 'r:gz')
+
+        tar_file.extractall(run_tmp_dir)
+
+        _rename_titan_files(run_tmp_dir)
+
+    df = pd.read_csv(stats_file, sep='\t')
 
     df = df.sort_values(by='s_dbw_validity_index')
 
-    return df.iloc[0]['run_idx']
+    best_idx = df.iloc[0]['run_idx']
+
+    shutil.copytree(os.path.join(tmp_dir, 'runs', str(int(best_idx))), os.path.join(tmp_dir, 'runs', 'selected'))
+
+    with tarfile.open(out_file, 'w:gz') as tar:
+        tar.add(tmp_dir, arcname='')
+
+    shutil.rmtree(tmp_dir)
 
 
-def copy_optimal_solution(idx, run_files, out_sentinel_file):
-    out_dir = os.path.dirname(out_sentinel_file)
+def _rename_titan_files(run_dir):
+    plot_dir = os.path.join(run_dir, 'plots')
 
-    plot_dir = os.path.join(out_dir, 'plots')
+    prefix = os.path.basename(os.path.commonprefix(os.listdir(run_dir)))
 
-    tar_file = tarfile.open(run_files[idx], 'r:gz')
+    shutil.move(os.path.join(run_dir, prefix), plot_dir)
 
-    tar_file.extractall(os.path.dirname(out_sentinel_file))
+    shutil.move(os.path.join(run_dir, prefix + '.params.txt'), os.path.join(run_dir, 'params.txt'))
 
-    prefix = os.path.basename(os.path.commonprefix(os.listdir(out_dir)))
+    shutil.move(os.path.join(run_dir, prefix + '.seg'), os.path.join(run_dir, 'igv.seg'))
 
-    shutil.move(os.path.join(out_dir, prefix), plot_dir)
+    shutil.move(os.path.join(run_dir, prefix + '.segs.txt'), os.path.join(run_dir, 'segs.txt'))
 
-    shutil.move(os.path.join(out_dir, prefix + '.params.txt'), os.path.join(out_dir, 'params.txt'))
+    shutil.move(os.path.join(run_dir, prefix + '.titan.txt'), os.path.join(run_dir, 'pos.txt'))
 
-    shutil.move(os.path.join(out_dir, prefix + '.seg'), os.path.join(out_dir, 'igv.seg'))
-
-    shutil.move(os.path.join(out_dir, prefix + '.segs.txt'), os.path.join(out_dir, 'segs.txt'))
-
-    shutil.move(os.path.join(out_dir, prefix + '.titan.txt'), os.path.join(out_dir, 'pos.txt'))
-
-    shutil.move(os.path.join(out_dir, prefix + '.RData'), os.path.join(out_dir, 'workspace.RData'))
+    shutil.move(os.path.join(run_dir, prefix + '.RData'), os.path.join(run_dir, 'workspace.RData'))
 
     for file_name in glob.glob(os.path.join(plot_dir, '*')):
         shutil.move(file_name, os.path.join(plot_dir, os.path.basename(file_name).replace(prefix + '_', '')))
-
-    open(out_sentinel_file, 'w').close()
