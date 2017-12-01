@@ -84,7 +84,7 @@ def create_titan_workflow(
 
     workflow.transform(
         name='split_vcf',
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': 6, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.split_vcf,
         args=(
             mgd.TempInputFile('het.snps.vcf'),
@@ -178,6 +178,7 @@ def create_titan_workflow(
     workflow.transform(
         name='run_titan',
         axes=('param_idx',),
+        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.run_titan,
         args=(
             mgd.TempInputFile('coverage.wig'),
