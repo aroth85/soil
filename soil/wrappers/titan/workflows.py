@@ -46,7 +46,7 @@ def create_titan_workflow(
 
     workflow.commandline(
         name='annotate_dbsnp_status',
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': 6, 'mem_retry_increment': 4, 'num_retry': 3},
         args=(
             'SnpSift',
             'annotate',
@@ -59,7 +59,7 @@ def create_titan_workflow(
 
     workflow.commandline(
         name='annotate_variant_type',
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': 6, 'mem_retry_increment': 4, 'num_retry': 3},
         args=(
             'SnpSift',
             'varType',
@@ -71,7 +71,7 @@ def create_titan_workflow(
 
     workflow.commandline(
         name='filter_het_snps',
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': 6, 'mem_retry_increment': 4, 'num_retry': 3},
         args=(
             'SnpSift',
             'filter',
