@@ -112,7 +112,10 @@ def merge_counts(in_files, out_file):
 
 def build_coverage_file(normal_wig, tumour_wig, gc_wig, mappability_wig, out_file, target_file=None):
 
-    script = pkg_resources.resource_filename('soil', 'scripts/build_titan_coverage.py')
+    script = pkg_resources.resource_filename(
+        'soil',
+        'wrappers/titan/scripts/build_titan_coverage.py'
+    )
 
     cmd = [
         'python',
@@ -177,7 +180,10 @@ def run_titan(
 
     os.makedirs(tmp_dir)
 
-    script = pkg_resources.resource_filename('soil', 'scripts/run_titan.R')
+    script = pkg_resources.resource_filename(
+        'soil',
+        'wrappers/titan/scripts/run_titan.R'
+    )
 
     cmd = [
         script,
