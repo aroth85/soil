@@ -4,10 +4,10 @@ import pypeliner
 import pypeliner.managed as mgd
 import yaml
 
-
 import soil.ref_data.paths
 import soil.utils.workflow
 import soil.wrappers.bwa.tasks
+import soil.wrappers.kallisto.tasks
 import soil.wrappers.samtools.tasks
 import soil.wrappers.star.tasks
 
@@ -37,7 +37,9 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
 
         cosmic_password = click.prompt('Please enter COSMIC password', hide_input=True)
 
-    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'samtools', 'star'])
+    sandbox = soil.utils.workflow.get_sandbox(
+        ['bwa', 'bcftools', 'kallisto', 'samtools', 'star']
+    )
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
@@ -139,6 +141,27 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
             mgd.TempInputFile('raw_ref_prot.fasta'),
             mgd.OutputFile(ref_data_paths.proteome_fasta_file)
         )
+    )
+
+    workflow.subworkflow(
+        name='download_ref_transcriptome',
+        func=create_download_decompress_concat_workflow,
+        args=(
+            mgd.TempInputObj('ref_transcriptome_fasta_urls'),
+            mgd.OutputFile(ref_data_paths.transcriptome_fasta_file),
+        )
+    )
+    
+    workflow.transform(
+        name='kallisto_index',
+        func=soil.wrappers.kallisto.tasks.build_index,
+        args=(
+            mgd.InputFile(ref_data_paths.transcriptome_fasta_file),
+            mgd.OutputFile(ref_data_paths.kallisto_index_file),
+        ),
+        kwargs={ 
+            'kmer_length': 31,
+        }
     )
 
     workflow.subworkflow(
