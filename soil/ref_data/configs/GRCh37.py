@@ -21,6 +21,11 @@ def get_config():
     ref_proteome_fasta_urls = [
         _get_url(gencode_url, 'gencode.v27lift37.pc_translations.fa.gz'),
     ]
+    
+    ref_transcriptome_fasta_urls = [
+        _get_url(gencode_url, 'gencode.v27lift37.transcripts.fa.gz'),
+        'http://tools.thermofisher.com/downloads/ERCC92.fa',
+    ]
 
     ref_gene_annotations_gtf_urls = [
         _get_url(gencode_url, 'gencode.v27lift37.annotation.gtf.gz'),

@@ -49,12 +49,22 @@ class SoilRefDataPaths(object):
         return os.path.join(self.base_dir, 'proteome.fa')
 
     @property
+    def transcriptome_fasta_file(self):
+        """ Path of reference transcriptome FASTA file.
+        """
+        return os.path.join(self.base_dir, 'transcriptome.fa')
+
+    @property
     def bwa_genome_fasta_file(self):
         """ Path of reference genome FASTA file with BWA index in same directory.
 
         This is a link to the reference as genome_fasta_file but will be in a separate directory with a BWA index.
         """
         return os.path.join(self.base_dir, 'bwa', 'genome.fa')
+    
+    @property
+    def kallisto_index_file(self):
+        return os.path.join(self.base_dir, 'kallisto', 'transcriptome.index')
 
     @property
     def star_genome_fasta_file(self):
