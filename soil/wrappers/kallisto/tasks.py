@@ -3,13 +3,19 @@ import pypeliner.commandline as cli
 import shutil
 
 
-def build_index(index_file, transcriptome_fasta_file, kmer_length=31):
+def build_index(in_file, out_file, kmer_length=31):
+    """ Build an index file for Kallisto
+    
+        :param in_file: Path to transcriptome fasta file
+        :param out_file: Path where Kallisto index file will be written 
+    """
+    
     cmd = [
         'kallisto',
         'index',
-        '-i', index_file,
+        '-i', out_file,
         '-k', kmer_length,
-        transcriptome_fasta_file,
+        in_file,
     ]
 
     cli.execute(*cmd)
