@@ -151,15 +151,16 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
             mgd.OutputFile(ref_data_paths.transcriptome_fasta_file),
         )
     )
-    
+
     workflow.transform(
         name='kallisto_index',
+        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
         func=soil.wrappers.kallisto.tasks.build_index,
         args=(
             mgd.InputFile(ref_data_paths.transcriptome_fasta_file),
             mgd.OutputFile(ref_data_paths.kallisto_index_file),
         ),
-        kwargs={ 
+        kwargs={
             'kmer_length': 31,
         }
     )
