@@ -25,6 +25,8 @@ packages = {
     # H
     'hmmcopy': Package('bioconductor-hmmcopy', '1.20.0'),
     'hmmcopy_utils': Package('hmmcopy', '0.1.1'),
+    # K
+    'kallisto': Package('kallisto', '0.43.1'),
     # M
     'mixcr': Package('mixcr', '2.1.3'),
     'msgf_plus': Package('msgf_plus', '2017.07.21'),
@@ -38,10 +40,12 @@ packages = {
     # S
     'sambamba': Package('sambamba', '0.6.6'),
     'samtools': Package('samtools', '1.6'),
+    'snpeff': Package('snpeff', '4.3.1r'),
     'snpsift': Package('snpsift', '4.3.1r'),
     'star': Package('star', '2.5.3a'),
     'strelka': Package('strelka', '2.8.4'),
     'stringtie': Package('stringtie', '1.3.3'),
+    'subread': Package('subread', '1.6.0'),
     # T
     'titan': Package('bioconductor-titancna', '1.16.0'),
     'transdecoder': Package('transdecoder', '3.0.1'),
