@@ -5,11 +5,11 @@ import shutil
 
 def build_index(in_file, out_file, kmer_length=31):
     """ Build an index file for Kallisto
-    
+
         :param in_file: Path to transcriptome fasta file
-        :param out_file: Path where Kallisto index file will be written 
+        :param out_file: Path where Kallisto index file will be written
     """
-    
+
     cmd = [
         'kallisto',
         'index',
@@ -44,4 +44,3 @@ def quantify(
     tmp_out_file = os.path.join(tmp_dir, 'abundance.tsv')
 
     shutil.move(tmp_out_file, out_file)
-
