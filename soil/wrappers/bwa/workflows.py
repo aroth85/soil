@@ -87,7 +87,7 @@ def create_align_workflow(
 
     workflow.transform(
         name='bwa_mem_paired_end',
-        ctx={'mem': 8, 'mem_retry_increment': 8, 'num_retry': 3, 'threads': align_threads},
+        ctx={'mem': 16, 'mem_retry_increment': 8, 'num_retry': 3, 'threads': align_threads},
         func=soil.wrappers.bwa.tasks.mem_paired_end,
         args=(
             mgd.InputFile(fastq_file_1),
