@@ -25,7 +25,7 @@ def create_basic_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             '-t', threads,
             mgd.InputFile(fastq_file_1),
             mgd.InputFile(fastq_file_2),
-            mgd.TempOutputFile('alignments.vdjca'),
+            mgd.TempOutputFile('alignments.vdjca')
         )
     )
 
@@ -38,7 +38,7 @@ def create_basic_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             '-f',
             '-t', 1,
             mgd.TempInputFile('alignments.vdjca'),
-            mgd.TempOutputFile('clones.clns'),
+            mgd.TempOutputFile('clones.clns')
         )
     )
 
@@ -50,7 +50,17 @@ def create_basic_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             'exportClones',
             '-f',
             mgd.TempInputFile('clones.clns'),
-            mgd.OutputFile(out_file),
+            mgd.TempOutputFile('results.tsv')
+        )
+    )
+
+    workflow.commandline(
+        name='compress',
+        args=(
+            'gzip', '-c',
+            mgd.TempInputFile('results.tsv'),
+            '>',
+            mgd.OutputFile(out_file)
         )
     )
 
@@ -76,7 +86,7 @@ def create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             '-t', threads,
             mgd.InputFile(fastq_file_1),
             mgd.InputFile(fastq_file_2),
-            mgd.TempOutputFile('alignments.vdjca'),
+            mgd.TempOutputFile('alignments.vdjca')
         )
     )
 
@@ -88,7 +98,7 @@ def create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             'assemblePartial',
             '-f',
             mgd.TempInputFile('alignments.vdjca'),
-            mgd.TempOutputFile('alignments_rescued_1.vdjca'),
+            mgd.TempOutputFile('alignments_rescued_1.vdjca')
         )
     )
 
@@ -100,7 +110,7 @@ def create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             'assemblePartial',
             '-f',
             mgd.TempInputFile('alignments_rescued_1.vdjca'),
-            mgd.TempOutputFile('alignments_rescued_2.vdjca'),
+            mgd.TempOutputFile('alignments_rescued_2.vdjca')
         )
     )
 
@@ -112,7 +122,7 @@ def create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             'extendAlignments',
             '-f',
             mgd.TempInputFile('alignments_rescued_2.vdjca'),
-            mgd.TempOutputFile('alignments_rescued_2_extended.vdjca'),
+            mgd.TempOutputFile('alignments_rescued_2_extended.vdjca')
         )
     )
 
@@ -125,7 +135,7 @@ def create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             '-f',
             '-t', threads,
             mgd.TempInputFile('alignments_rescued_2_extended.vdjca'),
-            mgd.TempOutputFile('clones.clns'),
+            mgd.TempOutputFile('clones.clns')
         )
     )
 
@@ -137,7 +147,17 @@ def create_rnaseq_workflow(fastq_file_1, fastq_file_2, out_file, threads=1):
             'exportClones',
             '-f',
             mgd.TempInputFile('clones.clns'),
-            mgd.OutputFile(out_file),
+            mgd.TempOutputFile('results.tsv')
+        )
+    )
+
+    workflow.commandline(
+        name='compress',
+        args=(
+            'gzip', '-c',
+            mgd.TempInputFile('results.tsv'),
+            '>',
+            mgd.OutputFile(out_file)
         )
     )
 
