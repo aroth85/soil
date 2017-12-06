@@ -22,7 +22,7 @@ def build_gene_counts_file(in_files, out_file):
 
         df = df.set_index('gene_id')
 
-        df.columns = sample
+        df.columns = (sample, )
 
         out_df.append(df)
 
