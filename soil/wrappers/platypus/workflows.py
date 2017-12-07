@@ -11,7 +11,11 @@ low_mem_ctx = {'mem': 2, 'mem_retry_factor': 2, 'num_retry': 3}
 med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
 
 
-def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chromosomes=None, split_size=int(1e7)):
+def create_single_sample_workflow(
+        bam_file,
+        ref_genome_fasta_file,
+        out_file, chromosomes='default',
+        split_size=int(1e7)):
 
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools', 'platypus'])
 
@@ -69,7 +73,12 @@ def create_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chr
     return workflow
 
 
-def create_rna_single_sample_workflow(bam_file, ref_genome_fasta_file, out_file, chromosomes=None, split_size=int(1e7)):
+def create_rna_single_sample_workflow(
+        bam_file,
+        ref_genome_fasta_file,
+        out_file,
+        chromosomes='default',
+        split_size=int(1e7)):
 
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools', 'opossum', 'platypus'])
 
