@@ -1,4 +1,5 @@
 import os
+import yaml
 
 
 class SoilRefDataPaths(object):
@@ -15,6 +16,13 @@ class SoilRefDataPaths(object):
         """ Path of file with information about where the reference data came from.
         """
         return os.path.join(self.base_dir, 'config.yaml')
+
+    @property
+    def config(self):
+        with open(self.config_file, 'r') as fh:
+            config = yaml.load(fh)
+
+        return config
 
     @property
     def cosmic_vcf_file(self):
@@ -61,10 +69,18 @@ class SoilRefDataPaths(object):
         This is a link to the reference as genome_fasta_file but will be in a separate directory with a BWA index.
         """
         return os.path.join(self.base_dir, 'bwa', 'genome.fa')
-    
+
     @property
     def kallisto_index_file(self):
         return os.path.join(self.base_dir, 'kallisto', 'transcriptome.index')
+
+    @property
+    def snpeff_data_dir(self):
+        return os.path.join(self.base_dir, 'snpeff', 'data')
+
+    @property
+    def snpeff_db(self):
+        return self.config['snpeff']['db']
 
     @property
     def star_genome_fasta_file(self):

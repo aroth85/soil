@@ -1,8 +1,10 @@
 import Bio.Seq
 import Bio.SeqIO
+import os
 import pypeliner.commandline as cli
 import pysam
 import pysftp
+import shutil
 
 
 def _guess_file_type(filename):
@@ -79,3 +81,18 @@ def lex_sort_fasta(in_file, out_file):
 
     for chrom in raw_ref.references:
         assert raw_ref.fetch(chrom) == lex_ref.fetch(chrom)
+
+
+def unzip_file(in_file, out_sentinel, tmp_dir):
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+
+    os.makedirs(tmp_dir)
+
+    cmd = ['unzip', in_file, '-d', tmp_dir]
+
+    cli.execute(*cmd)
+
+    shutil.move(tmp_dir, os.path.dirname(out_sentinel))
+
+    open(out_sentinel, 'w').close()

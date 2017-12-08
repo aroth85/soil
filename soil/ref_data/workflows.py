@@ -14,15 +14,7 @@ import soil.wrappers.star.tasks
 import tasks
 
 
-def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=1):
-
-    if ref_genome_version == 'GRCh37':
-        import soil.ref_data.configs.GRCh37
-
-        config = soil.ref_data.configs.GRCh37.get_config()
-
-    else:
-        raise Exception('{} is not a supported reference'.format(ref_genome_version))
+def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
 
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
@@ -61,7 +53,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=create_download_decompress_concat_workflow,
         args=(
             mgd.TempInputObj('ref_genome_fasta_urls'),
-            mgd.TempOutputFile('raw_ref.fasta'),
+            mgd.TempOutputFile('raw_ref.fasta')
         )
     )
 
@@ -70,7 +62,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=tasks.lex_sort_fasta,
         args=(
             mgd.TempInputFile('raw_ref.fasta'),
-            mgd.OutputFile(ref_data_paths.genome_fasta_file),
+            mgd.OutputFile(ref_data_paths.genome_fasta_file)
         )
     )
 
@@ -89,7 +81,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=soil.wrappers.bwa.tasks.index,
         args=(
             mgd.InputFile(ref_data_paths.bwa_genome_fasta_file),
-            mgd.OutputFile(ref_data_paths.bwa_genome_fasta_file + '.bwa_index.done'),
+            mgd.OutputFile(ref_data_paths.bwa_genome_fasta_file + '.bwa_index.done')
         )
     )
 
@@ -109,10 +101,10 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         args=(
             mgd.InputFile(ref_data_paths.star_genome_fasta_file),
             mgd.InputFile(ref_data_paths.gene_annotations_gtf_file),
-            mgd.OutputFile(ref_data_paths.star_genome_fasta_file + '.star_index.done'),
+            mgd.OutputFile(ref_data_paths.star_genome_fasta_file + '.star_index.done')
         ),
         kwargs={
-            'threads': threads,
+            'threads': threads
         }
     )
 
@@ -121,7 +113,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=soil.wrappers.samtools.tasks.index_fasta,
         args=(
             mgd.InputFile(ref_data_paths.genome_fasta_file),
-            mgd.OutputFile(ref_data_paths.genome_fasta_file + '.fai'),
+            mgd.OutputFile(ref_data_paths.genome_fasta_file + '.fai')
         )
     )
 
@@ -148,7 +140,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=create_download_decompress_concat_workflow,
         args=(
             mgd.TempInputObj('ref_transcriptome_fasta_urls'),
-            mgd.OutputFile(ref_data_paths.transcriptome_fasta_file),
+            mgd.OutputFile(ref_data_paths.transcriptome_fasta_file)
         )
     )
 
@@ -158,10 +150,10 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=soil.wrappers.kallisto.tasks.build_index,
         args=(
             mgd.InputFile(ref_data_paths.transcriptome_fasta_file),
-            mgd.OutputFile(ref_data_paths.kallisto_index_file),
+            mgd.OutputFile(ref_data_paths.kallisto_index_file)
         ),
         kwargs={
-            'kmer_length': 31,
+            'kmer_length': 31
         }
     )
 
@@ -179,7 +171,7 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
         func=soil.wrappers.samtools.tasks.index_vcf,
         args=(
             mgd.InputFile(ref_data_paths.dbsnp_vcf_file),
-            mgd.OutputFile(ref_data_paths.dbsnp_vcf_file + '.tbi'),
+            mgd.OutputFile(ref_data_paths.dbsnp_vcf_file + '.tbi')
         )
     )
 
@@ -188,12 +180,33 @@ def create_ref_data_workflow(ref_genome_version, out_dir, cosmic=False, threads=
             name='download_cosmic',
             func=create_download_cosmic_workflow,
             args=(
-                ref_genome_version,
+                config['cosmic']['ref_genome_version'],
                 mgd.OutputFile(ref_data_paths.cosmic_vcf_file),
                 cosmic_user,
-                cosmic_password,
+                cosmic_password
             )
         )
+
+    workflow.setobj(mgd.TempOutputObj('snpeff_url'), value=config['snpeff']['url'])
+
+    workflow.transform(
+        name='download_snpeff_db',
+        func=tasks.download,
+        args=(
+            mgd.TempInputObj('snpeff_url'),
+            mgd.TempOutputFile('snpeff.zip')
+        )
+    )
+
+    workflow.transform(
+        name='unzip_snpeff',
+        func=tasks.unzip_file,
+        args=(
+            mgd.TempInputFile('snpeff.zip'),
+            mgd.OutputFile(os.path.join(os.path.dirname(ref_data_paths.snpeff_data_dir), 'done.txt')),
+            mgd.TempSpace('snpeff_tmp')
+        )
+    )
 
     return workflow
 

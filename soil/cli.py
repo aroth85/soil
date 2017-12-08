@@ -19,6 +19,7 @@ import soil.wrappers.transdecoder.cli
 def pipeline():
     pass
 
+
 pipeline.add_command(soil.pipelines.rna_assembly.cli.rna_assembly)
 
 
@@ -28,13 +29,16 @@ def ref():
     """
     pass
 
+
 ref.add_command(soil.ref_data.cli.create)
 ref.add_command(soil.ref_data.cli.mappability)
+ref.add_command(soil.ref_data.cli.show_config)
 
 
 @click.group()
 def run():
     pass
+
 
 run.add_command(soil.wrappers.bwa.cli.bwa)
 run.add_command(soil.wrappers.mixcr.cli.mixcr)
