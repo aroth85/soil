@@ -93,8 +93,11 @@ def unzip_file(in_file, out_sentinel, tmp_dir):
 
     cli.execute(*cmd)
 
-    os.makedirs(os.path.dirname(out_sentinel))
+    out_dir = os.path.dirname(out_sentinel)
 
-    shutil.move(tmp_dir, os.path.dirname(out_sentinel))
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    shutil.move(tmp_dir, out_dir)
 
     open(out_sentinel, 'w').close()
