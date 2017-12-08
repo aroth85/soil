@@ -214,6 +214,9 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
 def create_download_decompress_workflow(url, local_path):
     workflow = pypeliner.workflow.Workflow()
 
+    if os.path.exists(local_path):
+        workflow.commandline(name='sleep', args=('sleep', 1))
+
     workflow.setobj(mgd.TempOutputObj('url'), value=url)
 
     workflow.transform(
