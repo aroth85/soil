@@ -157,9 +157,9 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         }
     )
 
-    workflow.subworkflow(
+    workflow.transform(
         name='download_dbsnp',
-        func=create_download_workflow,
+        func=tasks.download,
         args=(
             mgd.TempInputObj('dbsnp_url'),
             mgd.OutputFile(ref_data_paths.dbsnp_vcf_file)
@@ -206,30 +206,6 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
             mgd.OutputFile(os.path.join(os.path.dirname(ref_data_paths.snpeff_data_dir), 'done.txt')),
             mgd.TempSpace('snpeff_tmp')
         )
-    )
-
-    return workflow
-
-
-def create_download_workflow(url, local_path):
-    """ Download a file from a url.
-
-    Encapsulate the simple task in a worklfow to avoid pypeliner rerunning.
-
-    :param url: URL of file to download.
-    :param local_path: Path where downloaded file will be placed.
-    """
-    workflow = pypeliner.workflow.Workflow()
-
-    workflow.setobj(mgd.TempOutputObj('url'), value=url)
-
-    workflow.transform(
-        name='download',
-        func=tasks.download,
-        args=(
-            mgd.TempInputObj('url'),
-            mgd.OutputFile(local_path),
-        ),
     )
 
     return workflow
