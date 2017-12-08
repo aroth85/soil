@@ -18,8 +18,9 @@ def search(in_fasta_file, in_mzml_file, out_file, split_size):
     )
 
 
-@click.group()
+@click.group(name='msgf-plus')
 def msgf_plus():
     pass
+
 
 msgf_plus.add_command(search)
