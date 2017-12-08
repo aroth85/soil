@@ -95,7 +95,14 @@ def unzip_file(in_file, out_sentinel, tmp_dir):
 
     out_dir = os.path.dirname(out_sentinel)
 
+    if os.path.exists(out_dir):
+        shutil.rmtree(out_dir)
+
+    shutil.copytree(tmp_dir, out_dir)
+
     for x in os.listdir(tmp_dir):
         shutil.move(x, out_dir)
 
     open(out_sentinel, 'w').close()
+
+    shutil.rmtree(tmp_dir)
