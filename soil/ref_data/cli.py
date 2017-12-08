@@ -44,7 +44,7 @@ def mappability(ref_genome_fasta_file, out_file, split_size, threads):
     )
 
 
-@click.command()
+@click.command(name='show-config')
 @click.option('-r', '--ref-genome-version', default='GRCh37', type=click.Choice(['GRCh37', ]))
 def show_config(ref_genome_version):
     """ Show the YAML config for a reference version.
