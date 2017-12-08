@@ -240,9 +240,6 @@ def create_download_decompress_workflow(url, local_path):
 def create_download_decompress_concat_workflow(urls, out_file):
     workflow = pypeliner.workflow.Workflow()
 
-    if os.path.exists(out_file):
-        return workflow
-
     local_files = []
 
     for i, url in enumerate(urls):
