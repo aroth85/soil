@@ -42,38 +42,6 @@ def get_bam_regions(bam_file, split_size, chromosomes='default'):
     return get_regions(chromosome_lengths, split_size)
 
 
-def get_autosomal_chromosomes(bam_file):
-    bam = pysam.Samfile(bam_file, 'rb')
-
-    defaults = [str(i) for i in range(1, 23)]
-
-    chromosomes = []
-
-    for chrom in bam.references:
-        raw_chrom = chrom.replace('chr', '')
-
-        if raw_chrom in defaults:
-            chromosomes.append(chrom)
-
-    return chromosomes
-
-
-def get_default_chromosomes(bam_file):
-    bam = pysam.Samfile(bam_file, 'rb')
-
-    defaults = [str(i) for i in range(1, 23)] + ['X', 'Y', 'M', 'MT']
-
-    chromosomes = []
-
-    for chrom in bam.references:
-        raw_chrom = chrom.replace('chr', '')
-
-        if raw_chrom in defaults:
-            chromosomes.append(chrom)
-
-    return chromosomes
-
-
 def load_bam_chromosome_lengths(file_name, chromosomes='default'):
     chromosome_lengths = OrderedDict()
 
@@ -82,11 +50,23 @@ def load_bam_chromosome_lengths(file_name, chromosomes='default'):
     if chromosomes == 'all':
         chromosomes = bam.references
 
-    elif chromosomes == 'default':
-        chromosomes = get_default_chromosomes(file_name)
+    elif isinstance(chromosomes, str):
+        if chromosomes == 'default':
+            raw_chromosomes = [str(i) for i in range(1, 23)] + ['X', 'Y', 'M', 'MT']
 
-    else:
-        chromosomes = chromosomes
+        elif chromosomes == 'autosomes':
+            raw_chromosomes = [str(i) for i in range(1, 23)]
+
+        elif chromosomes == 'nuclear':
+            raw_chromosomes = [str(i) for i in range(1, 23)] + ['X', 'Y']
+
+        chromosomes = []
+
+        for chrom in bam.references:
+            raw_chrom = chrom.replace('chr', '')
+
+            if raw_chrom in raw_chromosomes:
+                chromosomes.append(chrom)
 
     for chrom, length in zip(bam.references, bam.lengths):
         if chrom not in chromosomes:
