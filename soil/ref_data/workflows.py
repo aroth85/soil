@@ -95,7 +95,7 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         kwargs={
             'k': 100,
             'max_map_qual': 60,
-            'threads': 4
+            'threads': threads
         }
 
     )
