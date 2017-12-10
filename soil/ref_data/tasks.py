@@ -6,6 +6,16 @@ import pysam
 import pysftp
 import shutil
 
+import soil.ref_data.mappability.workflows
+
+
+def mappability_wrapper(bwa_sentinel_file, out_file, **kwargs):
+    """ Simple wrapper so task can depend on sentinel and ensure index is built
+    """
+    return soil.ref_data.mappability.workflows.create_mappability_workflow(
+        bwa_sentinel_file.replace('.bwa_index.done', ''), out_file, **kwargs
+    )
+
 
 def _guess_file_type(filename):
     magic_dict = {

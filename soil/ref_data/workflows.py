@@ -85,6 +85,20 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         )
     )
 
+    workflow.subworkflow(
+        name='build_bwa_mappability_file',
+        func=tasks.mappability_wrapper,
+        args=(
+            mgd.InputFile(ref_data_paths.bwa_genome_fasta_file + '.bwa_index.done'),
+            mgd.OutputFile(ref_data_paths.genome_bwa_mappability_wig_file)
+        ),
+        kwargs={
+            'k': 100,
+            'max_map_qual': 60,
+            'threads': 4
+        }
+
+    )
     workflow.commandline(
         name='link_star_ref',
         args=(
