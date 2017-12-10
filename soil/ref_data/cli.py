@@ -1,8 +1,8 @@
 import click
-import pkg_resources
 import yaml
 
 import soil.ref_data.mappability.workflows
+import soil.ref_data.utils
 import soil.ref_data.workflows
 import soil.utils.cli
 
@@ -17,7 +17,7 @@ def create(config_file, ref_genome_version, out_dir, cosmic, threads):
     """ Download and index reference data.
     """
     if config_file is None:
-        config_file = _load_config_file(ref_genome_version)
+        config_file = soil.ref_data.utils.load_config_file(ref_genome_version)
 
     with open(config_file, 'r') as fh:
         config = yaml.load(fh)
@@ -49,14 +49,7 @@ def mappability(ref_genome_fasta_file, out_file, split_size, threads):
 def show_config(ref_genome_version):
     """ Show the YAML config for a reference version.
     """
-    config_file = _load_config_file(ref_genome_version)
+    config_file = soil.ref_data.utils.load_config_file(ref_genome_version)
 
     with open(config_file, 'r') as fh:
         print(fh.read())
-
-
-def _load_config_file(ref_genome_version):
-    return pkg_resources.resource_filename(
-        'soil',
-        'ref_data/configs/{}.yaml'.format(ref_genome_version)
-    )
