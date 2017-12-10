@@ -30,7 +30,7 @@ class SoilRefDataPaths(object):
 
         This file includes the coding and non-coding variants.
         """
-        return os.path.join(self.base_dir, 'dbsnp.vcf.gz')
+        return os.path.join(self.base_dir, 'cosmic.vcf.gz')
 
     @property
     def dbsnp_vcf_file(self):
