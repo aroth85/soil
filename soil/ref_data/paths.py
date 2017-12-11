@@ -54,7 +54,7 @@ class SoilRefDataPaths(object):
     def genome_bwa_mappability_wig_file(self):
         """ Path to file with average BWA mem mappability of bins
         """
-        return os.path.join(self.base_dir, 'genome_bwa_mappability.wig')
+        return os.path.join(self.base_dir, 'genome_bwa_mappability.bw')
 
     @property
     def proteome_fasta_file(self):
