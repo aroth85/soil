@@ -21,7 +21,7 @@ def create_titan_workflow(
 
     sandbox.packages.extend(['pandas', 'rpy2'])
 
-    chromosomes = soil.utils.genome.get_autosomal_chromosomes(normal_bam_file)
+    chromosomes = soil.utils.genome.load_bam_chromosome_lengths(normal_bam_file, 'autosomes')
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
