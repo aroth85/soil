@@ -1,0 +1,22 @@
+{% set version = "2.3.5" %}
+
+package:
+  name: eagle-phase
+  version: "{{ version }}"
+
+source:
+  fn: Eagle_v{{ version }}.tar.gz
+  url: "https://data.broadinstitute.org/alkesgroup/Eagle/downloads/Eagle_v{{ version }}.tar.gz"
+  sha256: "503a2bd0c395efeb9a4efac7eee50e659cedc45db0b79f6d8248f37a15a39189"
+
+build:
+  number: 0
+
+test:
+  commands:
+    - "eagle -h"
+
+about:
+  home: "https://data.broadinstitute.org/alkesgroup/Eagle"
+  license: GPLv3
+  summary: "The Eagle software estimates haplotype phase either within a genotyped cohort or using a phased reference panel"
