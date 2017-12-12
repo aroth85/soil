@@ -1,0 +1,16 @@
+package:
+  name: opossum
+  version: "0.2.0de259b45a35cd7d4c01dbb40d48d16c9118d76c4"
+source:
+  git_rev: de259b45a35cd7d4c01dbb40d48d16c9118d76c4
+  git_url: https://github.com/BSGOxford/Opossum.git
+requirements:
+  run:
+    - python
+    - pysam >=0.10.0
+build:
+  number: 0
+about:
+  home: https://github.com/BSGOxford/Opossum
+  license:  GPLv3
+  license_file: LICENSE
