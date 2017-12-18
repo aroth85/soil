@@ -5,7 +5,7 @@ import pypeliner.managed as mgd
 import yaml
 
 import soil.ref_data.paths
-import soil.ref_data.ref_haplotype_panel.workflows
+import soil.ref_data.haplotype.workflows
 import soil.utils.workflow
 import soil.wrappers.bwa.tasks
 import soil.wrappers.kallisto.tasks
@@ -234,7 +234,7 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
 
     workflow.subworkflow(
         name='ref_haplotype_panel',
-        func=soil.ref_data.ref_haplotype_panel.workflows.create_eagle_ref_data_workflow,
+        func=soil.ref_data.haplotype.workflows.create_eagle_ref_data_workflow,
         args=(
             mgd.TempInputObj('ref_haplotype_vcf_template_url'),
             mgd.OutputFile(ref_data_paths.haplotypes_vcf)
