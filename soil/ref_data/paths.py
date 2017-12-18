@@ -45,6 +45,12 @@ class SoilRefDataPaths(object):
         return os.path.join(self.base_dir, 'gene_annotations.gtf')
 
     @property
+    def genetic_map_file(self):
+        """ Path to genetic map file for EAGLE phasing software.
+        """
+        return os.path.join(self.base_dir, 'genetic_map.txt.gz')
+
+    @property
     def genome_fasta_file(self):
         """ Path of reference genome FASTA file.
         """
@@ -55,6 +61,12 @@ class SoilRefDataPaths(object):
         """ Path to file with average BWA mem mappability of bins
         """
         return os.path.join(self.base_dir, 'genome_bwa_mappability.bw')
+
+    @property
+    def haplotypes_bcf(self):
+        """ Path to VCF file with phased variants from 1000 genomes.
+        """
+        return os.path.join(self.base_dir, 'haplotypes.bcf')
 
     @property
     def proteome_fasta_file(self):
