@@ -14,6 +14,11 @@ def runner(func):
 
         resume = kwargs.pop('resume')
 
+        submit = kwargs.pop('submit')
+
+        if submit == 'qsub':
+            submit = 'asyncqsub'
+
         working_dir = kwargs.pop('working_dir')
 
         if os.path.exists(working_dir) and (not resume):
@@ -25,7 +30,7 @@ def runner(func):
         config = {
             'maxjobs': kwargs.pop('max_jobs'),
             'nativespec': kwargs.pop('native_spec'),
-            'submit': kwargs.pop('submit'),
+            'submit': submit,
             'tmpdir': working_dir,
         }
 
@@ -77,7 +82,7 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '-sb', '--submit', default='local', type=click.Choice(['drmaa', 'local']),
+        '-sb', '--submit', default='local', type=click.Choice(['drmaa', 'local', 'qsub']),
         help='''Job submission strategy. Use local to run on host machine or drmaa to submit to a cluster.'''
     )(func)
 
