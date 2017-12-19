@@ -10,6 +10,8 @@ def runner(func):
     """
     @functools.wraps(func)
     def func_wrapper(*args, **kwargs):
+        save_working_dir = kwargs.pop('save_working_dir')
+
         resume = kwargs.pop('resume')
 
         working_dir = kwargs.pop('working_dir')
@@ -33,7 +35,8 @@ def runner(func):
 
         pyp.run(workflow)
 
-        shutil.rmtree(working_dir)
+        if not save_working_dir:
+            shutil.rmtree(working_dir)
 
     name = func.__name__.replace('_', '-')
 
@@ -84,6 +87,11 @@ def _add_runner_cli_args(func):
             'Set this flag if an analysis was interrupted and you would like to resume.',
             'Only has an effect if the working directory exists.'
         ])
+    )(func)
+
+    click.option(
+        '--save-working-dir', default=False, is_flag=True,
+        help='''If set working directory will not be removed upon successful completion.'''
     )(func)
 
 
