@@ -22,7 +22,7 @@ def compress_vcf(in_file, out_file, index_file=None):
         index_vcf(out_file, index_file=index_file)
 
 
-def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
+def concatenate_vcf(in_files, out_file, allow_overlap=False, bcf_output=False, index_file=None):
     """ Concatenate VCF files.
 
     :param in_files: dict with values being files to be concatenated. Files will be concatenated based on sorted order
@@ -31,15 +31,21 @@ def concatenate_vcf(in_files, out_file, allow_overlap=False, index_file=None):
     :param allow_overlap: bool indicating whether there maybe overlapping regions in the files.
     :param index_file: path where tabix file will be written.
     """
+    if bcf_output:
+        output_format_str = 'b'
+
+    else:
+        output_format_str = 'z'
+
     in_files = soil.utils.workflow.flatten_input(in_files)
 
     tmp_index_files = []
 
     if allow_overlap:
-        cmd = ['bcftools', 'concat', '-a', '-O', 'z', '-o', out_file]
+        cmd = ['bcftools', 'concat', '-a', '-O', output_format_str, '-o', out_file]
 
     else:
-        cmd = ['bcftools', 'concat', '-O', 'z', '-o', out_file]
+        cmd = ['bcftools', 'concat', '-O', output_format_str, '-o', out_file]
 
     for file_name in in_files:
         if file_name.endswith('.vcf'):

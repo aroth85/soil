@@ -63,7 +63,10 @@ def create_eagle_ref_data_workflow(vcf_url_template, out_file):
         args=(
             mgd.TempInputFile('renamed.bcf', 'chrom'),
             mgd.OutputFile(out_file)
-        )
+        ),
+        kwargs={
+            'bcf_output': True
+        }
     )
 
     workflow.commandline(
