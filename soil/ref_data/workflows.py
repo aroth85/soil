@@ -15,8 +15,45 @@ import soil.wrappers.star.tasks
 import tasks
 
 
-def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
+def create_ref_data_workflow(config, out_dir, cosmic=False, local_download=False, threads=1):
+    """ Download and index reference data.
+    """
+    workflow = pypeliner.workflow.Workflow()
 
+    workflow.subworkflow(
+        name='download',
+        func=crete_download_ref_data_workflow,
+        args=(
+            config,
+            out_dir
+        ),
+        kwargs={
+            'cosmic': cosmic,
+            'local_download': local_download
+        }
+    )
+
+    workflow.subworkflow(
+        name='index',
+        func=create_index_ref_data_workflow,
+        args=(
+            config,
+            out_dir
+        ),
+        kwargs={
+            'threads': threads
+        }
+    )
+
+    return workflow
+
+
+def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_download=False):
+    """ Download reference files.
+
+    This workflow mainly retrieves files from the internet. There are some light to moderately heavy computational tasks
+    as well.
+    """
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -30,9 +67,7 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
 
         cosmic_password = click.prompt('Please enter COSMIC password', hide_input=True)
 
-    sandbox = soil.utils.workflow.get_sandbox(
-        ['bwa', 'bcftools', 'kallisto', 'samtools', 'star']
-    )
+    sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
@@ -40,22 +75,30 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         if key.endswith('url') or key.endswith('urls'):
             workflow.setobj(obj=mgd.TempOutputObj(key), value=config[key])
 
+    workflow.setobj(mgd.TempOutputObj('snpeff_url'), value=config['snpeff']['url'])
+
     workflow.subworkflow(
         name='download_ref_gene_annotations',
-        func=create_download_decompress_concat_workflow,
+        func=_create_download_decompress_concat_workflow,
         args=(
             mgd.TempInputObj('ref_gene_annotations_gtf_urls'),
             mgd.OutputFile(ref_data_paths.gene_annotations_gtf_file)
-        )
+        ),
+        kwargs={
+            'local_download': local_download
+        }
     )
 
     workflow.subworkflow(
         name='download_ref_genome',
-        func=create_download_decompress_concat_workflow,
+        func=_create_download_decompress_concat_workflow,
         args=(
             mgd.TempInputObj('ref_genome_fasta_urls'),
             mgd.TempOutputFile('raw_ref.fasta')
-        )
+        ),
+        kwargs={
+            'local_download': local_download
+        }
     )
 
     workflow.transform(
@@ -66,6 +109,123 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
             mgd.OutputFile(ref_data_paths.genome_fasta_file)
         )
     )
+
+    workflow.subworkflow(
+        name='download_ref_proteome',
+        func=_create_download_decompress_concat_workflow,
+        args=(
+            mgd.TempInputObj('ref_proteome_fasta_urls'),
+            mgd.TempOutputFile('raw_ref_prot.fasta')
+        ),
+        kwargs={
+            'local_download': local_download
+        }
+    )
+
+    workflow.transform(
+        name='filter_bad_proteins',
+        func=tasks.filter_bad_proiteins,
+        args=(
+            mgd.TempInputFile('raw_ref_prot.fasta'),
+            mgd.OutputFile(ref_data_paths.proteome_fasta_file)
+        )
+    )
+
+    workflow.subworkflow(
+        name='download_ref_transcriptome',
+        func=_create_download_decompress_concat_workflow,
+        args=(
+            mgd.TempInputObj('ref_transcriptome_fasta_urls'),
+            mgd.OutputFile(ref_data_paths.transcriptome_fasta_file)
+        ),
+        kwargs={
+            'local_download': local_download
+        }
+    )
+
+    workflow.transform(
+        name='download_dbsnp',
+        func=tasks.download,
+        args=(
+            mgd.TempInputObj('dbsnp_url'),
+            mgd.OutputFile(ref_data_paths.dbsnp_vcf_file)
+        ),
+        kwargs={
+            'local_download': local_download
+        }
+    )
+
+    if cosmic:
+        workflow.subworkflow(
+            name='download_cosmic',
+            func=_create_download_cosmic_workflow,
+            args=(
+                config['cosmic']['ref_genome_version'],
+                mgd.OutputFile(ref_data_paths.cosmic_vcf_file),
+                cosmic_user,
+                cosmic_password
+            ),
+            kwargs={
+                'local_download': local_download
+            }
+        )
+
+    workflow.transform(
+        name='download_snpeff_db',
+        ctx={'local': local_download},
+        func=tasks.download,
+        args=(
+            mgd.TempInputObj('snpeff_url'),
+            mgd.TempOutputFile('snpeff.zip')
+        )
+    )
+
+    workflow.transform(
+        name='unzip_snpeff',
+        func=tasks.unzip_file,
+        args=(
+            mgd.TempInputFile('snpeff.zip'),
+            mgd.OutputFile(os.path.join(os.path.dirname(ref_data_paths.snpeff_data_dir), 'done.txt')),
+            mgd.TempSpace('snpeff_tmp')
+        )
+    )
+
+    workflow.transform(
+        name='download_genetic_map',
+        ctx={'local': local_download},
+        func=tasks.download,
+        args=(
+            mgd.TempInputObj('genetic_map_txt_url'),
+            mgd.OutputFile(ref_data_paths.genetic_map_file)
+        )
+    )
+
+    workflow.subworkflow(
+        name='ref_haplotype_panel',
+        func=soil.ref_data.haplotype.workflows.create_eagle_ref_data_workflow,
+        args=(
+            mgd.TempInputObj('haplotype_vcf_template_url'),
+            mgd.OutputFile(ref_data_paths.haplotypes_bcf)
+        ),
+        kwargs={
+            'local_download': local_download
+        }
+    )
+
+    return workflow
+
+
+def create_index_ref_data_workflow(out_dir, threads=1):
+    """ Create index files for references.
+
+    This workflow is extremely compute and memory heavy. It should be run on a cluster with large memory nodes
+    available.
+    """
+    ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(out_dir)
+
+    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'kallisto', 'samtools', 'star'])
+
+    workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
     workflow.commandline(
         name='link_bwa_ref',
@@ -100,6 +260,7 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         }
 
     )
+
     workflow.commandline(
         name='link_star_ref',
         args=(
@@ -132,33 +293,6 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         )
     )
 
-    workflow.subworkflow(
-        name='download_ref_proteome',
-        func=create_download_decompress_concat_workflow,
-        args=(
-            mgd.TempInputObj('ref_proteome_fasta_urls'),
-            mgd.TempOutputFile('raw_ref_prot.fasta')
-        )
-    )
-
-    workflow.transform(
-        name='filter_bad_proteins',
-        func=tasks.filter_bad_proiteins,
-        args=(
-            mgd.TempInputFile('raw_ref_prot.fasta'),
-            mgd.OutputFile(ref_data_paths.proteome_fasta_file)
-        )
-    )
-
-    workflow.subworkflow(
-        name='download_ref_transcriptome',
-        func=create_download_decompress_concat_workflow,
-        args=(
-            mgd.TempInputObj('ref_transcriptome_fasta_urls'),
-            mgd.OutputFile(ref_data_paths.transcriptome_fasta_file)
-        )
-    )
-
     workflow.transform(
         name='kallisto_index',
         ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
@@ -173,11 +307,11 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
     )
 
     workflow.transform(
-        name='download_dbsnp',
-        func=tasks.download,
+        name='index_cosmic',
+        func=soil.wrappers.samtools.tasks.index_vcf,
         args=(
-            mgd.TempInputObj('dbsnp_url'),
-            mgd.OutputFile(ref_data_paths.dbsnp_vcf_file)
+            mgd.InputFile(ref_data_paths.cosmic_vcf_file),
+            mgd.OutputFile(ref_data_paths.cosmic_vcf_file + '.tbi')
         )
     )
 
@@ -190,67 +324,22 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, threads=1):
         )
     )
 
-    if cosmic:
-        workflow.subworkflow(
-            name='download_cosmic',
-            func=create_download_cosmic_workflow,
-            args=(
-                config['cosmic']['ref_genome_version'],
-                mgd.OutputFile(ref_data_paths.cosmic_vcf_file),
-                cosmic_user,
-                cosmic_password
-            )
-        )
-
-    workflow.setobj(mgd.TempOutputObj('snpeff_url'), value=config['snpeff']['url'])
-
-    workflow.transform(
-        name='download_snpeff_db',
-        func=tasks.download,
-        args=(
-            mgd.TempInputObj('snpeff_url'),
-            mgd.TempOutputFile('snpeff.zip')
-        )
-    )
-
-    workflow.transform(
-        name='unzip_snpeff',
-        func=tasks.unzip_file,
-        args=(
-            mgd.TempInputFile('snpeff.zip'),
-            mgd.OutputFile(os.path.join(os.path.dirname(ref_data_paths.snpeff_data_dir), 'done.txt')),
-            mgd.TempSpace('snpeff_tmp')
-        )
-    )
-
-    workflow.transform(
-        name='download_genetic_map',
-        func=tasks.download,
-        args=(
-            mgd.TempInputObj('genetic_map_txt_url'),
-            mgd.OutputFile(ref_data_paths.genetic_map_file)
-        )
-    )
-
-    workflow.subworkflow(
-        name='ref_haplotype_panel',
-        func=soil.ref_data.haplotype.workflows.create_eagle_ref_data_workflow,
-        args=(
-            mgd.TempInputObj('haplotype_vcf_template_url'),
-            mgd.OutputFile(ref_data_paths.haplotypes_bcf)
-        )
-    )
-
     return workflow
 
 
-def create_download_decompress_workflow(url, local_path):
+#=========================================================================
+# Helper workflows
+#=========================================================================
+
+
+def _create_download_decompress_workflow(url, local_path, local_download=False):
     workflow = pypeliner.workflow.Workflow()
 
     workflow.setobj(mgd.TempOutputObj('url'), value=url)
 
     workflow.transform(
         name='download',
+        ctx={'local': local_download},
         func=tasks.download,
         args=(
             mgd.TempInputObj('url'),
@@ -270,7 +359,7 @@ def create_download_decompress_workflow(url, local_path):
     return workflow
 
 
-def create_download_decompress_concat_workflow(urls, out_file):
+def _create_download_decompress_concat_workflow(urls, out_file, local_download=False):
     workflow = pypeliner.workflow.Workflow()
 
     local_files = []
@@ -282,11 +371,14 @@ def create_download_decompress_concat_workflow(urls, out_file):
 
         workflow.subworkflow(
             name='download_file_{}'.format(i),
-            func=create_download_decompress_workflow,
+            func=_create_download_decompress_workflow,
             args=(
                 mgd.TempInputObj('url_{}'.format(i)),
                 local_files[i].as_output(),
-            )
+            ),
+            kwargs={
+                'local_download': local_download
+            }
         )
 
     concat_args = ['cat', ] + [x.as_input() for x in local_files] + ['>', mgd.OutputFile(out_file)]
@@ -299,7 +391,14 @@ def create_download_decompress_concat_workflow(urls, out_file):
     return workflow
 
 
-def create_download_cosmic_workflow(ref_data_version, out_file, user, password, host='sftp-cancer.sanger.ac.uk'):
+def _create_download_cosmic_workflow(
+        ref_data_version,
+        out_file,
+        user,
+        password,
+        host='sftp-cancer.sanger.ac.uk',
+        local_download=False):
+
     host_base_path = '/files/{}/cosmic/v83/VCF'.format(ref_data_version.lower())
 
     coding_host_path = '/'.join([host_base_path, 'CosmicCodingMuts.vcf.gz'])
@@ -316,26 +415,32 @@ def create_download_cosmic_workflow(ref_data_version, out_file, user, password, 
 
     workflow.subworkflow(
         name='download_coding',
-        func=create_download_cosmic_file_subworkflow,
+        func=_create_download_cosmic_file_subworkflow,
         args=(
             host,
             mgd.TempInputObj('coding_host_path'),
             user,
             password,
             mgd.TempOutputFile('coding.vcf.gz'),
-        )
+        ),
+        kwargs={
+            'local_download': local_download
+        }
     )
 
     workflow.subworkflow(
         name='download_non_coding',
-        func=create_download_cosmic_file_subworkflow,
+        func=_create_download_cosmic_file_subworkflow,
         args=(
             host,
             mgd.TempInputObj('non_coding_host_path'),
             user,
             password,
             mgd.TempOutputFile('non_coding.vcf.gz'),
-        )
+        ),
+        kwargs={
+            'local_download': local_download
+        }
     )
 
     workflow.transform(
@@ -354,13 +459,14 @@ def create_download_cosmic_workflow(ref_data_version, out_file, user, password, 
     return workflow
 
 
-def create_download_cosmic_file_subworkflow(host, host_path, user, password, out_file):
+def _create_download_cosmic_file_subworkflow(host, host_path, user, password, out_file, local_download=False):
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
     workflow.transform(
-        name='download_non_coding',
+        name='download',
+        ctx={'local': local_download},
         func=tasks.download_from_sftp,
         args=(
             host,
@@ -372,7 +478,7 @@ def create_download_cosmic_file_subworkflow(host, host_path, user, password, out
     )
 
     workflow.transform(
-        name='decompress_coding',
+        name='decompress',
         func=tasks.decompress,
         args=(
             mgd.TempInputFile('file.vcf.gz'),

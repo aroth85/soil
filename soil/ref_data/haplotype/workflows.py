@@ -10,7 +10,8 @@ import soil.wrappers.bcftools.tasks
 import tasks
 
 
-def create_eagle_ref_data_workflow(vcf_url_template, out_file):
+def create_eagle_ref_data_workflow(vcf_url_template, out_file, local_download=False):
+
     chrom_map_file = soil.utils.package_data.load_data_file('ref_data/data/GRCh37/chrom_map.tsv')
 
     chrom_map = pd.read_csv(chrom_map_file, sep='\t')
@@ -30,6 +31,7 @@ def create_eagle_ref_data_workflow(vcf_url_template, out_file):
     workflow.transform(
         name='download_vcf_files',
         axes=('chrom',),
+        ctx={'local': local_download},
         func=soil.ref_data.tasks.download,
         args=(
             mgd.TempInputObj('vcf_url', 'chrom'),

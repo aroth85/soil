@@ -13,7 +13,8 @@ import soil.utils.cli
 @click.option('-r', '--ref_genome_version', default='GRCh37', type=click.Choice(['GRCh37', ]))
 @click.option('-t', '--threads', default=1, type=int)
 @click.option('--cosmic', is_flag=True)
-def create(config_file, ref_genome_version, out_dir, cosmic, threads):
+@click.option('--local-download', is_flag=True)
+def create(config_file, ref_genome_version, out_dir, cosmic, local_download, threads):
     """ Download and index reference data.
     """
     if config_file is None:
@@ -22,7 +23,38 @@ def create(config_file, ref_genome_version, out_dir, cosmic, threads):
     with open(config_file, 'r') as fh:
         config = yaml.load(fh)
 
-    return soil.ref_data.workflows.create_ref_data_workflow(config, out_dir, cosmic=cosmic, threads=threads)
+    return soil.ref_data.workflows.create_ref_data_workflow(
+        config, out_dir, cosmic=cosmic, local_download=local_download, threads=threads
+    )
+
+
+@soil.utils.cli.runner
+@click.option('-o', '--out_dir', required=True, type=click.Path(resolve_path=True))
+@click.option('-c', '--config_file', default=None)
+@click.option('-r', '--ref_genome_version', default='GRCh37', type=click.Choice(['GRCh37', ]))
+@click.option('--cosmic', is_flag=True)
+@click.option('--local-download', is_flag=True)
+def download(config_file, ref_genome_version, out_dir, cosmic, local_download):
+    """ Download reference data.
+    """
+    if config_file is None:
+        config_file = soil.ref_data.utils.load_config_file(ref_genome_version)
+
+    with open(config_file, 'r') as fh:
+        config = yaml.load(fh)
+
+    return soil.ref_data.workflows.crete_download_ref_data_workflow(
+        config, out_dir, cosmic=cosmic, local_download=local_download
+    )
+
+
+@soil.utils.cli.runner
+@click.option('-o', '--out_dir', required=True, type=click.Path(resolve_path=True))
+@click.option('-t', '--threads', default=1, type=int)
+def index(out_dir, threads):
+    """ Index reference data. Assumes download has already been run.
+    """
+    return soil.ref_data.workflows.create_index_ref_data_workflow(out_dir, threads=threads)
 
 
 @soil.utils.cli.runner
