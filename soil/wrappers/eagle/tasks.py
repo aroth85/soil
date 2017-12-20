@@ -11,7 +11,8 @@ def get_chrom_variant_file(chrom, in_file, out_file):
         'view',
         '-r', chrom,
         '-O', 'b',
-        '-o', out_file
+        '-o', out_file,
+        in_file
     ]
 
     cli.execute(*cmd)
