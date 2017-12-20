@@ -384,7 +384,7 @@ def _create_download_decompress_concat_workflow(urls, out_file, local_download=F
     concat_args = ['cat', ] + [x.as_input() for x in local_files] + ['>', mgd.OutputFile(out_file)]
 
     workflow.commandline(
-        name='concat_fastas',
+        name='concat',
         args=concat_args
     )
 
