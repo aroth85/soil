@@ -83,14 +83,18 @@ def create_ref_panel_phase_workflow(genetic_map_file, ref_file, target_file, out
 def get_chromosomes(variant_file):
     vf = pysam.VariantFile(variant_file, 'r')
 
-    chroms = []
+    chroms = {}
 
     autosomes = [str(x) for x in range(1, 23)]
+
+    idx = 0
 
     for raw_chrom in list(vf.header.contigs):
         parsed_chrom = raw_chrom.replace('chr', '')
 
         if parsed_chrom in autosomes:
-            chroms.append(raw_chrom)
+            chroms[idx] = raw_chrom
+
+            idx += 1
 
     return chroms
