@@ -32,6 +32,8 @@ def ref():
 
 
 ref.add_command(soil.ref_data.cli.create)
+ref.add_command(soil.ref_data.cli.download)
+ref.add_command(soil.ref_data.cli.index)
 ref.add_command(soil.ref_data.cli.mappability)
 ref.add_command(soil.ref_data.cli.show_config)
 
