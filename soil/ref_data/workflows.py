@@ -145,6 +145,7 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
 
     workflow.transform(
         name='download_dbsnp',
+        ctx={'local': local_download},
         func=tasks.download,
         args=(
             mgd.TempInputObj('dbsnp_url'),
