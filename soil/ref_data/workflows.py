@@ -150,10 +150,7 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
         args=(
             mgd.TempInputObj('dbsnp_url'),
             mgd.OutputFile(ref_data_paths.dbsnp_vcf_file)
-        ),
-        kwargs={
-            'local_download': local_download
-        }
+        )
     )
 
     if cosmic:
