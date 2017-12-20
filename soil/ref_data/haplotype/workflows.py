@@ -16,7 +16,7 @@ def create_eagle_ref_data_workflow(vcf_url_template, out_file, local_download=Fa
 
     chrom_map = pd.read_csv(chrom_map_file, sep='\t')
 
-    chrom_map = chrom_map[chrom_map['ncbi'] != 'MT']
+    chrom_map = chrom_map[chrom_map['ncbi'].isin([str(x) for x in range(1, 23)])]
 
     chrom_map['url'] = chrom_map['ncbi'].apply(lambda x: vcf_url_template.format(chrom=x))
 
