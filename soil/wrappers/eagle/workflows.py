@@ -13,7 +13,7 @@ def create_ref_panel_phase_workflow(genetic_map_file, ref_file, target_file, out
     """ Run EAGLE using a reference panel.
     """
 
-    sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'eagle-phase'])
+    sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'eagle'])
 
     workflow = pypeliner.workflow.Workflow(default_ctx=default_ctx, default_sandbox=sandbox)
 
@@ -71,7 +71,8 @@ def create_ref_panel_phase_workflow(genetic_map_file, ref_file, target_file, out
         args=(
             'bcftools',
             'index',
-            '-o', mgd.OutputFile(out_file + '.csi'),
+            '-t',
+            '-o', mgd.OutputFile(out_file + '.tbi'),
              mgd.InputFile(out_file)
         )
     )

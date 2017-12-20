@@ -19,7 +19,7 @@ import workflows
 )
 @click.option(
     '-o', '--out-file', required=True, type=click.Path(resolve_path=True),
-    help='''Path where output will be written in BCF format with an index.'''
+    help='''Path where output will be written in bgzip compressed VCF format with an index.'''
 )
 def eagle(genetic_map_file, ref_file, target_file, out_file):
     return workflows.create_ref_panel_phase_workflow(genetic_map_file, ref_file, target_file, out_file)

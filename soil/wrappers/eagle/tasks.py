@@ -22,7 +22,7 @@ def concat_results(in_files, out_file):
 
     tmp_index_files = []
 
-    cmd = ['bcftools', 'concat', '-O', 'b', '-o', out_file]
+    cmd = ['bcftools', 'concat', '-O', 'z', '-o', out_file]
 
     for file_name in in_files:
         tmp_index_file_name = file_name + '.csi'
