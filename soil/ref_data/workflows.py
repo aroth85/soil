@@ -41,6 +41,7 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, local_download=False
             out_dir
         ),
         kwargs={
+            'cosmic': cosmic,
             'threads': threads
         }
     )
@@ -213,7 +214,7 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
     return workflow
 
 
-def create_index_ref_data_workflow(out_dir, threads=1):
+def create_index_ref_data_workflow(out_dir, cosmic=False, threads=1):
     """ Create index files for references.
 
     This workflow is extremely compute and memory heavy. It should be run on a cluster with large memory nodes
@@ -304,14 +305,15 @@ def create_index_ref_data_workflow(out_dir, threads=1):
         }
     )
 
-    workflow.transform(
-        name='index_cosmic',
-        func=soil.wrappers.samtools.tasks.index_vcf,
-        args=(
-            mgd.InputFile(ref_data_paths.cosmic_vcf_file),
-            mgd.OutputFile(ref_data_paths.cosmic_vcf_file + '.tbi')
+    if cosmic:
+        workflow.transform(
+            name='index_cosmic',
+            func=soil.wrappers.samtools.tasks.index_vcf,
+            args=(
+                mgd.InputFile(ref_data_paths.cosmic_vcf_file),
+                mgd.OutputFile(ref_data_paths.cosmic_vcf_file + '.tbi')
+            )
         )
-    )
 
     workflow.transform(
         name='index_dbsnp',

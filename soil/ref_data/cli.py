@@ -49,12 +49,13 @@ def download(config_file, ref_genome_version, out_dir, cosmic, local_download):
 
 
 @soil.utils.cli.runner
-@click.option('-o', '--out_dir', required=True, type=click.Path(resolve_path=True))
+@click.option('-r', '--ref-data-dir', required=True, type=click.Path(resolve_path=True))
 @click.option('-t', '--threads', default=1, type=int)
-def index(out_dir, threads):
+@click.option('--cosmic', is_flag=True)
+def index(ref_data_dir, cosmic, threads):
     """ Index reference data. Assumes download has already been run.
     """
-    return soil.ref_data.workflows.create_index_ref_data_workflow(out_dir, threads=threads)
+    return soil.ref_data.workflows.create_index_ref_data_workflow(ref_data_dir, cosmic=cosmic, threads=threads)
 
 
 @soil.utils.cli.runner
