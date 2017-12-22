@@ -3,6 +3,7 @@ from __future__ import division
 from Bio import SeqIO
 from collections import defaultdict
 
+import numpy as np
 import pandas as pd
 import pypeliner.commandline as cli
 import pysam
@@ -121,20 +122,7 @@ def compute_mappability(in_file, out_file, max_map_qual=None):
     df.to_csv(out_file, index=False, sep='\t')
 
 
-def compute_chrom_mean_mappability(in_files, out_file):
-    def collapse_seg(df):
-        return pd.Series(
-            data=[df['chrom'].iloc[0], df['coord'].min(), df['coord'].max() + 1, df['mappability'].iloc[0]],
-            index=['chrom', 'beg', 'end', 'mappability'],
-        )
-
-    data = []
-
-    for file_name in soil.utils.workflow.flatten_input(in_files):
-        data.append(pd.read_csv(file_name, sep='\t'))
-
-    data = pd.concat(data)
-
+def compute_mean_mappability_2(data):
     data = data.groupby(['chrom', 'coord']).sum()
 
     data['mappability'] = data['mappability'] / data['count']
@@ -145,11 +133,23 @@ def compute_chrom_mean_mappability(in_files, out_file):
 
     data = data.reset_index()
 
-    data.sort_values(by='coord', inplace=True)
+    data = data.sort_values(by=['chrom', 'coord'], inplace=True)
 
-    data['seg'] = (data['mappability'].diff() != 0).cumsum()
+    data = data.values
 
-    data = data.groupby('seg').apply(collapse_seg)
+    segs = np.concatenate(([True], (data[:, 2:3] != data[:, 2:3]).any(1), [True]))
+
+    groups = np.split(data, np.cumsum(np.diff(np.flatnonzero(segs) + 1)))
+
+    data = []
+
+    for g in groups:
+        if len(g) == 0:
+            continue
+
+        data.append([g[0][0], g[0][1], g[-1][1] + 1, g[0][2]])
+
+    data = pd.DataFrame(data, columns=['chrom', 'beg', 'end', 'mappability'])
 
     data.to_csv(out_file, index=False, sep='\t')
 
