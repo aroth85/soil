@@ -3,7 +3,6 @@ from __future__ import division
 from Bio import SeqIO
 from collections import defaultdict
 
-import numpy as np
 import pandas as pd
 import pypeliner.commandline as cli
 import pysam
@@ -36,7 +35,7 @@ def create_kmer_reads(in_file, out_file_callback, k=100, split_size=int(1e6)):
 
     out_fh = open(out_file_callback[file_idx], 'w')
 
-    for beg in range(len(record.seq) - k):
+    for beg in range(len(record.seq) - k + 1):
         if file_size >= split_size:
             out_fh.close()
 
@@ -77,7 +76,6 @@ def bwa_mem_align(in_file, ref_genome_fasta_file, out_file, threads=1):
 
 
 def compute_mappability(in_file, out_file, max_map_qual=None):
-
     bam = pysam.AlignmentFile(in_file)
 
     probs = defaultdict(float)
@@ -122,7 +120,47 @@ def compute_mappability(in_file, out_file, max_map_qual=None):
     df.to_csv(out_file, index=False, sep='\t')
 
 
+def compute_mappability_segs(in_file, out_file):
+    """ Collapse the position specific data to segments.
+
+    This is necessary to keep the memory usage of :func:`compute_chrom_mean_mappability low`.
+    """
+    def collapse_seg(df):
+        return pd.Series(
+            data=[
+                df['chrom'].iloc[0],
+                df['coord'].min(),
+                df['coord'].max(),
+                df['mappability'].iloc[0],
+                df['count'].iloc[0]
+            ],
+            index=['chrom', 'beg', 'end', 'mappability', 'count'],
+        )
+
+    data = pd.read_csv(in_file, sep='\t')
+
+    data = data.round(decimals=0)
+
+    data = data.reset_index()
+
+    data.sort_values(by='coord', inplace=True)
+
+    data['seg'] = ((data['mappability'].diff() != 0) | (data['count'].diff() != 0)).cumsum()
+
+    data = data.groupby('seg').apply(collapse_seg)
+
+    data.to_csv(out_file, index=False, sep='\t')
+
+
 def compute_chrom_mean_mappability(in_files, out_file):
+    """ Merge all splits from a chromosome and compute mean mappability.
+    """
+    def collapse_seg(df):
+        return pd.Series(
+            data=[df['chrom'].iloc[0], df['beg'].min(), df['end'].max() + 1, df['mappability'].iloc[0]],
+            index=['chrom', 'beg', 'end', 'mappability'],
+        )
+
     data = []
 
     for file_name in soil.utils.workflow.flatten_input(in_files):
@@ -130,7 +168,7 @@ def compute_chrom_mean_mappability(in_files, out_file):
 
     data = pd.concat(data)
 
-    data = data.groupby(['chrom', 'coord']).sum()
+    data = data.groupby(['chrom', 'beg', 'end']).sum()
 
     data['mappability'] = data['mappability'] / data['count']
 
@@ -140,23 +178,11 @@ def compute_chrom_mean_mappability(in_files, out_file):
 
     data = data.reset_index()
 
-    data = data.sort_values(by=['chrom', 'coord'], inplace=True)
+    data.sort_values(by=['chrom', 'beg', 'end'], inplace=True)
 
-    data = data.values
+    data['seg'] = (data['mappability'].diff() != 0).cumsum()
 
-    segs = np.concatenate(([True], (data[:, 2:3] != data[:, 2:3]).any(1), [True]))
-
-    groups = np.split(data, np.cumsum(np.diff(np.flatnonzero(segs) + 1)))
-
-    data = []
-
-    for g in groups:
-        if len(g) == 0:
-            continue
-
-        data.append([g[0][0], g[0][1], g[-1][1] + 1, g[0][2]])
-
-    data = pd.DataFrame(data, columns=['chrom', 'beg', 'end', 'mappability'])
+    data = data.groupby('seg').apply(collapse_seg)
 
     data.to_csv(out_file, index=False, sep='\t')
 

@@ -23,7 +23,7 @@ def create_mappability_workflow(
         func=tasks.split_fasta_by_chrom,
         args=(
             mgd.InputFile(ref_genome_fasta_file),
-            mgd.TempOutputFile('chrom.fasta', 'chrom'),
+            mgd.TempOutputFile('chrom.fasta', 'chrom')
         )
     )
 
@@ -34,11 +34,11 @@ def create_mappability_workflow(
         func=tasks.create_kmer_reads,
         args=(
             mgd.TempInputFile('chrom.fasta', 'chrom'),
-            mgd.TempOutputFile('reads.fa', 'chrom', 'kmer_group'),
+            mgd.TempOutputFile('reads.fa', 'chrom', 'kmer_group')
         ),
         kwargs={
             'k': k,
-            'split_size': split_size,
+            'split_size': split_size
         }
     )
 
@@ -50,7 +50,7 @@ def create_mappability_workflow(
         args=(
             mgd.TempInputFile('reads.fa', 'chrom', 'kmer_group'),
             mgd.InputFile(ref_genome_fasta_file),
-            mgd.TempOutputFile('aligned.bam', 'chrom', 'kmer_group'),
+            mgd.TempOutputFile('aligned.bam', 'chrom', 'kmer_group')
         ),
         kwargs={
             'threads': threads
@@ -64,7 +64,7 @@ def create_mappability_workflow(
         func=tasks.compute_mappability,
         args=(
             mgd.TempInputFile('aligned.bam', 'chrom', 'kmer_group'),
-            mgd.TempOutputFile('mappability.tsv', 'chrom', 'kmer_group'),
+            mgd.TempOutputFile('mappability.tsv', 'chrom', 'kmer_group')
         ),
         kwargs={
             'max_map_qual': max_map_qual,
@@ -72,14 +72,25 @@ def create_mappability_workflow(
     )
 
     workflow.transform(
-        name='compute_chrom_mean_mappability',
-        axes=('chrom',),
-        ctx={'mem': 16, 'mem_retry_increment': 8, 'num_retry': 3},
-        func=tasks.compute_chrom_mean_mappability,
+        name='compute_mappability_segs',
+        axes=('chrom', 'kmer_group'),
+        ctx={'mem': 4, 'mem_retry_increment': 2, 'num_retry': 3},
+        func=tasks.compute_mappability_segs,
         args=(
             mgd.TempInputFile('mappability.tsv', 'chrom', 'kmer_group'),
-            mgd.TempOutputFile('mean_mappability.tsv', 'chrom'),
-        ),
+            mgd.TempOutputFile('mappability_segs.tsv', 'chrom', 'kmer_group')
+        )
+    )
+
+    workflow.transform(
+        name='compute_chrom_mean_mappability',
+        axes=('chrom',),
+        ctx={'mem': 8, 'mem_retry_increment': 8, 'num_retry': 3},
+        func=tasks.compute_chrom_mean_mappability,
+        args=(
+            mgd.TempInputFile('mappability_segs.tsv', 'chrom', 'kmer_group'),
+            mgd.TempOutputFile('mean_mappability.tsv', 'chrom')
+        )
     )
 
     workflow.transform(
@@ -88,8 +99,8 @@ def create_mappability_workflow(
         func=tasks.write_bed,
         args=(
             mgd.TempInputFile('mean_mappability.tsv', 'chrom'),
-            mgd.TempOutputFile('mean_mappability.bed'),
-        ),
+            mgd.TempOutputFile('mean_mappability.bed')
+        )
     )
 
     workflow.transform(
@@ -107,7 +118,7 @@ def create_mappability_workflow(
             'bedGraphToBigWig',
             mgd.TempInputFile('mean_mappability.bed'),
             mgd.TempInputFile('chrom_sizes.txt'),
-            mgd.OutputFile(out_file),
+            mgd.OutputFile(out_file)
         )
     )
 
