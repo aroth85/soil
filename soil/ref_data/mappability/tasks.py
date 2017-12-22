@@ -122,7 +122,14 @@ def compute_mappability(in_file, out_file, max_map_qual=None):
     df.to_csv(out_file, index=False, sep='\t')
 
 
-def compute_chrom_mean_mappability(data):
+def compute_chrom_mean_mappability(in_files, out_file):
+    data = []
+
+    for file_name in soil.utils.workflow.flatten_input(in_files):
+        data.append(pd.read_csv(file_name, sep='\t'))
+
+    data = pd.concat(data)
+
     data = data.groupby(['chrom', 'coord']).sum()
 
     data['mappability'] = data['mappability'] / data['count']
