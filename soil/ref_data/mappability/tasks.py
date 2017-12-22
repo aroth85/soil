@@ -122,7 +122,7 @@ def compute_mappability(in_file, out_file, max_map_qual=None):
     df.to_csv(out_file, index=False, sep='\t')
 
 
-def compute_mean_mappability(data):
+def compute_chrom_mean_mappability(data):
     data = data.groupby(['chrom', 'coord']).sum()
 
     data['mappability'] = data['mappability'] / data['count']
