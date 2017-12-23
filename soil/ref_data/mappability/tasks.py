@@ -3,6 +3,7 @@ from __future__ import division
 from Bio import SeqIO
 from collections import defaultdict
 
+import numpy as np
 import pandas as pd
 import pypeliner.commandline as cli
 import pysam
@@ -155,12 +156,6 @@ def compute_mappability_segs(in_file, out_file):
 def compute_chrom_mean_mappability(in_files, out_file):
     """ Merge all splits from a chromosome and compute mean mappability.
     """
-    def collapse_seg(df):
-        return pd.Series(
-            data=[df['chrom'].iloc[0], df['beg'].min(), df['end'].max() + 1, df['mappability'].iloc[0]],
-            index=['chrom', 'beg', 'end', 'mappability'],
-        )
-
     data = []
 
     for file_name in soil.utils.workflow.flatten_input(in_files):
@@ -180,11 +175,35 @@ def compute_chrom_mean_mappability(in_files, out_file):
 
     data.sort_values(by=['chrom', 'beg', 'end'], inplace=True)
 
-    data['seg'] = (data['mappability'].diff() != 0).cumsum()
+    groups = _numpy_groupby(data, ['mappability', ])
 
-    data = data.groupby('seg').apply(collapse_seg)
+    data = []
+
+    for g in groups:
+        data.append([g[0, 0], g[0, 1], g[-1, 2] + 1, g[0, 3]])
+
+    data = pd.DataFrame(data, columns=['chrom', 'beg', 'end', 'mappability'])
 
     data.to_csv(out_file, index=False, sep='\t')
+
+
+def _numpy_groupby(df, group_cols):
+    """ Memory efficient groupby.
+    """
+    cols = list(df.columns)
+
+    group_col_idx = [cols.index(x) for x in group_cols]
+
+    df = df.values
+
+    segs = np.concatenate(([True], (df[:-1, group_col_idx] != df[1:, group_col_idx]).any(1), [True]))
+
+    groups = np.split(df, np.cumsum(np.diff(np.flatnonzero(segs) + 1)))
+
+    if len(groups[-1]) == 0:
+        groups = groups[:-1]
+
+    return groups
 
 
 def write_bed(in_files, out_file):
