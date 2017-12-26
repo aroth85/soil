@@ -32,8 +32,7 @@ def run_topiary(
         '--output-csv', out_file,
 
         '--genome', genome,
-        '--mhc-predictor', predictor,
-        '--output-csv-sep', '"\t"'
+        '--mhc-predictor', predictor
     ]
 
     cli.execute(*cmd)

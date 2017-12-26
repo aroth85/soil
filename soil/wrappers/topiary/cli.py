@@ -18,15 +18,15 @@ import workflows
     help='''Path where output will be written in TSV format.'''
 )
 @click.option(
-    '--genome', type=click.Choice(['GRCh37', 'GRCh38']),
+    '--genome', default='GRCh37', type=click.Choice(['GRCh37', 'GRCh38']),
     help='''Path where pyensembl cache files have been downloaded.'''
 )
 @click.option(
-    '--iedb-dir', type=click.Path(exists=True, resolve_path=True),
+    '--iedb-dir', default=None, type=click.Path(exists=True, resolve_path=True),
     help='''Path to data files for MHC-I from http://tools.iedb.org. If this is not set netMHC must be on the PATH.'''
 )
 @click.option(
-    '--pyensembl-cache-dir', type=click.Path(exists=True, resolve_path=True),
+    '--pyensembl-cache-dir', default=None, type=click.Path(exists=True, resolve_path=True),
     help='''Path where pyensembl cache files have been downloaded.'''
 )
 def topiary(hla_alleles, in_file, out_file, genome, iedb_dir, pyensembl_cache_dir):
