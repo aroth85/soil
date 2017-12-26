@@ -77,6 +77,10 @@ class SoilRefDataPaths(object):
         return os.path.join(self.iedb_dir, 'mhc_i')
 
     @property
+    def pyensembl_cache_dir(self):
+        return os.path.join(self.base_dir, 'pyensembl')
+
+    @property
     def proteome_fasta_file(self):
         """ Path of reference proteome FASTA file.
         """

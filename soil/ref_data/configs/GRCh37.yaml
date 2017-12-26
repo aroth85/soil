@@ -11,6 +11,9 @@ haplotype_vcf_template_url: 'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20
 
 iedb_mhc_one_url: 'http://downloads.iedb.org/tools/mhci/2.17/IEDB_MHC_I-2.17.tar.gz'
 
+pyensembl:
+    version: 75
+
 ref_genome_fasta_urls:
     - 'ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_27/GRCh37_mapping/GRCh37.primary_assembly.genome.fa.gz'
     - 'ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/EBVt1.fa.gz'

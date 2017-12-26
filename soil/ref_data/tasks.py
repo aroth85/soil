@@ -42,6 +42,21 @@ def download_from_sftp(host, host_path, local_path, user, password):
         sftp.get(host_path, localpath=local_path)
 
 
+def download_pyensembl_cache(ensembl_version, out_sentinel):
+    os.environ['PYENSEMBL_CACHE_DIR'] = os.path.dirname(out_sentinel)
+
+    cmd = [
+        'pyensembl',
+        'install',
+        '--release', ensembl_version,
+        '--species', 'human'
+    ]
+
+    cli.execute(*cmd)
+
+    open(out_sentinel, 'w').close()
+
+
 def extract_tar_file(in_file, out_sentinel):
     out_dir = os.path.dirname(out_sentinel)
 

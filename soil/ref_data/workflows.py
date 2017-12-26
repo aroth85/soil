@@ -268,6 +268,18 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
         kwargs={'local_download': local_download}
     )
 
+    workflow.setobj(obj=mgd.TempOutputObj('pyensembl_version'), value=config['pyensembl']['version'])
+
+    workflow.transform(
+        name='download_pyensembl_cache',
+        ctx={'local': local_download},
+        func=tasks.download_pyensembl_cache,
+        args=(
+            mgd.TempInputObj('pyensembl_version'),
+            mgd.OutputFile(os.path.join(ref_data_paths.pyensembl_cache_dir, 'download.done'))
+        )
+    )
+
     return workflow
 
 
