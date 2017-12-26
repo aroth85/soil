@@ -211,6 +211,34 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
         }
     )
 
+    workflow.transform(
+        name='download_iedb_mhc_one',
+        ctx={'local': local_download},
+        func=tasks.download,
+        args=(
+            mgd.TempInputObj('iedb_mhc_one_url'),
+            mgd.TempOutputFile('mhc1.tar.gz')
+        )
+    )
+
+    workflow.transform(
+        name='extract_iedb_mhc_one',
+        func=tasks.extract_tar_file,
+        args=(
+            mgd.TempInputFile('mhc1.tar.gz'),
+            mgd.OutputFile(os.path.join(ref_data_paths.iedb_mhc_one_dir, 'extract.done'))
+        )
+    )
+
+    workflow.transform(
+        name='config_iedb_mhc_one',
+        func=tasks.configure_iedb_module,
+        args=(
+            mgd.InputFile(os.path.join(ref_data_paths.iedb_mhc_one_dir, 'extract.done')),
+            mgd.OutputFile(os.path.join(ref_data_paths.iedb_mhc_one_dir, 'configure.done'))
+        )
+    )
+
     return workflow
 
 

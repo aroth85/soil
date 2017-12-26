@@ -69,6 +69,14 @@ class SoilRefDataPaths(object):
         return os.path.join(self.base_dir, 'haplotypes.bcf')
 
     @property
+    def iedb_dir(self):
+        return os.path.join(self.base_dir, 'iedb')
+
+    @property
+    def iedb_mhc_one_dir(self):
+        return os.path.join(self.iedb_dir, 'mhc_i')
+
+    @property
     def proteome_fasta_file(self):
         """ Path of reference proteome FASTA file.
         """

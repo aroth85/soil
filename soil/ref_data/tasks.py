@@ -9,31 +9,16 @@ import shutil
 import soil.ref_data.mappability.workflows
 
 
-def mappability_wrapper(bwa_sentinel_file, out_file, **kwargs):
-    """ Simple wrapper so task can depend on sentinel and ensure index is built
-    """
-    return soil.ref_data.mappability.workflows.create_mappability_workflow(
-        bwa_sentinel_file.replace('.bwa_index.done', ''), out_file, **kwargs
-    )
+def configure_iedb_module(in_sentinel, out_sentinel):
+    iedb_dir = os.path.dirname(in_sentinel)
 
+    exe = os.path.join(iedb_dir, 'configure')
 
-def _guess_file_type(filename):
-    magic_dict = {
-        '\x1f\x8b\x08': 'gz',
-        '\x42\x5a\x68': 'bz2',
-        '\x50\x4b\x03\x04': 'zip'
-    }
+    cmd = ['sh', exe]
 
-    max_len = max(len(x) for x in magic_dict)
+    cli.execute(*cmd)
 
-    with open(filename) as f:
-        file_start = f.read(max_len)
-
-    for magic, file_type in magic_dict.items():
-        if file_start.startswith(magic):
-            return file_type
-
-    return None
+    open(out_sentinel, 'w').close()
 
 
 def decompress(in_file, out_file):
@@ -55,6 +40,21 @@ def download(url, local_path):
 def download_from_sftp(host, host_path, local_path, user, password):
     with pysftp.Connection(host, username=user, password=password) as sftp:
         sftp.get(host_path, localpath=local_path)
+
+
+def extract_tar_file(in_file, out_sentinel):
+    out_dir = os.path.dirname(out_sentinel)
+
+    cmd = [
+        'tar',
+        '-C', out_dir,
+        '-zxvf', in_file,
+        '--strip-components=1'
+    ]
+
+    cli.execute(*cmd)
+
+    open(out_sentinel, 'w').close()
 
 
 def filter_bad_proiteins(in_file, out_file):
@@ -93,6 +93,14 @@ def lex_sort_fasta(in_file, out_file):
         assert raw_ref.fetch(chrom) == lex_ref.fetch(chrom)
 
 
+def mappability_wrapper(bwa_sentinel_file, out_file, **kwargs):
+    """ Simple wrapper so task can depend on sentinel and ensure index is built
+    """
+    return soil.ref_data.mappability.workflows.create_mappability_workflow(
+        bwa_sentinel_file.replace('.bwa_index.done', ''), out_file, **kwargs
+    )
+
+
 def unzip_file(in_file, out_sentinel, tmp_dir):
     if os.path.exists(tmp_dir):
         shutil.rmtree(tmp_dir)
@@ -113,3 +121,22 @@ def unzip_file(in_file, out_sentinel, tmp_dir):
     open(out_sentinel, 'w').close()
 
     shutil.rmtree(tmp_dir)
+
+
+def _guess_file_type(filename):
+    magic_dict = {
+        '\x1f\x8b\x08': 'gz',
+        '\x42\x5a\x68': 'bz2',
+        '\x50\x4b\x03\x04': 'zip'
+    }
+
+    max_len = max(len(x) for x in magic_dict)
+
+    with open(filename) as f:
+        file_start = f.read(max_len)
+
+    for magic, file_type in magic_dict.items():
+        if file_start.startswith(magic):
+            return file_type
+
+    return None
