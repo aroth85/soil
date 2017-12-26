@@ -239,6 +239,25 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
         )
     )
 
+    workflow.transform(
+        name='download_vep_cache',
+        ctx={'local': local_download},
+        func=tasks.download,
+        args=(
+            mgd.TempInputObj('vep_cache_url'),
+            mgd.TempOutputFile('vep.tar.gz')
+        )
+    )
+
+    workflow.transform(
+        name='extract_vep_cache',
+        func=tasks.extract_tar_file,
+        args=(
+            mgd.TempInputFile('vep.tar.gz'),
+            mgd.OutputFile(os.path.join(ref_data_paths.vep_cache_dir, 'homo_sapiens', 'extract.done'))
+        )
+    )
+
     return workflow
 
 

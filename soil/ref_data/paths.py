@@ -115,3 +115,9 @@ class SoilRefDataPaths(object):
         This is a link to the reference as genome_fasta_file but will be in a separate directory with a STAR index.
         """
         return os.path.join(self.base_dir, 'star', 'genome.fa')
+
+    @property
+    def vep_cache_dir(self):
+        """ Path where cache files for VEP are stored so it can be run offline.
+        """
+        return os.path.join(self.base_dir, 'vep')
