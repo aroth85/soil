@@ -36,6 +36,7 @@ packages = {
     'opossum': Package('opossum', '0.2.0de259b45a35cd7d4c01dbb40d48d16c9118d76c4', channel='aroth85'),
     'optitype': Package('optitype', '1.2.1'),
     # P
+    'pyensembl': Package('pyensembl', '1.1.0', channel='pip'),
     'percolator': Package('percolator', '3.1'),
     'platypus': Package('platypus-variant', '0.8.1.1'),
     'proteowizard': Package('proteowizard', '3_0_9992'),

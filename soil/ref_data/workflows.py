@@ -277,7 +277,8 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
         args=(
             mgd.TempInputObj('pyensembl_version'),
             mgd.OutputFile(os.path.join(ref_data_paths.pyensembl_cache_dir, 'download.done'))
-        )
+        ),
+        sandbox=soil.utils.workflow.get_sandbox(['pyensembl'])
     )
 
     return workflow
