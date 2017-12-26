@@ -11,12 +11,10 @@ import soil.ref_data.mappability.workflows
 
 def configure_iedb_module(in_sentinel, out_sentinel):
     iedb_dir = os.path.dirname(in_sentinel)
+    
+    os.chdir(iedb_dir)
 
-    exe = os.path.join(iedb_dir, 'configure')
-
-    cmd = ['sh', exe]
-
-    cli.execute(*cmd)
+    cli.execute('tcsh', 'configure')
 
     open(out_sentinel, 'w').close()
 
@@ -35,6 +33,8 @@ def decompress(in_file, out_file):
 
 def download(url, local_path):
     cli.execute('wget', url, '-c', '-O', local_path)
+    
+    cli.execute('touch', local_path)
 
 
 def download_from_sftp(host, host_path, local_path, user, password):
