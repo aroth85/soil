@@ -12,6 +12,7 @@ import soil.wrappers.optitype.cli
 import soil.wrappers.platypus.cli
 import soil.wrappers.star.cli
 import soil.wrappers.strelka.cli
+import soil.wrappers.topiary.cli
 import soil.wrappers.titan.cli
 import soil.wrappers.transdecoder.cli
 
@@ -51,5 +52,6 @@ run.add_command(soil.wrappers.optitype.cli.optitype)
 run.add_command(soil.wrappers.platypus.cli.platypus)
 run.add_command(soil.wrappers.star.cli.star)
 run.add_command(soil.wrappers.strelka.cli.strelka)
+run.add_command(soil.wrappers.topiary.cli.topiary)
 run.add_command(soil.wrappers.titan.cli.titan)
 run.add_command(soil.wrappers.transdecoder.cli.transdecoder)

@@ -49,6 +49,7 @@ packages = {
     'stringtie': Package('stringtie', '1.3.3'),
     'subread': Package('subread', '1.6.0'),
     # T
+    'topiary': Package('topiary', '2.1.0', channel='pip'),
     'titan': Package('bioconductor-titancna', '1.16.0'),
     'transdecoder': Package('transdecoder', '3.0.1'),
     # U
