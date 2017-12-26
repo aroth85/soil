@@ -40,11 +40,17 @@ def get_sandbox(package_names):
 
     package_strs = set()
 
+    pip_packages = set()
+
     for name in package_names:
         package = soil.utils.conda.packages[name]
 
-        channels.add(package.channel)
+        if package.channel == 'pip':
+            pip_packages.add(package.conda_str)
 
-        package_strs.add(package.conda_str)
+        else:
+            channels.add(package.channel)
 
-    return CondaSandbox(sorted(channels), sorted(package_strs))
+            package_strs.add(package.conda_str)
+
+    return CondaSandbox(channels=sorted(channels), packages=sorted(package_strs), pip_packages=pip_packages)
