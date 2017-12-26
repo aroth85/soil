@@ -29,7 +29,7 @@ def create_topiary_workflow(hla_alleles, in_file, out_file, iedb_dir=None, genom
         ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.run_topiary,
         args=(
-            mgd.TempInputObj('hla_alles'),
+            mgd.TempInputObj('hla_alleles'),
             mgd.InputFile(in_file),
             mgd.TempOutputFile('raw.tsv')
         ),
