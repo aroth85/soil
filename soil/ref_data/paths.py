@@ -120,4 +120,10 @@ class SoilRefDataPaths(object):
     def vep_cache_dir(self):
         """ Path where cache files for VEP are stored so it can be run offline.
         """
-        return os.path.join(self.base_dir, 'vep')
+        return os.path.join(self.base_dir, 'vep', 'cache')
+
+    @property
+    def vep_plugins_dir(self):
+        """ Path where plugin files for VEP are stored so it can be run offline.
+        """
+        return os.path.join(self.base_dir, 'vep', 'plugins')

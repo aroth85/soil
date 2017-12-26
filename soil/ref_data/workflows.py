@@ -258,6 +258,16 @@ def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_downlo
         )
     )
 
+    workflow.subworkflow(
+        name='download_vep_plugins',
+        func=_create_download_vep_plugins_workflow,
+        args=(
+            mgd.TempInputObj('vep_plugins_urls'),
+            ref_data_paths.vep_plugins_dir
+        ),
+        kwargs={'local_download': local_download}
+    )
+
     return workflow
 
 
@@ -541,5 +551,26 @@ def _create_download_cosmic_file_subworkflow(host, host_path, user, password, ou
             mgd.OutputFile(out_file)
         )
     )
+
+    return workflow
+
+
+def _create_download_vep_plugins_workflow(urls, out_dir, local_download=False):
+    workflow = pypeliner.workflow.Workflow()
+
+    for i, url in enumerate(urls):
+        out_file = os.path.join(out_dir, os.path.basename(url))
+
+        workflow.setobj(mgd.TempOutputObj('url_{}'.format(i)), value=url)
+
+        workflow.transform(
+            name='download_file_{}'.format(i),
+            ctx={'local': local_download},
+            func=tasks.download,
+            args=(
+                mgd.TempInputObj('url_{}'.format(i)),
+                mgd.OutputFile(out_file),
+            )
+        )
 
     return workflow

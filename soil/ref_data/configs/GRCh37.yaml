@@ -33,3 +33,7 @@ snpeff:
     url: 'http://downloads.sourceforge.net/project/snpeff/databases/v4_3/snpEff_v4_3_GRCh37.75.zip'
     
 vep_cache_url: 'ftp://ftp.ensembl.org/pub/release-91/variation/VEP/homo_sapiens_vep_91_GRCh37.tar.gz'
+
+vep_plugins_urls:
+    - https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/91/Downstream.pm
+    - https://raw.githubusercontent.com/griffithlab/pVAC-Seq/master/pvacseq/VEP_plugins/Wildtype.pm
