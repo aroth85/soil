@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import pypeliner.commandline as cli
 import soil.utils.file_system
+import soil.utils.workflow
 
 
 def run_topiary(
@@ -10,6 +11,7 @@ def run_topiary(
         out_file,
         iedb_dir=None,
         genome='GRCh37',
+        peptide_length=9,
         predictor='nethmhc',
         pyensembl_cache_dir=None):
 
@@ -32,15 +34,23 @@ def run_topiary(
         '--output-csv', out_file,
 
         '--genome', genome,
-        '--mhc-predictor', predictor
+        '--mhc-predictor', predictor,
+        '--mhc-peptide-lengths', peptide_length
     ]
 
     cli.execute(*cmd)
 
 
-def reformat_output(in_file, out_file):
-    df = pd.read_csv(in_file, sep=',')
+def reformat_output(in_files, out_file):
+    data = []
 
-    df = df.drop('#', axis=1)
+    for file_name in soil.utils.workflow.flatten_input(in_files):
+        df = pd.read_csv(file_name, sep=',')
 
-    df.to_csv(out_file, index=False, sep='\t')
+        df = df.drop('#', axis=1)
+
+        data.append(df)
+
+    data = pd.concat(data)
+
+    data.to_csv(out_file, index=False, sep='\t')
