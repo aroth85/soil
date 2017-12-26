@@ -18,7 +18,7 @@ import workflows
     help='''Path where output will be written in TSV format.'''
 )
 @click.option(
-    '--genome', choices=['GRCh37', 'GRCh38'],
+    '--genome', type=click.Choice(['GRCh37', 'GRCh38']),
     help='''Path where pyensembl cache files have been downloaded.'''
 )
 @click.option(
