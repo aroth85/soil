@@ -50,7 +50,7 @@ def create_topiary_workflow(
     workflow.transform(
         name='run_topiary',
         axes=('pep_len',),
-        ctx={'mem': 4, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.run_topiary,
         args=(
             mgd.TempInputObj('hla_alleles'),
