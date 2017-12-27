@@ -1,7 +1,9 @@
 import os
 import pandas as pd
 import pypeliner.commandline as cli
+import shutil
 import subprocess
+import tempfile
 
 import soil.utils.file_system
 import soil.utils.workflow
@@ -29,32 +31,49 @@ def run_topiary(
         hla_alleles,
         in_file,
         out_file,
+        copy_pyensembl_cache_dir=False,
         iedb_dir=None,
         genome='GRCh37',
         peptide_length=9,
         predictor='nethmhc',
         pyensembl_cache_dir=None):
 
-    _set_path(iedb_dir, predictor)
+    tmp_cache_dir = None
 
-    if pyensembl_cache_dir is not None:
-        os.environ['PYENSEMBL_CACHE_DIR'] = os.path.abspath(pyensembl_cache_dir)
+    try:
+        if (pyensembl_cache_dir is not None) and copy_pyensembl_cache_dir:
+            tmp_cache_dir = tempfile.mkdtemp()
 
-    hla_alleles = ','.join(hla_alleles)
+            shutil.rmtree(tmp_cache_dir)
 
-    cmd = [
-        'topiary',
+            shutil.copytree(pyensembl_cache_dir, tmp_cache_dir)
 
-        '--mhc-alleles', hla_alleles,
-        '--vcf', in_file,
-        '--output-csv', out_file,
+            pyensembl_cache_dir = tmp_cache_dir
 
-        '--genome', genome,
-        '--mhc-predictor', predictor,
-        '--mhc-peptide-lengths', peptide_length
-    ]
+        _set_path(iedb_dir, predictor)
 
-    cli.execute(*cmd)
+        if pyensembl_cache_dir is not None:
+            os.environ['PYENSEMBL_CACHE_DIR'] = os.path.abspath(pyensembl_cache_dir)
+
+        hla_alleles = ','.join(hla_alleles)
+
+        cmd = [
+            'topiary',
+
+            '--mhc-alleles', hla_alleles,
+            '--vcf', in_file,
+            '--output-csv', out_file,
+
+            '--genome', genome,
+            '--mhc-predictor', predictor,
+            '--mhc-peptide-lengths', peptide_length
+        ]
+
+        cli.execute(*cmd)
+
+    finally:
+        if tmp_cache_dir is not None:
+            shutil.rmtree(tmp_cache_dir)
 
 
 def reformat_output(in_files, out_file):

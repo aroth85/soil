@@ -6,7 +6,14 @@ import soil.utils.workflow
 import tasks
 
 
-def create_topiary_workflow(hla_alleles, in_file, out_file, iedb_dir=None, genome='GRCh37', pyensembl_cache_dir=None):
+def create_topiary_workflow(
+        hla_alleles,
+        in_file,
+        out_file,
+        copy_pyensembl_cache_dir=False,
+        iedb_dir=None,
+        genome='GRCh37',
+        pyensembl_cache_dir=None):
     """ Run topiary.
 
     Parameters
@@ -51,6 +58,7 @@ def create_topiary_workflow(hla_alleles, in_file, out_file, iedb_dir=None, genom
             mgd.TempOutputFile('raw.tsv', 'pep_len')
         ),
         kwargs={
+            'copy_pyensembl_cache_dir': copy_pyensembl_cache_dir,
             'iedb_dir': iedb_dir,
             'genome': genome,
             'peptide_length': mgd.Template('{pep_len}', 'pep_len'),
