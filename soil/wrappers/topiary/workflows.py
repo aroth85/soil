@@ -22,9 +22,23 @@ def create_topiary_workflow(hla_alleles, in_file, out_file, iedb_dir=None, genom
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
-    workflow.setobj(obj=mgd.TempOutputObj('hla_alleles'), value=hla_alleles)
+    workflow.setobj(obj=mgd.TempOutputObj('raw_hla_alleles'), value=hla_alleles)
 
     workflow.setobj(obj=mgd.OutputChunks('pep_len'), value=[8, 9, 10, 11])
+
+    workflow.transform(
+        name='filter_hla_alleles',
+        func=tasks.filter_hla_alleles,
+        args=(
+            mgd.TempInputObj('raw_hla_alleles')
+        ),
+        kwargs={
+            'iedb_dir': iedb_dir,
+            'predictor': 'netmhc',
+
+        },
+        ret=mgd.TempOutputObj('hla_alleles')
+    )
 
     workflow.transform(
         name='run_topiary',
