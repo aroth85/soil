@@ -30,7 +30,7 @@ def create_topiary_workflow(hla_alleles, in_file, out_file, iedb_dir=None, genom
         name='filter_hla_alleles',
         func=tasks.filter_hla_alleles,
         args=(
-            mgd.TempInputObj('raw_hla_alleles')
+            mgd.TempInputObj('raw_hla_alleles'),
         ),
         kwargs={
             'iedb_dir': iedb_dir,
