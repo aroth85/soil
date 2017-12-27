@@ -10,12 +10,12 @@ import soil.utils.workflow
 def filter_hla_alleles(raw_hla_alleles, iedb_dir=None, predictor='nethmhc'):
     valid_alleles = _get_valid_alleles(iedb_dir, predictor)
 
+    raw_hla_alleles = _parse_alleles(raw_hla_alleles, predictor)
+
     if valid_alleles is None:
         hla_alleles = raw_hla_alleles
 
     else:
-        raw_hla_alleles = _parse_alleles(raw_hla_alleles, predictor)
-
         hla_alleles = []
 
         for a in raw_hla_alleles:
@@ -40,7 +40,7 @@ def run_topiary(
     if pyensembl_cache_dir is not None:
         os.environ['PYENSEMBL_CACHE_DIR'] = os.path.abspath(pyensembl_cache_dir)
 
-    hla_alleles = ','.join(_parse_alleles(hla_alleles, predictor))
+    hla_alleles = ','.join(hla_alleles)
 
     cmd = [
         'topiary',
