@@ -37,7 +37,6 @@ def create_ref_data_workflow(config, out_dir, cosmic=False, local_download=False
         name='index',
         func=create_index_ref_data_workflow,
         args=(
-            config,
             out_dir
         ),
         kwargs={
