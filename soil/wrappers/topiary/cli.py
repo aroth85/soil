@@ -19,7 +19,7 @@ import workflows
 )
 @click.option(
     '--genome', default='GRCh37', type=click.Choice(['GRCh37', 'GRCh38']),
-    help='''Path where pyensembl cache files have been downloaded.'''
+    help='''Genome build of variant coordinates in VCF file.'''
 )
 @click.option(
     '--iedb-dir', default=None, type=click.Path(exists=True, resolve_path=True),
