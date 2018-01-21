@@ -12,7 +12,7 @@ def create_optitype_workflow(bam_file, hla_type_file, is_rna=False, threads=1):
     else:
         chrom_str = '6'
 
-    sandbox = soil.utils.workflow.get_sandbox(['optitype', 'samtools'])
+    sandbox = soil.utils.workflow.get_sandbox(['optitype', 'razers3', 'samtools'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 

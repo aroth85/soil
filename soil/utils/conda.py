@@ -40,6 +40,8 @@ packages = {
     'percolator': Package('percolator', '3.1'),
     'platypus': Package('platypus-variant', '0.8.1.1'),
     'proteowizard': Package('proteowizard', '3_0_9992'),
+    # R
+    'razers3': Package('razers3', '3.5.0'),
     # S
     'sambamba': Package('sambamba', '0.6.6'),
     'samtools': Package('samtools', '1.6'),
