@@ -103,8 +103,13 @@ def _set_path(iedb_dir, predictor):
 
 
 def _parse_alleles(hla_alleles, predictor):
-    if predictor in ['netmhc', 'netmhcpan']:
+    hla_alleles = [x.replace('HLA-', '') for x in hla_alleles]
+
+    if predictor == 'netmhc':
         return ['HLA-{}'.format(x.replace('*', '').replace(':', '')) for x in hla_alleles]
+
+    elif predictor == 'netmhcpan':
+        return ['HLA-{}'.format(x.replace('*', '')) for x in hla_alleles]
 
     else:
         return hla_alleles
