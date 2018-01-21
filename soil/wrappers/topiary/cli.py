@@ -7,7 +7,7 @@ import workflows
 @soil.utils.cli.runner
 @click.option(
     '-a', '--hla-alleles', required=True, multiple=True,
-    help='''HLA allele of donor. Can be set multiple times to allow for multiple allele predictions.'''
+    help='''HLA allele of donor. Can be set multiple times to allow for multiple allele predictions. Example A*02:01.'''
 )
 @click.option(
     '-i', '--in-file', required=True, type=click.Path(exists=True, resolve_path=True),
