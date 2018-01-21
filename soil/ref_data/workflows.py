@@ -15,39 +15,6 @@ import soil.wrappers.star.tasks
 import tasks
 
 
-def create_ref_data_workflow(config, out_dir, cosmic=False, local_download=False, threads=1):
-    """ Download and index reference data.
-    """
-    workflow = pypeliner.workflow.Workflow()
-
-    workflow.subworkflow(
-        name='download',
-        func=crete_download_ref_data_workflow,
-        args=(
-            config,
-            out_dir
-        ),
-        kwargs={
-            'cosmic': cosmic,
-            'local_download': local_download
-        }
-    )
-
-    workflow.subworkflow(
-        name='index',
-        func=create_index_ref_data_workflow,
-        args=(
-            out_dir,
-        ),
-        kwargs={
-            'cosmic': cosmic,
-            'threads': threads
-        }
-    )
-
-    return workflow
-
-
 def crete_download_ref_data_workflow(config, out_dir, cosmic=False, local_download=False):
     """ Download reference files.
 
