@@ -96,11 +96,14 @@ def _set_path(iedb_dir, predictor):
         if predictor == 'netmhc':
             exe_dir = os.path.dirname(soil.utils.file_system.find('netMHC-4.0.readme', iedb_dir))
 
+        elif predictor == 'netmhcpan':
+            exe_dir = os.path.dirname(soil.utils.file_system.find('netMHCpan-3.0.readme', iedb_dir))
+
         os.environ['PATH'] = ':'.join([exe_dir, os.environ['PATH']])
 
 
 def _parse_alleles(hla_alleles, predictor):
-    if predictor == 'netmhc':
+    if predictor in ['netmhc', 'netmhcpan']:
         return ['HLA-{}'.format(x.replace('*', '').replace(':', '')) for x in hla_alleles]
 
     else:
@@ -110,8 +113,12 @@ def _parse_alleles(hla_alleles, predictor):
 def _get_valid_alleles(iedb_dir, predictor):
     _set_path(iedb_dir, predictor)
 
-    if predictor == 'netmhc':
-        raw_out = subprocess.check_output(['netMHC', '-listMHC'])
+    if predictor in ['netmhc', 'netmhcpan']:
+        if predictor == 'netmhc':
+            raw_out = subprocess.check_output(['netMHC', '-listMHC'])
+
+        else:
+            raw_out = subprocess.check_output(['netMHCpan', '-listMHC'])
 
         valid_alleles = []
 

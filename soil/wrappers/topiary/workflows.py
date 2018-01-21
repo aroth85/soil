@@ -13,6 +13,7 @@ def create_topiary_workflow(
         copy_pyensembl_cache_dir=False,
         iedb_dir=None,
         genome='GRCh37',
+        predictor='netmhc',
         pyensembl_cache_dir=None):
     """ Run topiary.
 
@@ -41,7 +42,7 @@ def create_topiary_workflow(
         ),
         kwargs={
             'iedb_dir': iedb_dir,
-            'predictor': 'netmhc',
+            'predictor': predictor,
 
         },
         ret=mgd.TempOutputObj('hla_alleles')
@@ -62,7 +63,7 @@ def create_topiary_workflow(
             'iedb_dir': iedb_dir,
             'genome': genome,
             'peptide_length': mgd.Template('{pep_len}', 'pep_len'),
-            'predictor': 'netmhc',
+            'predictor': predictor,
             'pyensembl_cache_dir': pyensembl_cache_dir
         }
     )

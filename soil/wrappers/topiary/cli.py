@@ -22,6 +22,10 @@ import workflows
     help='''Genome build of variant coordinates in VCF file.'''
 )
 @click.option(
+    '--predictor', default='netmhc', type=click.Choice(['netmhc', 'netmhcpan']),
+    help='''Prediction tool to use.'''
+)
+@click.option(
     '--iedb-dir', default=None, type=click.Path(exists=True, resolve_path=True),
     help='''Path to data files for MHC-I from http://tools.iedb.org. If this is not set netMHC must be on the PATH.'''
 )
@@ -29,7 +33,7 @@ import workflows
     '--pyensembl-cache-dir', default=None, type=click.Path(exists=True, resolve_path=True),
     help='''Path where pyensembl cache files have been downloaded.'''
 )
-def topiary(hla_alleles, in_file, out_file, genome, iedb_dir, pyensembl_cache_dir):
+def topiary(hla_alleles, in_file, out_file, genome, iedb_dir, predictor, pyensembl_cache_dir):
 
     return workflows.create_topiary_workflow(
         hla_alleles,
@@ -37,5 +41,6 @@ def topiary(hla_alleles, in_file, out_file, genome, iedb_dir, pyensembl_cache_di
         out_file,
         iedb_dir=iedb_dir,
         genome=genome,
+        predictor=predictor,
         pyensembl_cache_dir=pyensembl_cache_dir
     )
