@@ -15,7 +15,8 @@ def create_titan_workflow(
         ref_genome_fasta_file,
         out_file,
         exome_bed_file=None,
-        sample='Tumour'):
+        sample='Tumour',
+        threads=1):
 
     sandbox = soil.utils.workflow.get_sandbox(['hmmcopy', 'hmmcopy_utils', 'titan'])
 
@@ -118,7 +119,8 @@ def create_titan_workflow(
         ),
         kwargs={
             'is_exome': (exome_bed_file is not None),
-            'sample': sample
+            'sample': sample,
+            'threads': threads
         }
     )
 
