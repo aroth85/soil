@@ -108,7 +108,7 @@ def create_titan_workflow(
     workflow.transform(
         name='run_titan',
         axes=('param_idx',),
-        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3, 'threads': threads},
         func=tasks.run_titan,
         args=(
             mgd.TempInputFile('coverage.wig'),
