@@ -93,7 +93,7 @@ def run_search(
         fragment_method=0,
         instrument=0,
         isotope_range=(-1, 2),
-        max_mods=2,
+        max_mods=1,
         num_tolerable_termini=2,
         num_threads=1,
         precursor_mass_tolerance='20ppm',
