@@ -16,6 +16,7 @@ def create_search_workflow(
         in_fasta_file,
         in_mzml_file,
         out_file,
+        add_decoys=True,
         fixed_mods=None,
         max_mods=1,
         split_size=1000,
@@ -41,6 +42,7 @@ def create_search_workflow(
 
     workflow.commandline(
         name='copy_db',
+        ctx={'local': True},
         axes=('split',),
         args=(
             'cp',
@@ -61,7 +63,7 @@ def create_search_workflow(
             mgd.TempSpace('msgf_tmp', 'split'),
         ),
         kwargs={
-            'add_decoys': True,
+            'add_decoys': add_decoys,
             'fixed_mods': fixed_mods,
             'max_mods': max_mods,
             'variable_mods': variable_mods
