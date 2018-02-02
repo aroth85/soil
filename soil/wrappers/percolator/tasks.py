@@ -48,7 +48,7 @@ def convert_msgf_to_pin(in_decoy_files, in_target_files, out_file, tmp_space):
     shutil.rmtree(tmp_space)
 
 
-def run_percolator(in_file, out_file, db_file=None):
+def run_percolator(in_file, out_file, db_file=None, decoy_prefix='XXX_'):
     cmd = [
         'percolator',
         in_file,
@@ -58,6 +58,6 @@ def run_percolator(in_file, out_file, db_file=None):
     if db_file is not None:
         cmd.extend(['-f', db_file])
 
-        cmd.extend(['-P', 'DECOY_'])
+        cmd.extend(['-P', decoy_prefix])
 
     cli.execute(*cmd)

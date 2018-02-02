@@ -1,12 +1,7 @@
-'''
-Created on 23 Mar 2017
-
-@author: Andrew Roth
-'''
-import glob
 import os
 import pandas as pd
 import pyopenms
+import pyteomics.fasta
 import pypeliner.commandline as cli
 import re
 import shutil
@@ -14,40 +9,8 @@ import shutil
 import soil.utils.workflow
 
 
-def build_index(in_file, out_file, tmp_dir, tda=0):
-    if tda >= 2:
-        raise Exception()
-
-    tmp_in_file = os.path.join(tmp_dir, os.path.basename(in_file))
-
-    shutil.copy(in_file, tmp_in_file)
-
-    cmd = [
-        'msgf_plus',
-        'edu.ucsd.msjava.msdbsearch.BuildSA',
-        '-Xmx4G',
-        '-d', tmp_in_file,
-        '-tda', tda
-    ]
-
-    cli.execute(*cmd)
-
-    if tda == 0:
-        tmp_files = glob.glob(tmp_in_file + '*')
-
-    elif tda == 1:
-        tmp_files = glob.glob(tmp_in_file + '.revCat.*')
-
-    out_dir = os.path.dirname(out_file)
-
-    for src_file in tmp_files:
-        dst_file = os.path.join(out_dir, os.path.basename(src_file))
-
-        dst_file = dst_file.replace('.revCat', '.')
-
-        shutil.copy(src_file, dst_file)
-
-    assert os.path.exists(out_file)
+def build_decoy_db(in_file, out_file, decoy_prefix='XXX_'):
+    pyteomics.fasta.write_decoy_db(in_file, out_file, decoy_only=True, prefix=decoy_prefix)
 
 
 def convert_mzid_to_tsv(in_file, out_file):

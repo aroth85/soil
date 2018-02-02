@@ -4,6 +4,7 @@ pandas
 pysam
 #pypeliner
 #pyopenms
+pyteomics
 pysftp
 pyvcf
 pyyaml
