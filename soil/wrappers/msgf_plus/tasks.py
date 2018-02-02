@@ -154,6 +154,9 @@ def write_mods_files(file_name, num_mods, fixed_mods, variable_mods):
 def _get_modification_string(mod, fixed=True):
     base_mod, aa = re.search('(.*)\s\((.*)\)', mod).groups()
 
+    if '-term' in aa.lower():
+        aa = '*'
+
     db = pyopenms.ModificationsDB()
 
     idx = db.findModificationIndex(mod)
