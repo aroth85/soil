@@ -1,11 +1,11 @@
 import os
 import pandas as pd
-import pyopenms
 import pyteomics.fasta
 import pypeliner.commandline as cli
 import re
 import shutil
 
+import soil.utils.package_data
 import soil.utils.workflow
 
 
@@ -120,15 +120,17 @@ def _get_modification_string(mod, fixed=True):
     if '-term' in aa.lower():
         aa = '*'
 
-    db = pyopenms.ModificationsDB()
+    mods_file = soil.utils.package_data.load_data_file('data/protein_mods.tsv')
 
-    idx = db.findModificationIndex(mod)
+    mods_df = pd.read_csv(mods_file, sep='\t')
 
-    res_mod = db.getModification(idx)
+    mods_df = mods_df.set_index('modification')
 
-    weight = res_mod.getDiffFormula().getMonoWeight()
+    row = mods_df.loc[mod]
 
-    term_spec = res_mod.getTermSpecificityName(res_mod.getTermSpecificity())
+    weight = row['weight']
+
+    term_spec = row['terminus_specificity']
 
     if term_spec == 'none':
         term_spec = 'any'
