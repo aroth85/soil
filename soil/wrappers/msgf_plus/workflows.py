@@ -51,7 +51,7 @@ def create_percolator_workflow(
         ctx={'local': True},
         axes=('split',),
         args=(
-            'cp',
+            'ln', '-s',
             mgd.TempInputFile('decoy.fasta'),
             mgd.TempOutputFile('decoy.fasta', 'split'),
         )
@@ -62,7 +62,7 @@ def create_percolator_workflow(
         ctx={'local': True},
         axes=('split',),
         args=(
-            'cp',
+            'ln', '-s',
             mgd.InputFile(in_fasta_file),
             mgd.TempOutputFile('target.fasta', 'split'),
         )
@@ -176,7 +176,7 @@ def create_search_workflow(
         ctx={'local': True},
         axes=('split',),
         args=(
-            'cp',
+            'ln', '-s',
             mgd.InputFile(in_fasta_file),
             mgd.TempOutputFile('db.fasta', 'split'),
         )
