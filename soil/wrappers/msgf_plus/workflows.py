@@ -12,7 +12,7 @@ import soil.wrappers.proteowizard.tasks
 import tasks
 
 
-def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=1000):
+def create_search_workflow(in_fasta_file, in_mzml_file, out_file, fixed_mods=None, split_size=1000, variable_mods=None):
 
     sandbox = soil.utils.workflow.get_sandbox(['msgf_plus', 'proteowizard'])
 
@@ -55,6 +55,8 @@ def create_search_workflow(in_fasta_file, in_mzml_file, out_file, split_size=100
         ),
         kwargs={
             'add_decoys': True,
+            'fixed_mods': fixed_mods,
+            'variable_mods': variable_mods
         }
     )
 
