@@ -217,8 +217,16 @@ def create_search_workflow(
         func=tasks.merge_results,
         args=(
             mgd.TempInputFile('search.tsv', 'split'),
-            mgd.OutputFile(out_file)
+            mgd.TempOutputFile('merged.tsv')
         )
     )
 
+    workflow.transform(
+        name='convert_output',
+        func=tasks.convert_msgf_to_final,
+        args=(
+            mgd.TempInputFile('merged.tsv'),
+            mgd.OutputFile(out_file)
+        )
+    )
     return workflow

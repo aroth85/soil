@@ -29,6 +29,39 @@ def convert_mzid_to_tsv(in_file, out_file):
     shutil.move(tmp_file, out_file)
 
 
+def convert_msgf_to_final(in_file, out_file):
+    df = load_msgf_df(in_file)
+
+    df.to_csv(out_file, compression='gzip', index=False, sep='\t')
+
+
+def load_msgf_df(file_name):
+    df = pd.read_csv(file_name, sep='\t')
+
+    df = df.rename(columns={
+        'SpecID': 'scan_id',
+        'ScanNum': 'scan_num',
+        'FragMethod': 'frag_method',
+        'Precursor': 'precursor_mass',
+        'IsotopeError': 'isotope_error',
+        'PrecursorError(ppm)': 'precursor_error_ppm',
+        'DeNovoScore': 'denovo_score',
+        'MSGFScore': 'msgf_score',
+        'SpecEValue': 'spec_e_value',
+        'EValue': 'e_value',
+        'QValue': 'q_value',
+        'PepQValue': 'pep_q_value'
+    })
+
+    df = df.rename(columns=lambda x: x.lower())
+
+    is_decoy = df['protein'].str.startswith('XXX_').astype(int)
+
+    df['decoy_fdr'] = is_decoy.cumsum() / is_decoy.sum()
+
+    return df
+
+
 def merge_results(in_files, out_file):
     data = []
 
