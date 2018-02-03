@@ -9,8 +9,70 @@ import soil.utils.package_data
 import soil.utils.workflow
 
 
-def build_decoy_db(in_file, out_file, decoy_prefix='XXX_'):
-    pyteomics.fasta.write_decoy_db(in_file, out_file, decoy_only=True, prefix=decoy_prefix)
+def build_decoy_db(in_file, out_file, decoy_only=True, decoy_prefix='XXX_'):
+    pyteomics.fasta.write_decoy_db(in_file, out_file, decoy_only=decoy_only, prefix=decoy_prefix)
+
+
+def _build_index(in_file, tda=0):
+    cmd = [
+        'msgf_plus',
+        'edu.ucsd.msjava.msdbsearch.BuildSA',
+        '-Xmx4G',
+        '-d', in_file,
+        '-tda', tda
+    ]
+
+    cli.execute(*cmd)
+
+
+def build_index(in_file, out_file, add_decoys=True):
+    """ Build an indexed database.
+
+    When using MSGF+ out_file can be set as the search database.
+
+    Parameters
+    ----------
+    in_file: str
+        Path to FASTA format database file.
+    out_file: str
+        Path where database will be written in FASTA with MSGF+ index files alongside.
+    add_decoys: bool
+        Whether to add decoy sequences to the database.
+    """
+    tmp_file = out_file.replace('.tmp', '')
+
+    if add_decoys:
+        build_decoy_db(in_file, tmp_file, decoy_only=False, decoy_prefix='XXX_')
+
+    else:
+        shutil.copy(in_file, tmp_file)
+
+    _build_index(tmp_file, tda=0)
+
+    shutil.move(tmp_file, out_file)
+
+
+def clean_up(db_files, in_file, out_file):
+    """ Clean up the index files for MSGF+.
+
+    Parameters
+    ----------
+    db_file: str,iterable
+        Path(s) to db files used by MSGF+ workflow.
+    in_file: str
+        Path to final output file of workflow. Should be a tmp.
+    out_file: str
+        Path to final output of worklow. Should be the real target.
+    """
+    shutil.copy(in_file, out_file)
+
+    index_exts = ['csarr', 'canno', 'cseq', 'cnlcp']
+
+    for file_name in soil.utils.workflow.flatten_input(db_files):
+        for ext in index_exts:
+            index_file = file_name.replace('.fasta', '.{}'.format(ext))
+
+            os.unlink(index_file)
 
 
 def convert_mzid_to_tsv(in_file, out_file):
