@@ -170,6 +170,7 @@ def run_search(
 
     cmd = [
         'msgf_plus',
+        '-Xmx8G',
         '-d', db_file,
         '-s', in_file,
         '-o', tmp_file,
