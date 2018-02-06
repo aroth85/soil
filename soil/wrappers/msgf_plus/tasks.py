@@ -26,7 +26,7 @@ def _build_index(in_file, tda=0):
 
 
 def build_index_sentinel(in_file, sentinel_file, **kwargs):
-    out_file = sentinel_file.replace('.sentinel', '.fasta')
+    out_file = sentinel_file.replace('.sentinel.tmp', '.fasta')
 
     build_index(in_file, out_file, **kwargs)
 
