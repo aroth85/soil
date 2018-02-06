@@ -202,10 +202,10 @@ def create_search_workflow(
     workflow.transform(
         name='index_db',
         ctx={'mem': 4, 'mem_retry_increment': 8, 'num_retry': 3},
-        func=tasks.build_index,
+        func=tasks.build_index_sentinel,
         args=(
             mgd.InputFile(in_fasta_file),
-            mgd.TempOutputFile('db.fasta')
+            mgd.TempOutputFile('db.sentinel')
         ),
         kwargs={
             'add_decoys': add_decoys
@@ -229,9 +229,9 @@ def create_search_workflow(
         name='run_msgf_plus',
         axes=('split',),
         ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
-        func=tasks.run_search,
+        func=tasks.run_search_sentinel,
         args=(
-            mgd.TempInputFile('db.fasta'),
+            mgd.TempInputFile('db.sentinel'),
             mgd.TempInputFile('spec_data.mzml', 'split'),
             mgd.TempOutputFile('search.mzid', 'split'),
             mgd.TempSpace('msgf_tmp', 'split'),
@@ -277,7 +277,7 @@ def create_search_workflow(
         name='clean_up',
         func=tasks.clean_up,
         args=(
-            mgd.TempInputFile('db.fasta'),
+            mgd.TempInputFile('db.sentinel'),
             mgd.TempInputFile('final.tsv.gz'),
             mgd.OutputFile(out_file)
         )

@@ -25,6 +25,14 @@ def _build_index(in_file, tda=0):
     cli.execute(*cmd)
 
 
+def build_index_sentinel(in_file, sentinel_file, **kwargs):
+    out_file = sentinel_file.replace('.sentinel', '.fasta')
+
+    build_index(in_file, out_file, **kwargs)
+
+    open(sentinel_file, 'w').close()
+
+
 def build_index(in_file, out_file, add_decoys=True):
     """ Build an indexed database.
 
@@ -52,7 +60,7 @@ def build_index(in_file, out_file, add_decoys=True):
     shutil.move(tmp_file, out_file)
 
 
-def clean_up(db_files, in_file, out_file):
+def clean_up(db_sentinel_files, in_file, out_file):
     """ Clean up the index files for MSGF+.
 
     Parameters
@@ -68,7 +76,9 @@ def clean_up(db_files, in_file, out_file):
 
     index_exts = ['csarr', 'canno', 'cseq', 'cnlcp']
 
-    for file_name in soil.utils.workflow.flatten_input(db_files):
+    for sentinel_file in soil.utils.workflow.flatten_input(db_sentinel_files):
+        file_name = sentinel_file.replace('.sentinel', '.fasta')
+
         for ext in index_exts:
             index_file = file_name.replace('.fasta', '.{}'.format(ext))
 
@@ -137,6 +147,12 @@ def merge_results(in_files, out_file):
     data = data.drop('#SpecFile', axis=1)
 
     data.to_csv(out_file, index=False, sep='\t')
+
+
+def run_search_sentinel(sentinel_file, *args, **kwargs):
+    db_file = sentinel_file.replace('.sentinel', '.fasta')
+
+    run_search(db_file, *args, **kwargs)
 
 
 def run_search(
