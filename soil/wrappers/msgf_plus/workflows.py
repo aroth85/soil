@@ -201,6 +201,7 @@ def create_search_workflow(
 
     workflow.transform(
         name='index_db',
+        ctx={'mem': 4, 'mem_retry_increment': 8, 'num_retry': 3},
         func=tasks.build_index,
         args=(
             mgd.InputFile(in_fasta_file),
