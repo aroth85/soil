@@ -4,6 +4,7 @@ import pyteomics.fasta
 import pypeliner.commandline as cli
 import re
 import shutil
+import string
 
 import soil.utils.package_data
 import soil.utils.workflow
@@ -110,6 +111,15 @@ def convert_msgf_to_final(in_file, out_file):
 
 
 def load_msgf_df(file_name):
+    def get_unmodified_peptide(peptide):
+        result = []
+
+        for x in peptide:
+            if x in string.ascii_uppercase:
+                result.append(x)
+
+        return ''.join(result)
+
     df = pd.read_csv(file_name, sep='\t')
 
     df = df.rename(columns={
@@ -124,14 +134,17 @@ def load_msgf_df(file_name):
         'SpecEValue': 'spec_e_value',
         'EValue': 'e_value',
         'QValue': 'q_value',
-        'PepQValue': 'pep_q_value'
+        'PepQValue': 'pep_q_value',
+        'Protein': 'protein'
     })
 
     df = df.rename(columns=lambda x: x.lower())
 
-    is_decoy = df['protein'].str.contains('XXX_').astype(int)
+    is_decoy = df['proteins'].str.contains('XXX_').astype(int)
 
     df['decoy_fdr'] = is_decoy.cumsum() / is_decoy.sum()
+
+    df['peptide_no_mod'] = df['peptide'].apply(get_unmodified_peptide)
 
     return df
 
