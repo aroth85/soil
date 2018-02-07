@@ -113,6 +113,9 @@ def convert_msgf_to_final(in_file, out_file):
 
 def load_msgf_df(file_name):
     def get_unmodified_peptide(peptide):
+        if '.' in peptide:
+            peptide = peptide.split('.')[1]
+
         result = []
 
         for x in peptide:
