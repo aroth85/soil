@@ -187,6 +187,7 @@ def run_search(
         instrument=0,
         isotope_range=(-1, 2),
         max_mods=1,
+        mem=5,
         num_tolerable_termini=2,
         num_threads=1,
         precursor_mass_tolerance='20ppm',
@@ -207,7 +208,7 @@ def run_search(
 
     cmd = [
         'msgf_plus',
-        '-Xmx6G',
+        '-Xmx{}G'.format(mem),
         '-d', db_file,
         '-s', in_file,
         '-o', tmp_file,

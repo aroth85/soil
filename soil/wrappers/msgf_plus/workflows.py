@@ -193,6 +193,7 @@ def create_search_workflow(
         fixed_mods=None,
         max_mods=1,
         precursor_mass_tolerance='20ppm',
+        search_mem=5,
         split_size=1000,
         variable_mods=None):
 
@@ -229,7 +230,7 @@ def create_search_workflow(
     workflow.transform(
         name='run_msgf_plus',
         axes=('split',),
-        ctx={'mem': 8, 'mem_retry_increment': 4, 'num_retry': 3},
+        ctx={'mem': search_mem + 3, 'mem_retry_increment': 4, 'num_retry': 3},
         func=tasks.run_search_sentinel,
         args=(
             mgd.TempInputFile('db.sentinel'),
@@ -241,6 +242,7 @@ def create_search_workflow(
             'add_decoys': False,
             'fixed_mods': fixed_mods,
             'max_mods': max_mods,
+            'mem': search_mem,
             'precursor_mass_tolerance': precursor_mass_tolerance,
             'variable_mods': variable_mods
         }
