@@ -97,6 +97,7 @@ def convert_mzid_to_tsv(in_file, out_file):
         '-i', in_file,
         '-o', tmp_file,
         '-showDecoy', 1,
+        '-unroll', 1
     ]
 
     cli.execute(*cmd)
