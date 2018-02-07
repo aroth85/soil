@@ -14,6 +14,8 @@ def build_decoy_db(in_file, out_file, decoy_only=True, decoy_prefix='XXX_'):
 
 
 def _build_index(in_file, tda=0):
+    os.environ['MALLOC_ARENA_MAX'] = '2'
+
     cmd = [
         'msgf_plus',
         'edu.ucsd.msjava.msdbsearch.BuildSA',
@@ -172,6 +174,8 @@ def run_search(
         num_threads=1,
         precursor_mass_tolerance='20ppm',
         variable_mods=None):
+
+    os.environ['MALLOC_ARENA_MAX'] = '2'
 
     if os.path.exists(tmp_dir):
         shutil.rmtree(tmp_dir)
