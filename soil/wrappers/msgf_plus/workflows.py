@@ -192,6 +192,7 @@ def create_search_workflow(
         add_decoys=True,
         fixed_mods=None,
         max_mods=1,
+        precursor_mass_tolerance='20ppm',
         split_size=1000,
         variable_mods=None):
 
@@ -240,6 +241,7 @@ def create_search_workflow(
             'add_decoys': False,
             'fixed_mods': fixed_mods,
             'max_mods': max_mods,
+            'precursor_mass_tolerance': precursor_mass_tolerance,
             'variable_mods': variable_mods
         }
     )
