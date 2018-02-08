@@ -141,12 +141,12 @@ def load_msgf_df(file_name):
         'EValue': 'e_value',
         'QValue': 'q_value',
         'PepQValue': 'pep_q_value',
-        'Protein': 'proteins'
+        'Protein': 'protein'
     })
 
     df = df.rename(columns=lambda x: x.lower())
 
-    is_decoy = df['proteins'].str.contains('XXX_').astype(int)
+    is_decoy = df['protein'].str.contains('XXX_').astype(int)
 
     df['decoy_fdr'] = is_decoy.cumsum() / is_decoy.sum()
 
