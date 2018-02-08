@@ -139,7 +139,7 @@ def load_msgf_df(file_name):
         'EValue': 'e_value',
         'QValue': 'q_value',
         'PepQValue': 'pep_q_value',
-        'Protein': 'protein'
+        'Protein': 'proteins'
     })
 
     df = df.rename(columns=lambda x: x.lower())
