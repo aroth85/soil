@@ -10,9 +10,11 @@ def runner(func):
     """
     @functools.wraps(func)
     def func_wrapper(*args, **kwargs):
-        save_working_dir = kwargs.pop('save_working_dir')
+        no_cleanup = kwargs.pop('no_cleanup')
 
         resume = kwargs.pop('resume')
+
+        save_working_dir = kwargs.pop('save_working_dir')
 
         submit = kwargs.pop('submit')
 
@@ -30,6 +32,7 @@ def runner(func):
         config = {
             'maxjobs': kwargs.pop('max_jobs'),
             'nativespec': kwargs.pop('native_spec'),
+            'nocleanup': no_cleanup,
             'submit': submit,
             'tmpdir': working_dir,
         }
@@ -82,8 +85,10 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '-sb', '--submit', default='local', type=click.Choice(['drmaa', 'local', 'qsub']),
-        help='''Job submission strategy. Use local to run on host machine or drmaa to submit to a cluster.'''
+        '-sb', '--submit', default='local',
+        help='''Job submission strategy. Use `local` to run on host machine or `drmaa` to submit to a cluster. If
+        `drmaa` does not work `qsub` can also be used for grid engine clusters. Alternatively a custom execque can be
+        specified. See pypeliner documentation for details.'''
     )(func)
 
     click.option(
@@ -92,6 +97,12 @@ def _add_runner_cli_args(func):
             'Set this flag if an analysis was interrupted and you would like to resume.',
             'Only has an effect if the working directory exists.'
         ])
+    )(func)
+
+    click.option(
+        '--no-cleanup', default=False, is_flag=True,
+        help='''If set working directory will not be removed upon successful completion and temporary files will be
+        not be deleted.'''
     )(func)
 
     click.option(
