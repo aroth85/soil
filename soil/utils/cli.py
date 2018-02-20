@@ -85,7 +85,7 @@ def _add_runner_cli_args(func):
     )(func)
 
     click.option(
-        '-sb', '--submit', default='local',
+        '-sb', '--submit', default=os.environ.get('SOIL_SUBMIT', 'local'),
         help='''Job submission strategy. Use `local` to run on host machine or `drmaa` to submit to a cluster. If
         `drmaa` does not work `qsub` can also be used for grid engine clusters. Alternatively a custom execque can be
         specified. See pypeliner documentation for details.'''
