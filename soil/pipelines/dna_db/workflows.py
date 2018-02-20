@@ -178,7 +178,7 @@ def create_align_workflow(fastq_file_1, fastq_file_2, ref_genome_fasta_file, out
             mgd.OutputFile(out_bam_file),
             mgd.TempSpace('mark_dups_tmp')
         ),
-        kargs={
+        kwargs={
             'threads': threads
         }
     )
