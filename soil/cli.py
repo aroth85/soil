@@ -1,5 +1,6 @@
 import click
 
+import soil.pipelines.dna_db.cli
 import soil.pipelines.rna_assembly.cli
 
 import soil.ref_data.cli
@@ -23,6 +24,7 @@ def pipeline():
 
 
 pipeline.add_command(soil.pipelines.rna_assembly.cli.rna_assembly)
+pipeline.add_command(soil.pipelines.dna_db.cli.dna_db)
 
 
 @click.group()

@@ -79,3 +79,11 @@ def from_fastq(
         pyensembl_cache_dir=ref_data_paths.pyensembl_cache_dir,
         threads=threads
     )
+
+
+@click.group()
+def dna_db():
+    pass
+
+
+dna_db.add_command(from_fastq)
