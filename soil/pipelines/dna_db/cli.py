@@ -81,7 +81,7 @@ def from_fastq(
     )
 
 
-@click.group()
+@click.group(name='dna-db')
 def dna_db():
     pass
 
