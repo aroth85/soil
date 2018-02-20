@@ -17,7 +17,7 @@ def build_variant_fasta(in_file, out_file):
 
 
 def build_variant_table(in_file, out_file, genome_version='GRCh37', pyensembl_cache_dir=None):
-    script = soil.utils.package_data.load_data_file('pipelines/custom_dna_proteome/scripts/build_variants_table.py')
+    script = soil.utils.package_data.load_data_file('pipelines/dna_db/scripts/build_variants_table.py')
 
     cmd = [
         'python',
