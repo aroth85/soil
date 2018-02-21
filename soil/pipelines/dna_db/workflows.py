@@ -161,7 +161,7 @@ def create_align_workflow(fastq_file_1, fastq_file_2, ref_genome_fasta_file, out
         args=(
             'samtools', 'index',
             mgd.InputFile(out_bam_file),
-            mgd.InputFile(out_bam_file + '.bai'),
+            mgd.OutputFile(out_bam_file + '.bai'),
         )
     )
 
