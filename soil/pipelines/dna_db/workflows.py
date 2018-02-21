@@ -220,7 +220,7 @@ def create_db_workflow(
         func=tasks.build_variant_table,
         args=(
             mgd.InputFile(in_file),
-            mgd.TempOutputFile('variant_table.tsv')
+            mgd.TempOutputFile('variant_table.tsv.gz')
         ),
         kwargs={
             'genome_version': genome_version,
