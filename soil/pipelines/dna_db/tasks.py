@@ -69,6 +69,6 @@ def clean_ref_proteome_ids(in_file, out_file):
             line = line.strip()
 
             if line.startswith('>'):
-                line = '>' + '|'.join(['ref', line[1:].split('|')[0].split('.')[0]])
+                line = '>' + '|'.join(['ref', line[1:]])
 
             out_fh.write(line + '\n')
