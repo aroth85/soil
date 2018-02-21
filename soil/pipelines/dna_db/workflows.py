@@ -232,7 +232,7 @@ def create_db_workflow(
         name='build_variant_fasta',
         func=tasks.build_variant_fasta,
         args=(
-            mgd.TempInputFile('variant_table.tsv'),
+            mgd.TempInputFile('variant_table.tsv.gz'),
             mgd.TempOutputFile('var.fasta')
         )
     )
