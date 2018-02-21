@@ -7,16 +7,39 @@ import soil.utils.package_data
 def build_variant_fasta(in_file, out_file):
     df = pd.read_csv(in_file, sep='\t')
 
-    df['prot_alt'] = df['prot_alt'].fillna('')
+    str_cols = [
+        'gene_id',
+        'gene_name',
+        'protein_id',
+        'prot_alt',
+        'transcript_id',
+        'transcript_name',
+        'nuc_variant',
+        'aa_variant'
+    ]
 
-    df['prot_alt'] = df['prot_alt'].astype(str)
+    for col in str_cols:
+        df[col] = df[col].fillna('')
+
+        df[col] = df[col].astype(str)
 
     with open(out_file, 'w') as out_fh:
         for _, row in df.iterrows():
             if len(row['prot_alt']) == 0:
                 continue
 
-            header = 'mut|{0}_{1}'.format(row['protein_id'], row['aa_variant'])
+            protein_id = '{0}_{1}'.format(row['protein_id'], row['aa_variant'])
+
+            header = '|'.join([
+                'mut',
+                protein_id,
+                row['gene_name'],
+                row['gene_id'],
+                row['transcript_name'],
+                row['transcript_id'],
+                row['nuc_variant'],
+                row['aa_variant']
+            ])
 
             out_fh.write('>{}\n'.format(header))
 
