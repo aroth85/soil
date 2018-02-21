@@ -3,9 +3,7 @@ import pypeliner.managed as mgd
 import pypeliner.sandbox
 
 import soil.utils.workflow
-import soil.wrappers.bcftools.tasks
 import soil.wrappers.bwa.workflows
-import soil.wrappers.platypus.workflows
 import soil.wrappers.sambamba.tasks
 import soil.wrappers.strelka.workflows
 
@@ -22,7 +20,6 @@ def create_custom_dna_proteome_from_fastq_workflow(
         normal_bam_file,
         tumour_bam_file,
         custom_proteome_file,
-        platypus_file,
         strelka_file,
         genome_version='GRCh37',
         is_exome=False,
@@ -68,7 +65,6 @@ def create_custom_dna_proteome_from_fastq_workflow(
             mgd.InputFile(ref_genome_fasta_file),
             mgd.InputFile(ref_proteome_fasta_file),
             mgd.OutputFile(custom_proteome_file),
-            mgd.OutputFile(platypus_file),
             mgd.OutputFile(strelka_file)
         ),
         kwargs={
@@ -87,7 +83,6 @@ def create_custom_proteom_from_bam_workflow(
         ref_genome_fasta_file,
         ref_proteome_fasta_file,
         custom_proteome_file,
-        platypus_file,
         strelka_file,
         genome_version='GRCh37',
         is_exome=False,
@@ -96,16 +91,6 @@ def create_custom_proteom_from_bam_workflow(
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'samtools'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
-
-    workflow.subworkflow(
-        name='call_germline_ssms',
-        func=soil.wrappers.platypus.workflows.create_single_sample_workflow,
-        args=(
-            mgd.InputFile(normal_bam_file),
-            mgd.InputFile(ref_genome_fasta_file),
-            mgd.OutputFile(platypus_file)
-        )
-    )
 
     workflow.subworkflow(
         name='call_somatic_ssms',
@@ -121,23 +106,11 @@ def create_custom_proteom_from_bam_workflow(
         }
     )
 
-    workflow.transform(
-        name='concat_ssms',
-        func=soil.wrappers.bcftools.tasks.concatenate_vcf,
-        args=(
-            [mgd.InputFile(platypus_file), mgd.InputFile(strelka_file)],
-            mgd.TempOutputFile('ssms.vcf.gz')
-        ),
-        kwargs={
-            'allow_overlap': True,
-        }
-    )
-
     workflow.subworkflow(
         name='create_db',
         func=create_db_workflow,
         args=(
-            mgd.TempInputFile('ssms.vcf.gz'),
+            mgd.InputFile(strelka_file),
             mgd.InputFile(ref_proteome_fasta_file),
             mgd.OutputFile(custom_proteome_file),
         ),

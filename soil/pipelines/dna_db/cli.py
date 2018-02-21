@@ -56,8 +56,6 @@ def from_fastq(
 
     tumour_bam_file = os.path.join(out_dir, 'tumour.bam')
 
-    platypus_file = os.path.join(out_dir, 'platypus.vcf.gz')
-
     strelka_file = os.path.join(out_dir, 'strelka.vcf.gz')
 
     ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(ref_data_dir)
@@ -72,7 +70,6 @@ def from_fastq(
         normal_bam_file,
         tumour_bam_file,
         custom_proteome_file,
-        platypus_file,
         strelka_file,
         genome_version=ref_data_paths.config['pyensembl']['genome'],
         is_exome=is_exome,
