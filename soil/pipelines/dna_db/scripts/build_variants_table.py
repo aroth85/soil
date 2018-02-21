@@ -4,7 +4,6 @@ import os
 import pandas as pd
 import shutil
 import tempfile
-import varcode
 
 
 def main(args):
@@ -30,6 +29,8 @@ def main(args):
 
 
 def _build_variant_table(in_file, out_file, genome_version='GRCh37'):
+    import varcode
+
     variants = varcode.load_vcf(in_file, genome=genome_version)
 
     effects = variants.effects()
