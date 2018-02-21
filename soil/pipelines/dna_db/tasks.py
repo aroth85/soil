@@ -6,20 +6,20 @@ import soil.utils.package_data
 
 def build_variant_fasta(in_file, out_file):
     df = pd.read_csv(in_file, sep='\t')
-    
+
     df['prot_alt'] = df['prot_alt'].fillna('')
-    
+
     df['prot_alt'] = df['prot_alt'].astype(str)
 
     with open(out_file, 'w') as out_fh:
         for _, row in df.iterrows():
             if len(row['prot_alt']) == 0:
                 continue
-            
-            header = '{0}_{1}'.format(row['protein_id'], row['aa_variant'])
+
+            header = 'mut|{0}_{1}'.format(row['protein_id'], row['aa_variant'])
 
             out_fh.write('>{}\n'.format(header))
-            
+
             out_fh.write(row['prot_alt'] + '\n')
 
 
@@ -46,6 +46,6 @@ def clean_ref_proteome_ids(in_file, out_file):
             line = line.strip()
 
             if line.startswith('>'):
-                line = line.split('|')[0].split('.')[0]
+                line = '>' + '|'.join(['ref', line[1:].split('|')[0].split('.')[0]])
 
             out_fh.write(line + '\n')
