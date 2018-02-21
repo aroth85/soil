@@ -207,15 +207,6 @@ def create_db_workflow(
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
     workflow.transform(
-        name='clean_ref_fasta',
-        func=tasks.clean_ref_proteome_ids,
-        args=(
-            mgd.InputFile(ref_proteome_fasta_file),
-            mgd.TempOutputFile('ref.fasta')
-        )
-    )
-
-    workflow.transform(
         name='build_variant_table',
         func=tasks.build_variant_table,
         args=(
@@ -241,7 +232,7 @@ def create_db_workflow(
         name='build_db',
         args=(
             'cat',
-            mgd.TempInputFile('ref.fasta'),
+            mgd.InputFile(ref_proteome_fasta_file),
             mgd.TempInputFile('var.fasta'),
             '>',
             mgd.OutputFile(out_file)
