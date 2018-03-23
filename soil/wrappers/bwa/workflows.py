@@ -48,7 +48,7 @@ def create_multiple_lane_align_workflow(
     workflow.transform(
         name='markdups_and_merge',
         axes=(),
-        ctx={'mem': 24, 'mem_retry_increment': 8, 'num_retry': 3, 'threads': merge_threads},
+        ctx={'mem': 24, 'mem_retry_factor': 2, 'num_retry': 3, 'threads': merge_threads},
         func=soil.wrappers.sambamba.tasks.markdups,
         args=(
             mgd.TempInputFile('lane.bam', 'lane'),
