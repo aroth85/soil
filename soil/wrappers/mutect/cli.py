@@ -47,4 +47,4 @@ def mutect():
     pass
 
 
-mutect.add_command(mutect)
+mutect.add_command(paired)
