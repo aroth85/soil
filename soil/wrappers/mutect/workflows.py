@@ -1,3 +1,4 @@
+import pysam
 import pypeliner
 import pypeliner.managed as mgd
 
@@ -20,6 +21,10 @@ def create_mutect_paired_workflow(
         normal_name='normal',
         split_size=int(1e7),
         tumour_name='tumour'):
+
+    normal_name = get_sample(normal_bam_file, normal_name)
+
+    tumour_name = get_sample(tumour_bam_file, tumour_name)
 
     sandbox = soil.utils.workflow.get_sandbox(['bcftools', 'gatk', 'samtools'])
 
@@ -58,3 +63,17 @@ def create_mutect_paired_workflow(
     )
 
     return workflow
+
+
+def get_sample(file_name, orig_name):
+    bam = pysam.AlignmentFile(file_name)
+
+    try:
+        sample = bam.header['RG'][0]['SM']
+
+    except KeyError:
+        sample = orig_name
+
+    bam.close()
+
+    return sample
