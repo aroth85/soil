@@ -258,7 +258,7 @@ def create_index_ref_data_workflow(out_dir, cosmic=False, threads=1):
     """
     ref_data_paths = soil.ref_data.paths.SoilRefDataPaths(out_dir)
 
-    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'kallisto', 'samtools', 'star'])
+    sandbox = soil.utils.workflow.get_sandbox(['bwa', 'bcftools', 'kallisto', 'picard', 'samtools', 'star'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
@@ -325,6 +325,16 @@ def create_index_ref_data_workflow(out_dir, cosmic=False, threads=1):
         args=(
             mgd.InputFile(ref_data_paths.genome_fasta_file),
             mgd.OutputFile(ref_data_paths.genome_fasta_file + '.fai')
+        )
+    )
+
+    workflow.commandline(
+        name='build_ref_genom_dict',
+        args=(
+            'picard',
+            'CreateSequenceDictionary',
+            'R={}'.format(mgd.InputFile(ref_data_paths.genome_fasta_file)),
+            'O={}'.format(mgd.OutputFile(os.path.splitext(ref_data_paths.genome_fasta_file)[0] + '.dict'))
         )
     )
 
