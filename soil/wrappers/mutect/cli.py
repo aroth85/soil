@@ -26,7 +26,7 @@ import workflows
     help='''Chromosome to analyze. Can be specified multiple times i.e. -c chr1 -c chrX to analyze chromosomes 1 and X.
     '''
 )
-def paired(normal_bam_file, tumour_bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes, split_size):
+def paired(normal_bam_file, tumour_bam_file, ref_genome_fasta_file, out_vcf_file, chromosomes):
     if len(chromosomes) == 0:
         chromosomes = None
 
