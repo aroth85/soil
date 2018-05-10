@@ -60,7 +60,7 @@ def create_mutect_paired_workflow(
         func=tasks.run_filter_mutect,
         args=(
             mgd.TempInputFile('region.vcf', 'regions'),
-            mgd.TempOutputFile('flagged.vcf.gz', 'regions')
+            mgd.TempOutputFile('flagged.vcf', 'regions')
         )
     )
 
@@ -68,7 +68,7 @@ def create_mutect_paired_workflow(
         name='concatenate_vcfs',
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
-            mgd.TempInputFile('flagged.vcf.gz', 'regions'),
+            mgd.TempInputFile('flagged.vcf', 'regions'),
             mgd.TempOutputFile('merged.vcf.gz'),
         )
     )
