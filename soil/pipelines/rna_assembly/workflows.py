@@ -3,7 +3,7 @@ import pypeliner.managed as mgd
 
 import soil.utils.workflow
 import soil.wrappers.stringtie.tasks
-import soil.wrappers.transdecoder.tasks
+import soil.wrappers.transdecoder.workflows
 
 
 def create_assembly_workflow(
@@ -16,7 +16,7 @@ def create_assembly_workflow(
         out_gtf_file,
         threads=1):
 
-    sandbox = soil.utils.workflow.get_sandbox(['stringtie', 'transdecoder'])
+    sandbox = soil.utils.workflow.get_sandbox(['stringtie'])
 
     workflow = pypeliner.workflow.Workflow(default_sandbox=sandbox)
 
@@ -34,17 +34,17 @@ def create_assembly_workflow(
         }
     )
 
-    workflow.transform(
+    workflow.subworkflow(
         name='run_transdecoder',
-        ctx={'mem': 8, 'mem_retry_increment': 8, 'num_retry': 3},
-        func=soil.wrappers.transdecoder.tasks.gtf_to_fasta,
+        func=soil.wrappers.transdecoder.workflows.create_transdecoder_workflow,
         args=(
             mgd.InputFile(out_gtf_file),
+            mgd.InputFile(ref_gtf_file),
             mgd.InputFile(ref_genome_fasta_file),
+            mgd.OutputFile(out_gff_file),
+            mgd.TempOutputFile('cdna.fasta'),
             mgd.OutputFile(out_cds_fasta_file),
             mgd.OutputFile(out_protein_fasta_file),
-            mgd.OutputFile(out_gff_file),
-            mgd.TempSpace('transdecoder_tmp'),
         )
     )
 
