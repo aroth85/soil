@@ -1,7 +1,18 @@
 import pypeliner.commandline as cli
 
 
-def run_mutect(
+def run_filter_mutect(in_file, out_file):
+    cmd = [
+        'gatk',
+        'FilterMutectCalls',
+        '-V', in_file,
+        '-O', out_file
+    ]
+
+    cli.execute(*cmd)
+
+
+def run_mutect_paired(
         normal_bam_file,
         tumour_bam_file,
         ref_genome_fasta_file,

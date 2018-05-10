@@ -39,13 +39,13 @@ def create_mutect_paired_workflow(
         name='run_mutect',
         axes=('regions',),
         ctx=med_mem_ctx,
-        func=tasks.run_mutect,
+        func=tasks.run_mutect_paired,
         args=(
             mgd.InputFile(normal_bam_file),
             mgd.InputFile(tumour_bam_file),
             mgd.InputFile(ref_genome_fasta_file),
             mgd.TempInputObj('config', 'regions'),
-            mgd.TempOutputFile('region.vcf.gz', 'regions')
+            mgd.TempOutputFile('region.vcf', 'regions')
         ),
         kwargs={
             'normal_name': normal_name,
@@ -54,12 +54,36 @@ def create_mutect_paired_workflow(
     )
 
     workflow.transform(
+        name='run_mutect_filter',
+        axes=('regions',),
+        ctx=med_mem_ctx,
+        func=tasks.run_filter_mutect,
+        args=(
+            mgd.TempInputFile('region.vcf', 'regions'),
+            mgd.TempOutputFile('flagged.vcf.gz', 'regions')
+        )
+    )
+
+    workflow.transform(
         name='concatenate_vcfs',
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
-            mgd.TempInputFile('region.vcf.gz', 'regions'),
-            mgd.OutputFile(out_file),
-        ),
+            mgd.TempInputFile('flagged.vcf.gz', 'regions'),
+            mgd.TempOutputFile('merged.vcf.gz'),
+        )
+    )
+
+    workflow.commandline(
+        name='filter_vcf',
+        ctx=low_mem_ctx,
+        args=(
+            'bcftools',
+            'view',
+            '-O', 'z',
+            '-f', '.,PASS',
+            '-o', mgd.OutputFile(out_file),
+            mgd.TempInputFile('merged.vcf.gz'),
+        )
     )
 
     return workflow
