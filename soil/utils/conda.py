@@ -25,7 +25,7 @@ packages = {
     # E
     'eagle': Package('eagle-phase', '2.3.5', channel='soil'),
     # G
-    'gatk': Package('gatk', '4.0.4.0'),
+    'gatk': Package('gatk4', '4.0.4.0'),
     # H
     'hmmcopy': Package('bioconductor-hmmcopy', '1.20.0'),
     'hmmcopy_utils': Package('hmmcopy', '0.1.1'),
