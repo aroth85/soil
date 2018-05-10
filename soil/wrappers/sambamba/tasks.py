@@ -52,10 +52,10 @@ def markdups(in_files, out_file, tmp_dir, threads=1):
         'markdup',
         '-t', threads,
         '--tmpdir', tmp_dir,
-        '--sort-buffer-size', 20480,
-        '--io-buffer-size', 1280,
-        '--overflow-list-size', 2000000,
-        '--hash-table-size', 2621440
+        '--sort-buffer-size', 2048,
+        '--io-buffer-size', 640,
+        '--overflow-list-size', 1000000,
+        '--hash-table-size', 262144
     ]
 
     cmd.extend(flatten_input(in_files))
