@@ -1,3 +1,4 @@
+import os
 import pypeliner.commandline as cli
 
 
@@ -10,6 +11,11 @@ def run_filter_mutect(in_file, out_file):
     ]
 
     cli.execute(*cmd)
+
+    idx_file = out_file + '.idx'
+
+    if os.path.exists(idx_file):
+        os.unlink(idx_file)
 
 
 def run_mutect_paired(
@@ -34,3 +40,8 @@ def run_mutect_paired(
     ]
 
     cli.execute(*cmd)
+
+    idx_file = out_file + '.idx'
+
+    if os.path.exists(idx_file):
+        os.unlink(idx_file)
