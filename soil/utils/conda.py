@@ -60,5 +60,7 @@ packages = {
     # U
     'ucsc-bedgraphtobigwig': Package('ucsc-bedgraphtobigwig', '357'),
     # V
+    'vardict': Package('vardict', '2018.04.27'),
+    'vardict-java': Package('vardict-java', '1.5.1'),
     'varscan': Package('varscan', '2.4.3'),
 }
