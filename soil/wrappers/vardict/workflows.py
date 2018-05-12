@@ -44,7 +44,7 @@ def create_vardict_paired_workflow(
 
     workflow.transform(
         name='test_somatic',
-        axes=('region',),
+        axes=('regions',),
         func=tasks.run_test_somatic,
         args=(
             mgd.TempInputFile('call.tsv', 'regions'),
@@ -54,7 +54,7 @@ def create_vardict_paired_workflow(
 
     workflow.transform(
         name='write_vcf',
-        axes=('region',),
+        axes=('regions',),
         func=tasks.run_build_paired_vcf,
         args=(
             mgd.TempInputFile('somatic.tsv', 'regions'),
