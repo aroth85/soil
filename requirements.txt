@@ -2,7 +2,7 @@ biopython
 click
 pandas
 pysam
-#pypeliner
+pypeliner-sandbox
 pyteomics
 pysftp
 pyvcf
