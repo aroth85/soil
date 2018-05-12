@@ -8,7 +8,7 @@ import soil.wrappers.samtools.tasks
 import tasks
 
 low_mem_ctx = {'mem': 2, 'mem_retry_factor': 2, 'num_retry': 3}
-med_mem_ctx = {'mem': 4, 'mem_retry_factor': 2, 'num_retry': 3}
+med_mem_ctx = {'mem': 8, 'mem_retry_factor': 2, 'num_retry': 3}
 
 
 def create_vardict_paired_workflow(
@@ -62,11 +62,22 @@ def create_vardict_paired_workflow(
         )
     )
 
+    workflow.commandline(
+        name='compress_vcf',
+        axes=('regions',),
+        args=(
+            'bcftools', 'view',
+            '-O', 'z',
+            '-o', mgd.TempOutputFile('region.vcf.gz', 'regions'),
+            mgd.TempInputFile('region.vcf', 'regions')
+        )
+    )
+
     workflow.transform(
         name='concatenate_vcfs',
         func=soil.wrappers.samtools.tasks.concatenate_vcf,
         args=(
-            mgd.TempInputFile('region.vcf', 'regions'),
+            mgd.TempInputFile('region.vcf.gz', 'regions'),
             mgd.TempOutputFile('merged.vcf.gz'),
         )
     )
