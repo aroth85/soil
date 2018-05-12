@@ -1,3 +1,4 @@
+import pipes
 import pypeliner
 import pypeliner.managed as mgd
 
@@ -84,14 +85,25 @@ def create_vardict_paired_workflow(
 
     workflow.commandline(
         name='filter_vcf',
-        ctx=low_mem_ctx,
         args=(
             'bcftools',
             'view',
             '-O', 'z',
             '-f', '.,PASS',
-            '-o', mgd.OutputFile(out_file),
+            '-o', mgd.TempOutputFile('filtered.vcf.gz'),
             mgd.TempInputFile('merged.vcf.gz'),
+        )
+    )
+
+    workflow.commandline(
+        name='filter_somatics',
+        args=(
+            'bcftools',
+            'filter',
+            '-i', pipes.quote('INFO/STATUS[0]="StrongSomatic"'),
+            '-O', 'z',
+            '-o', mgd.OutputFile(out_file),
+            mgd.TempInputFile('filtered.vcf.gz')
         )
     )
 
