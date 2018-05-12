@@ -17,6 +17,7 @@ import soil.wrappers.strelka.cli
 import soil.wrappers.topiary.cli
 import soil.wrappers.titan.cli
 import soil.wrappers.transdecoder.cli
+import soil.wrappers.vardict.cli
 
 
 @click.group()
@@ -58,3 +59,4 @@ run.add_command(soil.wrappers.strelka.cli.strelka)
 run.add_command(soil.wrappers.topiary.cli.topiary)
 run.add_command(soil.wrappers.titan.cli.titan)
 run.add_command(soil.wrappers.transdecoder.cli.transdecoder)
+run.add_command(soil.wrappers.vardict.cli.vardict)
