@@ -3,7 +3,7 @@ package:
   version: "0.1.0"
 
 source:
-  git_url: git@github.com:aroth85/pypeliner.git
+  git_url: git@github.com:aroth85/soil.git
   git_rev: 0.1.0
 
 requirements:
