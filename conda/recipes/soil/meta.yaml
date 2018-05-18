@@ -41,7 +41,5 @@ test:
     - soil
     
 about:
-  home: http://bitbucket.org/dranew/pypeliner
-  license: MIT
-  summary: "Library for creating informatic workflows"
+  home: http://github.com/aroth85/soil
 
