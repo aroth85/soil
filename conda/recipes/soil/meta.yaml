@@ -18,6 +18,7 @@ requirements:
     - pysftp
     - pyvcf
     - pyyaml
+    - setuptools
   
   run:
     - python 2.7*
@@ -30,7 +31,8 @@ requirements:
     - pysftp
     - pyvcf
     - pyyaml
-    
+    - setuptools
+
 build:
   script: python setup.py install --single-version-externally-managed --record=record.txt
   
