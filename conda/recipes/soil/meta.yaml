@@ -1,0 +1,45 @@
+package:
+  name: soil
+  version: "0.1.0"
+
+source:
+  git_url: git@github.com:aroth85/pypeliner.git
+  git_rev: 0.1.0
+
+requirements:
+  build:
+    - python 2.7*
+    - biopython
+    - click
+    - pandas
+    - pysam
+    - pypeliner-sandbox
+    - pyteomics
+    - pysftp
+    - pyvcf
+    - pyyaml
+  
+  run:
+    - python 2.7*
+    - biopython
+    - click
+    - pandas
+    - pysam
+    - pypeliner-sandbox
+    - pyteomics
+    - pysftp
+    - pyvcf
+    - pyyaml
+    
+build:
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  
+test:
+  imports:
+    - soil
+    
+about:
+  home: http://bitbucket.org/dranew/pypeliner
+  license: MIT
+  summary: "Library for creating informatic workflows"
+
