@@ -20,6 +20,8 @@ def create_titan_workflow(
 
     sandbox = soil.utils.workflow.get_sandbox(['hmmcopy', 'hmmcopy_utils', 'titan'])
 
+    sandbox.channels.append(['conda-forge'])
+
     sandbox.packages.extend(['pandas', 'rpy2'])
 
     chromosomes = soil.utils.genome.load_bam_chromosome_lengths(normal_bam_file, 'autosomes')
