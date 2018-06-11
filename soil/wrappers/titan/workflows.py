@@ -20,7 +20,7 @@ def create_titan_workflow(
 
     sandbox = soil.utils.workflow.get_sandbox(['hmmcopy', 'hmmcopy_utils', 'titan'])
 
-    sandbox.channels.append(['conda-forge'])
+    sandbox.channels.append('conda-forge')
 
     sandbox.packages.extend(['pandas', 'rpy2'])
 
