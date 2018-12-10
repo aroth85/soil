@@ -18,6 +18,13 @@ conda create -n soil python=2.7
 source activate soil
 ```
 
+You may need to add `conda-forge` as a channel to install required packages such as `python-json-logger`
+
+```
+conda config --append channels conda-forge
+```
+
+
 Next you will need to get [SOIL](https://github.com/aroth85/pypeliner) and an experimental fork of [Pypeliner](https://github.com/aroth85/pypeliner) using git.
 The following assumes you are in a directory where you want to put the code.
 First install Pypeliner.
